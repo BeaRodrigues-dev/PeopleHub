@@ -1,0 +1,44 @@
+import { Navigate, Route, Routes } from "react-router-dom";
+import { AppLayout } from "./components/layout/AppLayout";
+import { HomePage } from "./features/home/pages/HomePage";
+import { VacanciesPage } from "./features/vacancy/pages/VacanciesPage";
+import { VacancyDetailPage } from "./features/vacancy/pages/VacancyDetailPage";
+import { CreateVacancyPage } from "./features/vacancy/pages/CreateVacancyPage";
+import { TalentPoolPage } from "./features/talent-bank/pages/TalentPoolPage";
+import { PeoplePage } from "./features/people/pages/PeoplePage";
+import { OnboardingPage } from "./features/onboarding/pages/OnboardingPage";
+import { AnalyticsPage } from "./features/analytics/pages/AnalyticsPage";
+import { ConsultingPage } from "./features/consulting/pages/ConsultingPage";
+import { InsightsPage } from "./features/insights/pages/InsightsPage";
+import { WeeklyReportPage } from "./features/weekly-report/pages/WeeklyReportPage";
+import { DocsPage } from "./features/docs/pages/DocsPage";
+import { CandidateDetailDrawer } from "./features/candidate/components/CandidateDetailDrawer";
+import { CandidateEditModal } from "./features/candidate/components/CandidateEditModal";
+import { AddCandidateModal } from "./features/candidate/components/AddCandidateModal";
+
+export default function App() {
+  return (
+    <AppLayout>
+      <Routes>
+        <Route path="/" element={<HomePage />} />
+        <Route path="/vagas" element={<VacanciesPage />} />
+        <Route path="/vagas/:id" element={<VacancyDetailPage />} />
+        <Route path="/criar-vaga" element={<CreateVacancyPage />} />
+        <Route path="/banco-de-talentos" element={<TalentPoolPage />} />
+        <Route path="/pessoas" element={<PeoplePage />} />
+        <Route path="/onboarding" element={<OnboardingPage />} />
+        <Route path="/analytics" element={<AnalyticsPage />} />
+        <Route path="/consultoria" element={<ConsultingPage />} />
+        <Route path="/insights" element={<InsightsPage />} />
+        <Route path="/relatorio-semanal" element={<WeeklyReportPage />} />
+        <Route path="/documentos" element={<DocsPage />} />
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
+      {/* Montados uma única vez: drawer/modais de candidato funcionam a partir
+          de qualquer página, controlados via uiStore. */}
+      <CandidateDetailDrawer />
+      <CandidateEditModal />
+      <AddCandidateModal />
+    </AppLayout>
+  );
+}

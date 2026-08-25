@@ -1,0 +1,16 @@
+version: "3.8"
+
+# Sobe um MongoDB local para desenvolvimento: `docker compose up -d`
+# Connection string correspondente em .env: mongodb://localhost:27017/talentflow
+services:
+  mongo:
+    image: mongo:7
+    container_name: talentflow-mongo
+    restart: unless-stopped
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-data:/data/db
+
+volumes:
+  mongo-data:

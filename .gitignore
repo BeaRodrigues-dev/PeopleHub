@@ -1,1 +1,15 @@
 node_modules
+dist
+.vite
+.DS_Store
+*.log
+
+# env locais (mantemos apenas os .env.example versionados)
+.env
+.env.local
+
+# uploads gerados em runtime (mock-backend e backend real)
+mock-backend/uploads/*
+!mock-backend/uploads/.gitkeep
+backend/uploads/*
+!backend/uploads/.gitkeep
