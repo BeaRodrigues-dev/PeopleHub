@@ -58,7 +58,7 @@ O jeito mais rápido de ter um link real (tipo `seusite.onrender.com`) é usando
 
 1. Suba o código pro GitHub (`git push origin main` — ver instruções acima).
 2. Crie uma conta em [render.com](https://render.com) (dá pra entrar direto com a conta do GitHub).
-3. No dashboard: **New** → **Blueprint** → selecione o repositório `poc-kanban`.
+3. No dashboard: **New** → **Blueprint** → selecione o repositório `PeopleHub`.
 4. O Render lê o `render.yaml` da raiz e propõe 2 serviços: `peoplehub-mock-backend` (API) e `peoplehub-frontend` (site). Clique em **Apply**.
 5. Espere os dois builds terminarem (alguns minutos). O link do site fica em algo como `https://peoplehub-frontend.onrender.com`.
 
@@ -68,7 +68,7 @@ Detalhes:
 - Se o nome `peoplehub-mock-backend` já estiver em uso por outra pessoa no Render, o serviço sobe com outro nome — nesse caso, ajuste a variável `VITE_API_URL` do serviço `peoplehub-frontend` (Render → serviço → Environment) para apontar pra URL real do backend, e clique em **Manual Deploy** no frontend pra rebuildar.
 - Pra usar o backend real (NestJS + MongoDB) em produção em vez do mock, é preciso um MongoDB gerenciado (ex.: MongoDB Atlas free tier) e ajustar `MONGODB_URI`/`OPENAI_API_KEY` nas env vars do serviço — ver `backend/README.md`.
 
-### GitHub Pages (link `bearodrigues-dev.github.io/poc-kanban`)
+### GitHub Pages (link `bearodrigues-dev.github.io/PeopleHub`)
 
 Se você quer o link aparecendo direto na seção "About" do repositório no GitHub
 (estilo `usuario.github.io/repo`), use o workflow já incluso
@@ -82,7 +82,7 @@ hospedada em algum lugar (o backend do Render, passo acima, é o mais simples).
 4. Faça um `git push` (ou rode o workflow manualmente em **Actions** → "Deploy frontend to GitHub Pages" → **Run workflow**).
 5. Depois que o workflow terminar (ícone verde em **Actions**), o link aparece automaticamente em **Settings** → **Pages**, e também no ícone de engrenagem do "About" na página principal do repo (marque "Use your GitHub Pages website").
 
-O link final fica algo como `https://bearodrigues-dev.github.io/poc-kanban/`.
+O link final fica algo como `https://bearodrigues-dev.github.io/PeopleHub/`.
 
 ## Autenticação
 
