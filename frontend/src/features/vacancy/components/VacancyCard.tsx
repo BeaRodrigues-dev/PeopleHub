@@ -1,7 +1,8 @@
-import { Box, Card, Chip, Stack, Typography } from "@mui/material";
+import { Box, Card, Chip, IconButton, Stack, Typography } from "@mui/material";
 import PlaceOutlinedIcon from "@mui/icons-material/PlaceOutlined";
 import WorkOutlineRoundedIcon from "@mui/icons-material/WorkOutlineRounded";
 import GroupsRoundedIcon from "@mui/icons-material/GroupsRounded";
+import DeleteOutlineRoundedIcon from "@mui/icons-material/DeleteOutlineRounded";
 import { useNavigate } from "react-router-dom";
 import type { Vacancy, VacancyStatus } from "../types";
 
@@ -12,7 +13,7 @@ const statusStyle: Record<VacancyStatus, { bg: string; color: string }> = {
   Rascunho: { bg: "#eef0ff", color: "#5546c9" },
 };
 
-export function VacancyCard({ vacancy, candidateCount }: { vacancy: Vacancy; candidateCount?: number }) {
+export function VacancyCard({ vacancy, candidateCount, onDelete }: { vacancy: Vacancy; candidateCount?: number; onDelete?: (vacancy: Vacancy) => void }) {
   const navigate = useNavigate();
   const status = statusStyle[vacancy.status];
   return (
@@ -31,7 +32,14 @@ export function VacancyCard({ vacancy, candidateCount }: { vacancy: Vacancy; can
           <Typography fontWeight={800} fontSize={16} sx={{ lineHeight: 1.3 }}>{vacancy.title}</Typography>
           <Typography variant="body2" color="text.secondary" sx={{ mt: 0.25 }}>{vacancy.department || "—"}</Typography>
         </Box>
-        <Chip label={vacancy.status} size="small" sx={{ bgcolor: status.bg, color: status.color, fontWeight: 750, flexShrink: 0 }} />
+        <Stack direction="row" spacing={0.25} alignItems="center" flexShrink={0}>
+          <Chip label={vacancy.status} size="small" sx={{ bgcolor: status.bg, color: status.color, fontWeight: 750 }} />
+          {onDelete && (
+            <IconButton size="small" onClick={(e) => { e.stopPropagation(); onDelete(vacancy); }}>
+              <DeleteOutlineRoundedIcon fontSize="small" />
+            </IconButton>
+          )}
+        </Stack>
       </Stack>
 
       <Stack direction="row" flexWrap="wrap" gap={0.75} sx={{ mb: 1.5 }}>

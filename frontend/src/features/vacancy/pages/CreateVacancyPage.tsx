@@ -1,8 +1,8 @@
-import { useState, type ReactNode } from "react";
-import { Box, Button, Card, Grid, MenuItem, Select, Stack, TextField, Typography } from "@mui/material";
+import { useEffect, useState, type ReactNode } from "react";
+import { Box, Button, Card, Grid, MenuItem, Select, Skeleton, Stack, TextField, Typography } from "@mui/material";
 import ArrowBackRoundedIcon from "@mui/icons-material/ArrowBackRounded";
-import { useNavigate } from "react-router-dom";
-import { useCreateVacancy } from "../queries";
+import { useNavigate, useParams } from "react-router-dom";
+import { useCreateVacancy, useUpdateVacancy, useVacancy } from "../queries";
 import { useToast } from "../../../components/common/ToastProvider";
 import { SkillsEditor } from "../../../components/common/SkillsEditor";
 import { PipelineStageEditor, type DraftStage } from "../components/PipelineStageEditor";
@@ -23,7 +23,11 @@ function SectionCard({ title, description, children }: { title: string; descript
 
 export function CreateVacancyPage() {
   const navigate = useNavigate();
+  const { id } = useParams();
+  const isEditing = !!id;
+  const { data: existingVacancy, isLoading: loadingExisting } = useVacancy(id);
   const createVacancy = useCreateVacancy();
+  const updateVacancy = useUpdateVacancy();
   const toast = useToast();
 
   const [title, setTitle] = useState("");
@@ -40,39 +44,80 @@ export function CreateVacancyPage() {
   const [requiredSkills, setRequiredSkills] = useState<string[]>([]);
   const [stages, setStages] = useState<DraftStage[]>(DEFAULT_STAGES.map((name, i) => ({ id: `draft-${i}`, name })));
 
-  const canSubmit = title.trim() && department.trim() && location.trim() && stages.length > 0 && !createVacancy.isPending;
+  useEffect(() => {
+    if (!existingVacancy) return;
+    setTitle(existingVacancy.title);
+    setDepartment(existingVacancy.department ?? "");
+    setLocation(existingVacancy.location ?? "");
+    setWorkModel(existingVacancy.workModel);
+    setSeniority(existingVacancy.seniority ?? "Pleno");
+    setStatus(existingVacancy.status);
+    setDescription(existingVacancy.description ?? "");
+    setResponsibilities(existingVacancy.responsibilities ?? "");
+    setRequirements(existingVacancy.requirements ?? "");
+    setRequiredSkills(existingVacancy.requiredSkills);
+    setStages([...existingVacancy.stages].sort((a, b) => a.order - b.order));
+  }, [existingVacancy]);
+
+  const isSaving = createVacancy.isPending || updateVacancy.isPending;
+  const canSubmit = title.trim() && department.trim() && location.trim() && stages.length > 0 && !isSaving;
 
   const handleSubmit = () => {
     if (!canSubmit) return;
-    createVacancy.mutate(
-      {
-        title: title.trim(),
-        department: department.trim(),
-        location: location.trim(),
-        workModel,
-        seniority,
-        status,
-        description,
-        responsibilities,
-        requirements,
-        requiredSkills,
-        stages: stages.map((s, i) => ({ name: s.name, order: i, isTerminal: i === stages.length - 1 })),
-      },
-      {
-        onSuccess: (vacancy) => {
-          toast.success("Vaga criada com sucesso");
-          navigate(`/vagas/${vacancy.id}`);
+    const payload = {
+      title: title.trim(),
+      department: department.trim(),
+      location: location.trim(),
+      workModel,
+      seniority,
+      status,
+      description,
+      responsibilities,
+      requirements,
+      requiredSkills,
+      stages: stages.map((s, i) => ({ name: s.name, order: i, isTerminal: i === stages.length - 1 })),
+    };
+
+    if (isEditing && id) {
+      updateVacancy.mutate(
+        { id, input: payload },
+        {
+          onSuccess: () => {
+            toast.success("Vaga atualizada com sucesso");
+            navigate(`/vagas/${id}`);
+          },
+          onError: (err) => toast.error(errorMessage(err, "Não foi possível salvar as alterações")),
         },
-        onError: (err) => toast.error(errorMessage(err, "Não foi possível criar a vaga")),
+      );
+      return;
+    }
+
+    createVacancy.mutate(payload, {
+      onSuccess: (vacancy) => {
+        toast.success("Vaga criada com sucesso");
+        navigate(`/vagas/${vacancy.id}`);
       },
-    );
+      onError: (err) => toast.error(errorMessage(err, "Não foi possível criar a vaga")),
+    });
   };
+
+  if (isEditing && loadingExisting) {
+    return (
+      <Box sx={{ p: { xs: 2, md: 3.5 }, maxWidth: 880, mx: "auto" }}>
+        <Skeleton variant="rounded" height={400} />
+      </Box>
+    );
+  }
 
   return (
     <Box sx={{ p: { xs: 2, md: 3.5 }, maxWidth: 880, mx: "auto" }}>
-      <Button startIcon={<ArrowBackRoundedIcon />} onClick={() => navigate("/vagas")} sx={{ mb: 1.5 }}>Voltar para vagas</Button>
-      <Typography variant="h4" sx={{ mb: 0.5 }}>Criar nova vaga</Typography>
-      <Typography color="text.secondary" variant="body2" sx={{ mb: 3 }}>Preencha as informações abaixo para publicar uma nova vaga.</Typography>
+      <Button startIcon={<ArrowBackRoundedIcon />} onClick={() => navigate(isEditing ? `/vagas/${id}` : "/vagas")} sx={{ mb: 1.5 }}>
+        {isEditing ? "Voltar para a vaga" : "Voltar para vagas"}
+      </Button>
+      <Typography variant="h4" sx={{ mb: 0.5 }}>{isEditing ? "Editar vaga" : "Criar nova vaga"}</Typography>
+      <Typography color="text.secondary" variant="body2" sx={{ mb: 3 }}>
+        {isEditing ? "Atualize as informações da vaga." : "Preencha as informações abaixo para publicar uma nova vaga."}
+      </Typography>
 
       <SectionCard title="Informações básicas">
         <Grid container spacing={2}>
@@ -123,9 +168,9 @@ export function CreateVacancyPage() {
       </SectionCard>
 
       <Stack direction="row" justifyContent="flex-end" spacing={1.5} sx={{ mt: 1 }}>
-        <Button onClick={() => navigate("/vagas")} disabled={createVacancy.isPending}>Cancelar</Button>
+        <Button onClick={() => navigate(isEditing ? `/vagas/${id}` : "/vagas")} disabled={isSaving}>Cancelar</Button>
         <Button variant="contained" onClick={handleSubmit} disabled={!canSubmit}>
-          {createVacancy.isPending ? "Criando…" : "Criar vaga"}
+          {isSaving ? "Salvando…" : isEditing ? "Salvar alterações" : "Criar vaga"}
         </Button>
       </Stack>
     </Box>

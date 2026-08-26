@@ -1,10 +1,10 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Box, Button, Grid, MenuItem, TextField } from "@mui/material";
 import { Modal } from "../../../components/common/Modal";
 import { useToast } from "../../../components/common/ToastProvider";
 import { errorMessage } from "../../../components/common/ErrorState";
-import { useCreateEmployee } from "../queries";
-import { CONTRACT_TYPES, EMPLOYEE_STATUSES, LIFECYCLE_STAGES, type CreateEmployeeInput } from "../types";
+import { useCreateEmployee, useUpdateEmployee } from "../queries";
+import { CONTRACT_TYPES, EMPLOYEE_STATUSES, LIFECYCLE_STAGES, type CreateEmployeeInput, type Employee } from "../types";
 
 const empty: CreateEmployeeInput = {
   name: "",
@@ -18,11 +18,24 @@ const empty: CreateEmployeeInput = {
   lifecycle: "Onboarding",
 };
 
-export function AddEmployeeModal({ open, onClose }: { open: boolean; onClose: () => void }) {
+export function AddEmployeeModal({ open, onClose, employee }: { open: boolean; onClose: () => void; employee?: Employee | null }) {
+  const isEditing = !!employee;
   const [form, setForm] = useState<CreateEmployeeInput>(empty);
   const createEmployee = useCreateEmployee();
+  const updateEmployee = useUpdateEmployee();
   const toast = useToast();
 
+  useEffect(() => {
+    if (open) {
+      setForm(
+        employee
+          ? { name: employee.name, role: employee.role, area: employee.area, country: employee.country, startDate: employee.startDate, manager: employee.manager ?? "", contract: employee.contract, status: employee.status, lifecycle: employee.lifecycle }
+          : empty,
+      );
+    }
+  }, [open, employee]);
+
+  const isSaving = createEmployee.isPending || updateEmployee.isPending;
   const set = <K extends keyof CreateEmployeeInput>(key: K, value: CreateEmployeeInput[K]) => setForm((f) => ({ ...f, [key]: value }));
 
   const handleClose = () => {
@@ -33,6 +46,16 @@ export function AddEmployeeModal({ open, onClose }: { open: boolean; onClose: ()
   const handleSubmit = () => {
     if (!form.name.trim() || !form.role.trim()) {
       toast.error("Preencha nome e cargo.");
+      return;
+    }
+    if (isEditing && employee) {
+      updateEmployee.mutate(
+        { id: employee.id, input: form },
+        {
+          onSuccess: () => { toast.success("Colaborador atualizado."); handleClose(); },
+          onError: (error) => toast.error(errorMessage(error, "Não foi possível salvar as alterações.")),
+        },
+      );
       return;
     }
     createEmployee.mutate(form, {
@@ -48,13 +71,13 @@ export function AddEmployeeModal({ open, onClose }: { open: boolean; onClose: ()
     <Modal
       open={open}
       onClose={handleClose}
-      title="Adicionar colaborador"
+      title={isEditing ? "Editar colaborador" : "Adicionar colaborador"}
       width={560}
       footer={
         <>
           <Button variant="text" onClick={handleClose}>Cancelar</Button>
-          <Button variant="contained" onClick={handleSubmit} disabled={createEmployee.isPending}>
-            {createEmployee.isPending ? "Salvando…" : "Adicionar"}
+          <Button variant="contained" onClick={handleSubmit} disabled={isSaving}>
+            {isSaving ? "Salvando…" : isEditing ? "Salvar alterações" : "Adicionar"}
           </Button>
         </>
       }

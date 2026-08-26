@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react";
 import { Button, Chip, Stack, Typography } from "@mui/material";
 import { Modal } from "../../../components/common/Modal";
+import { ConfirmDialog } from "../../../components/common/ConfirmDialog";
 import { useToast } from "../../../components/common/ToastProvider";
 import { errorMessage } from "../../../components/common/ErrorState";
 import { useUIStore } from "../../../store/uiStore";
-import { useCandidate, useUpdateCandidate } from "../queries";
+import { useCandidate, useDeleteCandidate, useUpdateCandidate } from "../queries";
 import { useVacancy } from "../../vacancy/queries";
 import { CandidateForm, emptyCandidateForm, isCandidateFormValid, type CandidateFormValues } from "./CandidateForm";
 
@@ -16,6 +17,8 @@ export function CandidateEditModal() {
   const { data: candidate } = useCandidate(editingId);
   const { data: vacancy } = useVacancy(candidate?.vacancyId);
   const updateCandidate = useUpdateCandidate();
+  const deleteCandidate = useDeleteCandidate();
+  const [confirmDelete, setConfirmDelete] = useState(false);
 
   const [values, setValues] = useState<CandidateFormValues>(emptyCandidateForm);
 
@@ -50,6 +53,17 @@ export function CandidateEditModal() {
     );
   };
 
+  const handleDelete = () => {
+    deleteCandidate.mutate(candidate.id, {
+      onSuccess: () => {
+        toast.success("Candidato removido");
+        setConfirmDelete(false);
+        close();
+      },
+      onError: (err) => toast.error(errorMessage(err, "Não foi possível remover o candidato")),
+    });
+  };
+
   return (
     <Modal
       open={!!editingId}
@@ -58,12 +72,15 @@ export function CandidateEditModal() {
       subtitle={candidate.name}
       width={680}
       footer={
-        <>
-          <Button onClick={close} disabled={updateCandidate.isPending}>Cancelar</Button>
-          <Button variant="contained" onClick={handleSave} disabled={!isCandidateFormValid(values) || updateCandidate.isPending}>
-            {updateCandidate.isPending ? "Salvando…" : "Salvar alterações"}
-          </Button>
-        </>
+        <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ width: "100%" }}>
+          <Button color="error" onClick={() => setConfirmDelete(true)} disabled={updateCandidate.isPending}>Excluir candidato</Button>
+          <Stack direction="row" spacing={1.25}>
+            <Button onClick={close} disabled={updateCandidate.isPending}>Cancelar</Button>
+            <Button variant="contained" onClick={handleSave} disabled={!isCandidateFormValid(values) || updateCandidate.isPending}>
+              {updateCandidate.isPending ? "Salvando…" : "Salvar alterações"}
+            </Button>
+          </Stack>
+        </Stack>
       }
     >
       <CandidateForm
@@ -77,6 +94,14 @@ export function CandidateEditModal() {
             {vacancy && <Chip label={vacancy.status} size="small" />}
           </Stack>
         }
+      />
+      <ConfirmDialog
+        open={confirmDelete}
+        title="Excluir candidato"
+        description={`Tem certeza que deseja excluir "${candidate.name}"? Essa ação não pode ser desfeita.`}
+        loading={deleteCandidate.isPending}
+        onConfirm={handleDelete}
+        onClose={() => setConfirmDelete(false)}
       />
     </Modal>
   );

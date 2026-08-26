@@ -1,24 +1,43 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button, Grid, MenuItem, TextField } from "@mui/material";
 import { Modal } from "../../../components/common/Modal";
 import { useToast } from "../../../components/common/ToastProvider";
 import { errorMessage } from "../../../components/common/ErrorState";
-import { useCreateConsultingLead } from "../queries";
-import { CONSULTING_STATUSES, type CreateConsultingLeadInput } from "../types";
+import { useCreateConsultingLead, useUpdateConsultingLead } from "../queries";
+import { CONSULTING_STATUSES, type ConsultingLead, type CreateConsultingLeadInput } from "../types";
 
 const empty: CreateConsultingLeadInput = { company: "", sector: "", size: "", contact: "", need: "", status: "Pesquisado", value: "" };
 
-export function AddConsultingLeadModal({ open, onClose }: { open: boolean; onClose: () => void }) {
+export function AddConsultingLeadModal({ open, onClose, lead }: { open: boolean; onClose: () => void; lead?: ConsultingLead | null }) {
+  const isEditing = !!lead;
   const [form, setForm] = useState<CreateConsultingLeadInput>(empty);
   const createLead = useCreateConsultingLead();
+  const updateLead = useUpdateConsultingLead();
   const toast = useToast();
 
+  useEffect(() => {
+    if (open) {
+      setForm(lead ? { company: lead.company, sector: lead.sector, size: lead.size, contact: lead.contact, need: lead.need, status: lead.status, value: lead.value } : empty);
+    }
+  }, [open, lead]);
+
+  const isSaving = createLead.isPending || updateLead.isPending;
   const set = <K extends keyof CreateConsultingLeadInput>(key: K, value: CreateConsultingLeadInput[K]) => setForm((f) => ({ ...f, [key]: value }));
   const handleClose = () => { setForm(empty); onClose(); };
 
   const handleSubmit = () => {
     if (!form.company.trim()) {
       toast.error("Informe o nome da empresa.");
+      return;
+    }
+    if (isEditing && lead) {
+      updateLead.mutate(
+        { id: lead.id, input: form },
+        {
+          onSuccess: () => { toast.success("Empresa atualizada."); handleClose(); },
+          onError: (error) => toast.error(errorMessage(error, "Não foi possível salvar as alterações.")),
+        },
+      );
       return;
     }
     createLead.mutate(form, {
@@ -31,13 +50,13 @@ export function AddConsultingLeadModal({ open, onClose }: { open: boolean; onClo
     <Modal
       open={open}
       onClose={handleClose}
-      title="Nova empresa"
-      subtitle="Adicionar ao pipeline de consulting."
+      title={isEditing ? "Editar empresa" : "Nova empresa"}
+      subtitle={isEditing ? undefined : "Adicionar ao pipeline de consulting."}
       width={560}
       footer={
         <>
           <Button variant="text" onClick={handleClose}>Cancelar</Button>
-          <Button variant="contained" onClick={handleSubmit} disabled={createLead.isPending}>{createLead.isPending ? "Salvando…" : "Adicionar"}</Button>
+          <Button variant="contained" onClick={handleSubmit} disabled={isSaving}>{isSaving ? "Salvando…" : isEditing ? "Salvar alterações" : "Adicionar"}</Button>
         </>
       }
     >

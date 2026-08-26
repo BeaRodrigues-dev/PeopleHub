@@ -13,11 +13,18 @@
  *     público, pois o hash fica versionado no código.
  */
 const crypto = require("crypto");
+const fs = require("fs");
+const path = require("path");
 
 const DEFAULT_EMAIL = "beatriz@peoplehub.local";
 const DEFAULT_SALT = "ec8417e98eb430436ed24c7bb8495c45";
 const DEFAULT_HASH =
   "7816212ae863763877a73fc3c1a4b595b0d02838e601164b43a88c651d88ee1597da50fbc54b593d7e540bc880a9c49f6c8ea4581d49576161b0683918dda753";
+
+// Credenciais trocadas pelo usuário na tela de Configurações ficam salvas
+// aqui (fora do git, ver .gitignore) — têm prioridade sobre AUTH_EMAIL/
+// AUTH_PASSWORD e sobre as credenciais padrão de desenvolvimento.
+const AUTH_FILE = path.join(__dirname, "..", "data", "auth.json");
 
 const AUTH_SECRET = process.env.AUTH_SECRET || "dev-only-insecure-secret-troque-em-producao";
 const TOKEN_TTL_MS = 12 * 60 * 60 * 1000; // 12h
@@ -34,7 +41,26 @@ function hashPassword(password, salt) {
   return crypto.scryptSync(password, salt, 64).toString("hex");
 }
 
+function loadOverride() {
+  try {
+    const raw = fs.readFileSync(AUTH_FILE, "utf8");
+    const parsed = JSON.parse(raw);
+    if (parsed && parsed.email && parsed.salt && parsed.hash) return parsed;
+  } catch {
+    // sem override salvo ainda — segue para env vars / padrão
+  }
+  return null;
+}
+
+function saveOverride(email, salt, hash) {
+  fs.mkdirSync(path.dirname(AUTH_FILE), { recursive: true });
+  fs.writeFileSync(AUTH_FILE, JSON.stringify({ email, salt, hash }), "utf8");
+}
+
 function getCredentials() {
+  const override = loadOverride();
+  if (override) return { email: override.email.toLowerCase(), salt: override.salt, hash: override.hash };
+
   const email = (process.env.AUTH_EMAIL || DEFAULT_EMAIL).toLowerCase();
   if (process.env.AUTH_PASSWORD) {
     // Deriva o hash uma vez, na inicialização do processo — a senha em
@@ -53,6 +79,31 @@ function verifyPassword(email, password) {
   if (String(email || "").toLowerCase() !== creds.email) return false;
   const attempt = hashPassword(String(password || ""), creds.salt);
   return crypto.timingSafeEqual(Buffer.from(attempt, "hex"), Buffer.from(creds.hash, "hex"));
+}
+
+/**
+ * Troca email e/ou senha da conta. Exige a senha atual correta. Salva em
+ * AUTH_FILE, que passa a ter prioridade sobre env vars e credenciais padrão.
+ * Retorna o novo email (em minúsculas) em caso de sucesso, ou lança erro.
+ */
+function updateCredentials({ currentPassword, newEmail, newPassword }) {
+  const creds = getCredentials();
+  const attempt = hashPassword(String(currentPassword || ""), creds.salt);
+  const currentOk = crypto.timingSafeEqual(Buffer.from(attempt, "hex"), Buffer.from(creds.hash, "hex"));
+  if (!currentOk) {
+    const err = new Error("Senha atual incorreta.");
+    err.statusCode = 401;
+    throw err;
+  }
+  const email = (newEmail && newEmail.trim() ? newEmail.trim() : creds.email).toLowerCase();
+  let salt = creds.salt;
+  let hash = creds.hash;
+  if (newPassword && newPassword.trim()) {
+    salt = crypto.randomBytes(16).toString("hex");
+    hash = hashPassword(newPassword.trim(), salt);
+  }
+  saveOverride(email, salt, hash);
+  return email;
 }
 
 function sign(payload) {
@@ -96,4 +147,4 @@ function checkLoginRateLimit(ip) {
   return entry.count <= 8;
 }
 
-module.exports = { verifyPassword, issueToken, verifyToken, checkLoginRateLimit, getCredentials };
+module.exports = { verifyPassword, issueToken, verifyToken, checkLoginRateLimit, getCredentials, updateCredentials };

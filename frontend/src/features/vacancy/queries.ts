@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { vacancyApi, type VacancyQueryParams } from "./api";
-import type { CreateVacancyInput } from "./types";
+import type { CreateVacancyInput, Vacancy } from "./types";
 
 export const vacancyKeys = {
   all: ["vacancies"] as const,
@@ -31,5 +31,24 @@ export function useCreateVacancy() {
   return useMutation({
     mutationFn: (input: CreateVacancyInput) => vacancyApi.create(input),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: vacancyKeys.all }),
+  });
+}
+
+export function useDeleteVacancy() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (id: string) => vacancyApi.remove(id),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: vacancyKeys.all }),
+  });
+}
+
+export function useUpdateVacancy() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ id, input }: { id: string; input: Partial<CreateVacancyInput> }) => vacancyApi.update(id, input),
+    onSuccess: (_data: Vacancy, { id }) => {
+      queryClient.invalidateQueries({ queryKey: vacancyKeys.all });
+      queryClient.invalidateQueries({ queryKey: vacancyKeys.detail(id) });
+    },
   });
 }

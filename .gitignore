@@ -13,3 +13,7 @@ mock-backend/uploads/*
 !mock-backend/uploads/.gitkeep
 backend/uploads/*
 !backend/uploads/.gitkeep
+
+# dados persistidos do mock-backend (seus dados reais, não os de exemplo)
+mock-backend/data/*
+!mock-backend/data/.gitkeep

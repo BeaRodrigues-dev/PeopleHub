@@ -5,13 +5,13 @@ import { useEmployees } from "../../people/queries";
 import { useConsultingLeads } from "../../consulting/queries";
 import { LIFECYCLE_STAGES } from "../../people/types";
 
-const AREA_PALETTE = ["#7D3A52", "#C4849A", "#E8B4C4", "#A66A1E", "#4A6FA5", "#8A5DA5"];
+const AREA_PALETTE = ["#2E6B4F", "#7FAE8E", "#B7D8C2", "#A66A1E", "#4A6FA5", "#8A5DA5"];
 const LIFECYCLE_COLOR: Record<string, string> = {
   Recruitment: "#4A6FA5",
-  Onboarding: "#C4849A",
+  Onboarding: "#7FAE8E",
   Development: "#5A8A6A",
   Performance: "#8A5DA5",
-  Offboarding: "#8C7570",
+  Offboarding: "#6E7D74",
 };
 
 export function AnalyticsPage() {
@@ -74,7 +74,7 @@ export function AnalyticsPage() {
                   {funnel.map((f) => (
                     <Stack key={f.stage} direction="row" alignItems="center" spacing={1.5}>
                       <Typography variant="body2" color="text.secondary" sx={{ width: 160, flexShrink: 0 }}>{f.stage}</Typography>
-                      <Box sx={{ flex: 1, height: 22, bgcolor: "#F0EBE5", borderRadius: 2, overflow: "hidden" }}>
+                      <Box sx={{ flex: 1, height: 22, bgcolor: "#E4EDE6", borderRadius: 2, overflow: "hidden" }}>
                         <Box sx={{ width: `${Math.max(6, (f.count / funnelMax) * 100)}%`, height: "100%", bgcolor: "primary.main", display: "flex", alignItems: "center", px: 1 }}>
                           <Typography variant="caption" color="#fff" fontWeight={700}>{f.count}</Typography>
                         </Box>
@@ -101,7 +101,7 @@ export function AnalyticsPage() {
                     <Stack key={area} direction="row" alignItems="center" spacing={1.5}>
                       <Box sx={{ width: 8, height: 8, borderRadius: "50%", bgcolor: AREA_PALETTE[i % AREA_PALETTE.length], flexShrink: 0 }} />
                       <Typography variant="body2" color="text.secondary" sx={{ width: 100, flexShrink: 0 }}>{area}</Typography>
-                      <Box sx={{ flex: 1, height: 8, bgcolor: "#F0EBE5", borderRadius: 4, overflow: "hidden" }}>
+                      <Box sx={{ flex: 1, height: 8, bgcolor: "#E4EDE6", borderRadius: 4, overflow: "hidden" }}>
                         <Box sx={{ width: `${(count / activeEmployees.length) * 100}%`, height: "100%", bgcolor: AREA_PALETTE[i % AREA_PALETTE.length] }} />
                       </Box>
                       <Typography variant="caption" fontWeight={700}>{count}</Typography>
@@ -119,7 +119,7 @@ export function AnalyticsPage() {
                       <Stack key={stage} direction="row" alignItems="center" spacing={1.5}>
                         <Box sx={{ width: 8, height: 8, borderRadius: "50%", bgcolor: LIFECYCLE_COLOR[stage], flexShrink: 0 }} />
                         <Typography variant="body2" color="text.secondary" sx={{ width: 100, flexShrink: 0 }}>{stage}</Typography>
-                        <Box sx={{ flex: 1, height: 8, bgcolor: "#F0EBE5", borderRadius: 4, overflow: "hidden" }}>
+                        <Box sx={{ flex: 1, height: 8, bgcolor: "#E4EDE6", borderRadius: 4, overflow: "hidden" }}>
                           <Box sx={{ width: `${employees.length ? (count / employees.length) * 100 : 0}%`, height: "100%", bgcolor: LIFECYCLE_COLOR[stage] }} />
                         </Box>
                         <Typography variant="caption" fontWeight={700}>{count}</Typography>
@@ -166,7 +166,7 @@ function KpiCard({ label, value, sub }: { label: string; value: string; sub: str
 
 function ImpactCard({ icon, label, value }: { icon: string; label: string; value: string }) {
   return (
-    <Box sx={{ bgcolor: "#FAF8F5", border: "1px solid", borderColor: "divider", borderRadius: 4, p: 2.25, textAlign: "center" }}>
+    <Box sx={{ bgcolor: "#F1F7F2", border: "1px solid", borderColor: "divider", borderRadius: 4, p: 2.25, textAlign: "center" }}>
       <Typography fontSize={22}>{icon}</Typography>
       <Typography sx={{ fontSize: 26, fontWeight: 800, color: "primary.main", mt: 0.5 }}>{value}</Typography>
       <Typography variant="caption" color="text.secondary" fontWeight={700}>{label}</Typography>

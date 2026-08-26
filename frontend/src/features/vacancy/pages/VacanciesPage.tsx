@@ -4,23 +4,36 @@ import SearchRoundedIcon from "@mui/icons-material/SearchRounded";
 import AddRoundedIcon from "@mui/icons-material/AddRounded";
 import WorkOutlineRoundedIcon from "@mui/icons-material/WorkOutlineRounded";
 import { useNavigate } from "react-router-dom";
-import { useVacancies } from "../queries";
+import { useDeleteVacancy, useVacancies } from "../queries";
 import { useVacancyCandidateCounts } from "../../candidate/queries";
 import { VacancyCard } from "../components/VacancyCard";
 import { EmptyState } from "../../../components/common/EmptyState";
-import { ErrorState } from "../../../components/common/ErrorState";
-import { VACANCY_STATUSES, type VacancyStatus } from "../types";
+import { ErrorState, errorMessage } from "../../../components/common/ErrorState";
+import { ConfirmDialog } from "../../../components/common/ConfirmDialog";
+import { useToast } from "../../../components/common/ToastProvider";
+import { VACANCY_STATUSES, type Vacancy, type VacancyStatus } from "../types";
 
 export function VacanciesPage() {
   const [search, setSearch] = useState("");
   const [status, setStatus] = useState<VacancyStatus | null>(null);
+  const [toDelete, setToDelete] = useState<Vacancy | null>(null);
   const navigate = useNavigate();
+  const toast = useToast();
+  const deleteVacancy = useDeleteVacancy();
 
   const { data, isLoading, isError, error, refetch } = useVacancies({ search, status: status ?? undefined });
   const vacancies = data?.items ?? [];
   const { data: counts } = useVacancyCandidateCounts(vacancies.map((v) => v.id));
 
   const summary = useMemo(() => `${data?.total ?? 0} vagas encontradas`, [data?.total]);
+
+  const handleDelete = () => {
+    if (!toDelete) return;
+    deleteVacancy.mutate(toDelete.id, {
+      onSuccess: () => { toast.success("Vaga removida."); setToDelete(null); },
+      onError: (err) => toast.error(errorMessage(err, "Não foi possível remover a vaga.")),
+    });
+  };
 
   return (
     <Box sx={{ p: { xs: 2, md: 3.5 }, maxWidth: 1400, mx: "auto" }}>
@@ -65,9 +78,18 @@ export function VacanciesPage() {
         />
       ) : (
         <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", sm: "1fr 1fr", lg: "1fr 1fr 1fr" }, gap: 2 }}>
-          {vacancies.map((vacancy) => <VacancyCard key={vacancy.id} vacancy={vacancy} candidateCount={counts?.[vacancy.id]} />)}
+          {vacancies.map((vacancy) => <VacancyCard key={vacancy.id} vacancy={vacancy} candidateCount={counts?.[vacancy.id]} onDelete={setToDelete} />)}
         </Box>
       )}
+
+      <ConfirmDialog
+        open={!!toDelete}
+        title="Excluir vaga"
+        description={`Tem certeza que deseja excluir a vaga "${toDelete?.title}"? Candidaturas associadas também serão afetadas. Essa ação não pode ser desfeita.`}
+        loading={deleteVacancy.isPending}
+        onConfirm={handleDelete}
+        onClose={() => setToDelete(null)}
+      />
     </Box>
   );
 }

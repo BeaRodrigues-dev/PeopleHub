@@ -18,7 +18,7 @@ import { errorMessage } from "../../../components/common/ErrorState";
 
 const INSIGHT_STYLE: Record<string, { bg: string; border: string; label: string; icon: string }> = {
   problem: { bg: "#FDF2F2", border: "#F3C6C6", label: "Problema", icon: "🔴" },
-  opportunity: { bg: "#FBF1F4", border: "#E8B4C4", label: "Oportunidade", icon: "🟡" },
+  opportunity: { bg: "#F1F8F3", border: "#B7D8C2", label: "Oportunidade", icon: "🟡" },
   suggestion: { bg: "#F1F6FB", border: "#C6D9F3", label: "Sugestão", icon: "🔵" },
 };
 
@@ -96,10 +96,10 @@ export function HomePage() {
       </Box>
 
       <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr 1fr", lg: "repeat(4, 1fr)" }, gap: 2, mb: 3 }}>
-        <StatCard label="Colaboradores" value={isLoading ? undefined : activeEmployees.length} sub={`${offboardingEmployees.length} em offboarding`} color="#E8B4C4" />
-        <StatCard label="Vagas abertas" value={isLoading ? undefined : openVacancies.length} sub={`${vacancies.length} total`} color="#C4849A" />
-        <StatCard label="Candidatos ativos" value={isLoading ? undefined : activeCandidates} sub="em pipelines de vagas" color="#7D3A52" light />
-        <StatCard label="Pipeline Consulting" value={isLoading ? undefined : leads.length} sub={`${clients.length} cliente(s)`} color="#F5EEE8" />
+        <StatCard label="Colaboradores" value={isLoading ? undefined : activeEmployees.length} sub={`${offboardingEmployees.length} em offboarding`} color="#B7D8C2" />
+        <StatCard label="Vagas abertas" value={isLoading ? undefined : openVacancies.length} sub={`${vacancies.length} total`} color="#7FAE8E" light />
+        <StatCard label="Candidatos ativos" value={isLoading ? undefined : activeCandidates} sub="em pipelines de vagas" color="#2E6B4F" light />
+        <StatCard label="Pipeline Consulting" value={isLoading ? undefined : leads.length} sub={`${clients.length} cliente(s)`} color="#E7F2EA" />
       </Box>
 
       <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", lg: "1fr 1fr 1fr" }, gap: 2.5, mb: 3 }}>
@@ -110,7 +110,7 @@ export function HomePage() {
           <OverviewRow label="Insights registados" value={String(insights.length)} />
           <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap sx={{ pt: 1.5, mt: 1, borderTop: "1px solid", borderColor: "divider" }}>
             {[{ label: "Recruitment", to: "/vagas" }, { label: "People", to: "/pessoas" }, { label: "Onboarding", to: "/onboarding" }].map((s) => (
-              <Chip key={s.to} label={`→ ${s.label}`} size="small" onClick={() => navigate(s.to)} sx={{ bgcolor: "#F5EEE8", color: "primary.main", fontWeight: 700, "&:hover": { bgcolor: "secondary.light" } }} />
+              <Chip key={s.to} label={`→ ${s.label}`} size="small" onClick={() => navigate(s.to)} sx={{ bgcolor: "#E7F2EA", color: "primary.main", fontWeight: 700, "&:hover": { bgcolor: "secondary.light" } }} />
             ))}
           </Stack>
         </PanelCard>
@@ -125,7 +125,7 @@ export function HomePage() {
                 onClick={() => setActiveDay(d)}
                 sx={{
                   fontWeight: 700,
-                  bgcolor: activeDay === d ? "primary.main" : "#F5EEE8",
+                  bgcolor: activeDay === d ? "primary.main" : "#E7F2EA",
                   color: activeDay === d ? "#fff" : "text.secondary",
                   "&:hover": { bgcolor: activeDay === d ? "primary.dark" : "secondary.light" },
                 }}

@@ -15,8 +15,8 @@ const INITIAL = {
 const SECTIONS: Array<{ key: keyof typeof INITIAL; icon: string; label: string; bg: string; border: string }> = [
   { key: "deliveries", icon: "✅", label: "Esta semana fiz:", bg: "#EAF6EE", border: "#BFE3C9" },
   { key: "observations", icon: "👁️", label: "Observei:", bg: "#EAF1FB", border: "#C6D9F3" },
-  { key: "proposals", icon: "💡", label: "Proponho:", bg: "#FFF9F0", border: "#E8B4C4" },
-  { key: "nextSteps", icon: "🚀", label: "Próximos passos:", bg: "#FAF8F5", border: "#E5DDD5" },
+  { key: "proposals", icon: "💡", label: "Proponho:", bg: "#FFF9F0", border: "#B7D8C2" },
+  { key: "nextSteps", icon: "🚀", label: "Próximos passos:", bg: "#F1F7F2", border: "#DCE6DE" },
 ];
 
 function currentWeekLabel(): string {
@@ -91,7 +91,7 @@ export function WeeklyReportPage() {
 
       <Box sx={{ mt: 2.5, bgcolor: "background.paper", border: "1px solid", borderColor: "divider", borderRadius: 4, p: 2.5 }}>
         <Typography variant="caption" fontWeight={800} color="text.secondary" sx={{ textTransform: "uppercase", letterSpacing: "0.05em" }}>Pré-visualização</Typography>
-        <Box component="pre" sx={{ mt: 1.25, fontFamily: "monospace", fontSize: 12.5, whiteSpace: "pre-wrap", bgcolor: "#FAF8F5", borderRadius: 3, p: 2, m: 0, lineHeight: 1.7 }}>
+        <Box component="pre" sx={{ mt: 1.25, fontFamily: "monospace", fontSize: 12.5, whiteSpace: "pre-wrap", bgcolor: "#F1F7F2", borderRadius: 3, p: 2, m: 0, lineHeight: 1.7 }}>
           {buildText()}
         </Box>
       </Box>

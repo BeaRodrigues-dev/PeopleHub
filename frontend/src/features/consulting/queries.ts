@@ -32,6 +32,14 @@ export function useUpdateConsultingLead() {
   });
 }
 
+export function useDeleteConsultingLead() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (id: string) => consultingApi.remove(id),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: consultingKeys.all }),
+  });
+}
+
 export function useQualifyLeadWithAi() {
   const queryClient = useQueryClient();
   return useMutation({

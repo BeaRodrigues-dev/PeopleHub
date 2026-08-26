@@ -17,7 +17,7 @@ const { randomUUID } = require("crypto");
 const fs = require("fs");
 const path = require("path");
 
-const { db, seed, computeProgress, CONSULTING_SERVICES } = require("./lib/db");
+const { db, init: initDb, save: saveDb, computeProgress, CONSULTING_SERVICES } = require("./lib/db");
 const ai = require("./lib/ai");
 const { buildSyntheticResumeText } = require("./lib/resume");
 const { sendJson, HttpError, readJsonBody, readRawBody, parseMultipart } = require("./lib/http-utils");
@@ -26,7 +26,7 @@ const auth = require("./lib/auth");
 const PORT = Number(process.env.PORT || 3001);
 const UPLOAD_DIR = path.join(__dirname, "uploads");
 fs.mkdirSync(UPLOAD_DIR, { recursive: true });
-seed();
+initDb();
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -308,6 +308,22 @@ function createOnboarding(body) {
   return onboarding;
 }
 
+function updateOnboarding(id, patch) {
+  const onboarding = findOnboardingOrThrow(id);
+  const { employeeName, role, startDate, status, checklist } = patch;
+  if (employeeName !== undefined) onboarding.employeeName = employeeName;
+  if (role !== undefined) onboarding.role = role;
+  if (startDate !== undefined) onboarding.startDate = startDate;
+  if (checklist !== undefined) {
+    onboarding.checklist = checklist;
+    onboarding.progress = computeProgress(onboarding.checklist);
+    onboarding.status = onboarding.progress >= 100 ? "Completed" : onboarding.progress > 0 ? "In Progress" : "Started";
+  }
+  if (status !== undefined) onboarding.status = status;
+  onboarding.updatedAt = now();
+  return onboarding;
+}
+
 function toggleChecklistItem(id, phase, index) {
   const onboarding = findOnboardingOrThrow(id);
   if (!onboarding.checklist[phase] || !onboarding.checklist[phase][index]) {
@@ -425,6 +441,18 @@ route("POST", "/auth/login", async (ctx) => {
   sendJson(ctx.res, 200, { token, expiresAt, email: String(email).toLowerCase() });
 });
 route("GET", "/auth/me", async (ctx) => sendJson(ctx.res, 200, { email: ctx.req.authPayload.email }));
+route("PATCH", "/auth/credentials", async (ctx) => {
+  const { currentPassword, newEmail, newPassword } = await readJsonBody(ctx.req);
+  if (!currentPassword) throw new HttpError(400, "Informe a senha atual.");
+  let email;
+  try {
+    email = auth.updateCredentials({ currentPassword, newEmail, newPassword });
+  } catch (err) {
+    throw new HttpError(err.statusCode || 400, err.message || "Não foi possível atualizar as credenciais.");
+  }
+  const { token, expiresAt } = auth.issueToken(email);
+  sendJson(ctx.res, 200, { token, expiresAt, email });
+});
 
 route("GET", "/candidates", async (ctx) => sendJson(ctx.res, 200, listCandidates(ctx.query)));
 route("GET", "/candidates/counts-by-vacancy", async (ctx) => {
@@ -459,7 +487,19 @@ route("POST", "/vacancies", async (ctx) => sendJson(ctx.res, 201, createVacancy(
 route("GET", "/vacancies/:id", async (ctx) => sendJson(ctx.res, 200, findVacancyOrThrow(ctx.params.id)));
 route("PATCH", "/vacancies/:id", async (ctx) => {
   const vacancy = findVacancyOrThrow(ctx.params.id);
-  Object.assign(vacancy, await readJsonBody(ctx.req), { updatedAt: now() });
+  const body = await readJsonBody(ctx.req);
+  if (Array.isArray(body.stages)) {
+    // Preserva o id da etapa existente quando o nome bate na mesma posição
+    // (mantém o vínculo com candidaturas/Kanban); gera id novo só para
+    // etapas realmente novas.
+    body.stages = body.stages.map((s, i) => ({
+      id: s.id || vacancy.stages[i]?.id || randomUUID(),
+      name: s.name,
+      order: i,
+      isTerminal: i === body.stages.length - 1,
+    }));
+  }
+  Object.assign(vacancy, body, { updatedAt: now() });
   sendJson(ctx.res, 200, vacancy);
 });
 route("DELETE", "/vacancies/:id", async (ctx) => {
@@ -552,6 +592,7 @@ route("GET", "/onboardings", async (ctx) => {
 });
 route("POST", "/onboardings", async (ctx) => sendJson(ctx.res, 201, createOnboarding(await readJsonBody(ctx.req))));
 route("GET", "/onboardings/:id", async (ctx) => sendJson(ctx.res, 200, findOnboardingOrThrow(ctx.params.id)));
+route("PATCH", "/onboardings/:id", async (ctx) => sendJson(ctx.res, 200, updateOnboarding(ctx.params.id, await readJsonBody(ctx.req))));
 route("PATCH", "/onboardings/:id/checklist", async (ctx) => {
   const { phase, index } = await readJsonBody(ctx.req);
   sendJson(ctx.res, 200, toggleChecklistItem(ctx.params.id, phase, index));
@@ -728,6 +769,9 @@ const server = http.createServer(async (req, res) => {
 
   try {
     await match.handler({ req, res, params, query: url.searchParams });
+    // Persiste em disco após qualquer requisição que possa ter alterado dados
+    // (tudo exceto GET), para que edições/exclusões sobrevivam a um restart.
+    if (req.method !== "GET") saveDb();
   } catch (error) {
     if (error instanceof HttpError) {
       sendJson(res, error.status, { statusCode: error.status, message: error.message });
@@ -741,7 +785,7 @@ const server = http.createServer(async (req, res) => {
 
 server.listen(PORT, () => {
   // eslint-disable-next-line no-console
-  console.log(`🚀 TalentFlow mock backend em http://localhost:${PORT}/api/v1`);
+  console.log(`🚀 People Hub mock backend em http://localhost:${PORT}/api/v1`);
   // eslint-disable-next-line no-console
-  console.log(`   (zero dependências — dados em memória, perdidos ao reiniciar)`);
+  console.log(`   (zero dependências — dados salvos em mock-backend/data/state.json)`);
 });

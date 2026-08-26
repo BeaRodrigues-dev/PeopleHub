@@ -1,20 +1,22 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Box, Button, Chip, Grid, Stack, TextField, Typography } from "@mui/material";
 import AutoAwesomeRoundedIcon from "@mui/icons-material/AutoAwesomeRounded";
 import { Modal } from "../../../components/common/Modal";
 import { useToast } from "../../../components/common/ToastProvider";
 import { errorMessage } from "../../../components/common/ErrorState";
-import { useCreateOnboarding } from "../queries";
+import { useCreateOnboarding, useUpdateOnboarding } from "../queries";
 import { onboardingApi } from "../api";
-import { DEFAULT_CHECKLIST, type OnboardingChecklist } from "../types";
+import { DEFAULT_CHECKLIST, type OnboardingChecklist, type OnboardingEntry } from "../types";
 
-export function AddOnboardingModal({ open, onClose }: { open: boolean; onClose: () => void }) {
+export function AddOnboardingModal({ open, onClose, entry }: { open: boolean; onClose: () => void; entry?: OnboardingEntry | null }) {
+  const isEditing = !!entry;
   const [employeeName, setEmployeeName] = useState("");
   const [role, setRole] = useState("");
   const [startDate, setStartDate] = useState(new Date().toISOString().slice(0, 10));
   const [checklist, setChecklist] = useState<OnboardingChecklist>(DEFAULT_CHECKLIST);
   const [suggesting, setSuggesting] = useState(false);
   const createOnboarding = useCreateOnboarding();
+  const updateOnboarding = useUpdateOnboarding();
   const toast = useToast();
 
   const reset = () => {
@@ -23,6 +25,21 @@ export function AddOnboardingModal({ open, onClose }: { open: boolean; onClose: 
     setStartDate(new Date().toISOString().slice(0, 10));
     setChecklist(DEFAULT_CHECKLIST);
   };
+
+  useEffect(() => {
+    if (!open) return;
+    if (entry) {
+      setEmployeeName(entry.employeeName);
+      setRole(entry.role);
+      setStartDate(entry.startDate);
+      setChecklist(entry.checklist);
+    } else {
+      reset();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [open, entry]);
+
+  const isSaving = createOnboarding.isPending || updateOnboarding.isPending;
 
   const handleClose = () => {
     reset();
@@ -51,6 +68,16 @@ export function AddOnboardingModal({ open, onClose }: { open: boolean; onClose: 
       toast.error("Preencha nome e cargo.");
       return;
     }
+    if (isEditing && entry) {
+      updateOnboarding.mutate(
+        { id: entry.id, input: { employeeName, role, startDate, checklist } },
+        {
+          onSuccess: () => { toast.success("Onboarding atualizado."); handleClose(); },
+          onError: (error) => toast.error(errorMessage(error, "Não foi possível salvar as alterações.")),
+        },
+      );
+      return;
+    }
     createOnboarding.mutate(
       { employeeName, role, startDate, checklist },
       {
@@ -69,14 +96,14 @@ export function AddOnboardingModal({ open, onClose }: { open: boolean; onClose: 
     <Modal
       open={open}
       onClose={handleClose}
-      title="Novo onboarding"
-      subtitle="Crie o processo de entrada de um novo colaborador."
+      title={isEditing ? "Editar onboarding" : "Novo onboarding"}
+      subtitle={isEditing ? undefined : "Crie o processo de entrada de um novo colaborador."}
       width={560}
       footer={
         <>
           <Button variant="text" onClick={handleClose}>Cancelar</Button>
-          <Button variant="contained" onClick={handleSubmit} disabled={createOnboarding.isPending}>
-            {createOnboarding.isPending ? "Salvando…" : "Criar onboarding"}
+          <Button variant="contained" onClick={handleSubmit} disabled={isSaving}>
+            {isSaving ? "Salvando…" : isEditing ? "Salvar alterações" : "Criar onboarding"}
           </Button>
         </>
       }
@@ -101,7 +128,7 @@ export function AddOnboardingModal({ open, onClose }: { open: boolean; onClose: 
       </Stack>
       <Stack spacing={1.25}>
         {(["before", "day1", "week1"] as const).map((phase) => (
-          <Box key={phase} sx={{ bgcolor: "#FAF8F5", borderRadius: 2.5, p: 1.5 }}>
+          <Box key={phase} sx={{ bgcolor: "#F1F7F2", borderRadius: 2.5, p: 1.5 }}>
             <Typography variant="caption" fontWeight={800} color="text.secondary" sx={{ textTransform: "uppercase" }}>
               {phase === "before" ? "Antes do 1º dia" : phase === "day1" ? "1º dia" : "1ª semana"}
             </Typography>

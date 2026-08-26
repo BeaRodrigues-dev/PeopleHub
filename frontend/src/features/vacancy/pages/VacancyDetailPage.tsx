@@ -4,22 +4,37 @@ import ArrowBackRoundedIcon from "@mui/icons-material/ArrowBackRounded";
 import SearchRoundedIcon from "@mui/icons-material/SearchRounded";
 import PersonAddAltRoundedIcon from "@mui/icons-material/PersonAddAltRounded";
 import AutoAwesomeRoundedIcon from "@mui/icons-material/AutoAwesomeRounded";
+import DeleteOutlineRoundedIcon from "@mui/icons-material/DeleteOutlineRounded";
+import EditRoundedIcon from "@mui/icons-material/EditRounded";
 import { useNavigate, useParams } from "react-router-dom";
-import { useVacancy, useTimeToFill } from "../queries";
+import { useVacancy, useTimeToFill, useDeleteVacancy } from "../queries";
 import { KanbanBoard } from "../../kanban/components/KanbanBoard";
 import { TalentBankMatchModal } from "../../talent-bank/components/TalentBankMatchModal";
 import { useUIStore } from "../../../store/uiStore";
-import { ErrorState } from "../../../components/common/ErrorState";
+import { ErrorState, errorMessage } from "../../../components/common/ErrorState";
+import { ConfirmDialog } from "../../../components/common/ConfirmDialog";
+import { useToast } from "../../../components/common/ToastProvider";
 
 export function VacancyDetailPage() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const toast = useToast();
   const { data: vacancy, isLoading, isError, error, refetch } = useVacancy(id);
   const { data: timeToFill } = useTimeToFill(vacancy?.status === "Aberta" ? id : null);
   const openCandidate = useUIStore((s) => s.openCandidate);
   const openMatchModal = useUIStore((s) => s.openMatchModal);
   const openAddCandidate = useUIStore((s) => s.openAddCandidate);
   const [search, setSearch] = useState("");
+  const [confirmDelete, setConfirmDelete] = useState(false);
+  const deleteVacancy = useDeleteVacancy();
+
+  const handleDelete = () => {
+    if (!vacancy) return;
+    deleteVacancy.mutate(vacancy.id, {
+      onSuccess: () => { toast.success("Vaga removida."); navigate("/vagas"); },
+      onError: (err) => toast.error(errorMessage(err, "Não foi possível remover a vaga.")),
+    });
+  };
 
   if (isLoading) {
     return (
@@ -54,6 +69,12 @@ export function VacancyDetailPage() {
           <Button variant="contained" startIcon={<PersonAddAltRoundedIcon />} onClick={() => openMatchModal(vacancy.id)}>
             Banco de Talentos
           </Button>
+          <Button variant="outlined" startIcon={<EditRoundedIcon />} onClick={() => navigate(`/vagas/${vacancy.id}/editar`)}>
+            Editar
+          </Button>
+          <Button variant="outlined" color="error" startIcon={<DeleteOutlineRoundedIcon />} onClick={() => setConfirmDelete(true)}>
+            Excluir
+          </Button>
         </Stack>
       </Stack>
 
@@ -67,7 +88,7 @@ export function VacancyDetailPage() {
               icon={<AutoAwesomeRoundedIcon sx={{ fontSize: 15 }} />}
               label={`IA: ~${timeToFill.estimatedDays}d para preencher (confiança ${timeToFill.confidence.toLowerCase()})`}
               size="small"
-              sx={{ fontWeight: 700, bgcolor: "#F5EEE8", color: "primary.main", ml: 0.5 }}
+              sx={{ fontWeight: 700, bgcolor: "#E7F2EA", color: "primary.main", ml: 0.5 }}
             />
           </Tooltip>
         )}
@@ -89,6 +110,14 @@ export function VacancyDetailPage() {
       )}
 
       <TalentBankMatchModal />
+      <ConfirmDialog
+        open={confirmDelete}
+        title="Excluir vaga"
+        description={`Tem certeza que deseja excluir a vaga "${vacancy.title}"? Candidaturas associadas também serão afetadas. Essa ação não pode ser desfeita.`}
+        loading={deleteVacancy.isPending}
+        onConfirm={handleDelete}
+        onClose={() => setConfirmDelete(false)}
+      />
     </Box>
   );
 }

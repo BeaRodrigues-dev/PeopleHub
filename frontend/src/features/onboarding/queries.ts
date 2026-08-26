@@ -26,3 +26,19 @@ export function useToggleChecklistItem() {
     onSuccess: () => queryClient.invalidateQueries({ queryKey: onboardingKeys.all }),
   });
 }
+
+export function useUpdateOnboarding() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ id, input }: { id: string; input: Partial<CreateOnboardingInput> }) => onboardingApi.update(id, input),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: onboardingKeys.all }),
+  });
+}
+
+export function useDeleteOnboarding() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (id: string) => onboardingApi.remove(id),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: onboardingKeys.all }),
+  });
+}

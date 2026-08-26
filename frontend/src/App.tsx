@@ -14,6 +14,7 @@ import { ConsultingPage } from "./features/consulting/pages/ConsultingPage";
 import { InsightsPage } from "./features/insights/pages/InsightsPage";
 import { WeeklyReportPage } from "./features/weekly-report/pages/WeeklyReportPage";
 import { DocsPage } from "./features/docs/pages/DocsPage";
+import { SettingsPage } from "./features/auth/pages/SettingsPage";
 import { CandidateDetailDrawer } from "./features/candidate/components/CandidateDetailDrawer";
 import { CandidateEditModal } from "./features/candidate/components/CandidateEditModal";
 import { AddCandidateModal } from "./features/candidate/components/AddCandidateModal";
@@ -30,6 +31,7 @@ export default function App() {
         <Route path="/vagas" element={<VacanciesPage />} />
         <Route path="/vagas/:id" element={<VacancyDetailPage />} />
         <Route path="/criar-vaga" element={<CreateVacancyPage />} />
+        <Route path="/vagas/:id/editar" element={<CreateVacancyPage />} />
         <Route path="/banco-de-talentos" element={<TalentPoolPage />} />
         <Route path="/pessoas" element={<PeoplePage />} />
         <Route path="/onboarding" element={<OnboardingPage />} />
@@ -38,6 +40,7 @@ export default function App() {
         <Route path="/insights" element={<InsightsPage />} />
         <Route path="/relatorio-semanal" element={<WeeklyReportPage />} />
         <Route path="/documentos" element={<DocsPage />} />
+        <Route path="/configuracoes" element={<SettingsPage />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
       {/* Montados uma única vez: drawer/modais de candidato funcionam a partir

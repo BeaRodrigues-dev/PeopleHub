@@ -1,19 +1,23 @@
 import { useState } from "react";
-import { Box, Button, Chip, Skeleton, Stack, Table, TableBody, TableCell, TableHead, TableRow, Tabs, Tab, Tooltip, Typography } from "@mui/material";
+import { Box, Button, Chip, IconButton, Skeleton, Stack, Table, TableBody, TableCell, TableHead, TableRow, Tabs, Tab, Tooltip, Typography } from "@mui/material";
 import AddRoundedIcon from "@mui/icons-material/AddRounded";
 import AutoAwesomeRoundedIcon from "@mui/icons-material/AutoAwesomeRounded";
 import BusinessCenterRoundedIcon from "@mui/icons-material/BusinessCenterRounded";
-import { useConsultingLeads, useConsultingServices, useQualifyLeadWithAi } from "../queries";
+import DeleteOutlineRoundedIcon from "@mui/icons-material/DeleteOutlineRounded";
+import EditRoundedIcon from "@mui/icons-material/EditRounded";
+import { useConsultingLeads, useConsultingServices, useDeleteConsultingLead, useQualifyLeadWithAi } from "../queries";
 import { AddConsultingLeadModal } from "../components/AddConsultingLeadModal";
 import { EmptyState } from "../../../components/common/EmptyState";
 import { ErrorState } from "../../../components/common/ErrorState";
 import { errorMessage } from "../../../components/common/ErrorState";
+import { ConfirmDialog } from "../../../components/common/ConfirmDialog";
 import { useToast } from "../../../components/common/ToastProvider";
+import type { ConsultingLead } from "../types";
 
 const STATUS_COLOR: Record<string, { bg: string; fg: string }> = {
-  "Pesquisado": { bg: "#F0EBE5", fg: "#8C7570" },
+  "Pesquisado": { bg: "#E4EDE6", fg: "#6E7D74" },
   "Proposta enviada": { bg: "#E3ECFA", fg: "#2E5AA8" },
-  "Reunião agendada": { bg: "#F5D9E4", fg: "#7D3A52" },
+  "Reunião agendada": { bg: "#DCEFE1", fg: "#2E6B4F" },
   "Em negociação": { bg: "#FBEBD2", fg: "#A66A1E" },
   "Cliente": { bg: "#DCEFE1", fg: "#2E7D4F" },
 };
@@ -21,17 +25,28 @@ const STATUS_COLOR: Record<string, { bg: string; fg: string }> = {
 const PRIORITY_COLOR: Record<string, { bg: string; fg: string }> = {
   Alta: { bg: "#FDE2E2", fg: "#B23A3A" },
   Média: { bg: "#FBEBD2", fg: "#A66A1E" },
-  Baixa: { bg: "#F0EBE5", fg: "#8C7570" },
+  Baixa: { bg: "#E4EDE6", fg: "#6E7D74" },
 };
 
 export function ConsultingPage() {
   const [tab, setTab] = useState<"pipeline" | "services" | "bd">("pipeline");
   const [addOpen, setAddOpen] = useState(false);
+  const [editing, setEditing] = useState<ConsultingLead | null>(null);
+  const [toDelete, setToDelete] = useState<ConsultingLead | null>(null);
   const { data, isLoading, isError, error, refetch } = useConsultingLeads();
   const leads = data?.items ?? [];
   const { data: services } = useConsultingServices();
   const qualify = useQualifyLeadWithAi();
+  const deleteLead = useDeleteConsultingLead();
   const toast = useToast();
+
+  const handleDelete = () => {
+    if (!toDelete) return;
+    deleteLead.mutate(toDelete.id, {
+      onSuccess: () => { toast.success("Empresa removida."); setToDelete(null); },
+      onError: (err) => toast.error(errorMessage(err, "Não foi possível remover.")),
+    });
+  };
 
   const bdStats = [
     { label: "Pesquisadas", count: leads.filter((l) => l.status === "Pesquisado").length },
@@ -68,8 +83,8 @@ export function ConsultingPage() {
           <Box sx={{ bgcolor: "background.paper", border: "1px solid", borderColor: "divider", borderRadius: 4, overflow: "hidden" }}>
             <Table size="small">
               <TableHead>
-                <TableRow sx={{ bgcolor: "#FAF8F5" }}>
-                  {["Empresa", "Setor", "Dimensão", "Contacto", "Necessidade", "Status", "Valor", "IA"].map((h) => (
+                <TableRow sx={{ bgcolor: "#F1F7F2" }}>
+                  {["Empresa", "Setor", "Dimensão", "Contacto", "Necessidade", "Status", "Valor", "IA", ""].map((h) => (
                     <TableCell key={h} sx={{ fontWeight: 800, fontSize: 11, textTransform: "uppercase", letterSpacing: "0.04em", color: "text.secondary" }}>{h}</TableCell>
                   ))}
                 </TableRow>
@@ -101,6 +116,10 @@ export function ConsultingPage() {
                         </Button>
                       )}
                     </TableCell>
+                    <TableCell align="right">
+                      <IconButton size="small" onClick={() => setEditing(lead)}><EditRoundedIcon fontSize="small" /></IconButton>
+                      <IconButton size="small" onClick={() => setToDelete(lead)}><DeleteOutlineRoundedIcon fontSize="small" /></IconButton>
+                    </TableCell>
                   </TableRow>
                 ))}
               </TableBody>
@@ -114,7 +133,7 @@ export function ConsultingPage() {
               <Typography fontSize={26}>{s.icon}</Typography>
               <Typography fontWeight={800} sx={{ mt: 1 }}>{s.name}</Typography>
               <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5, mb: 1.5 }}>{s.desc}</Typography>
-              <Box sx={{ pt: 1.25, borderTop: "1px solid", borderColor: "#F0EBE5" }}>
+              <Box sx={{ pt: 1.25, borderTop: "1px solid", borderColor: "#E4EDE6" }}>
                 <Typography variant="caption" color="text.secondary">Pricing</Typography>
                 <Typography fontWeight={700} color="primary.main">{s.price}</Typography>
               </Box>
@@ -140,7 +159,7 @@ export function ConsultingPage() {
                 return (
                   <Stack key={status} direction="row" alignItems="center" spacing={1.5}>
                     <Typography variant="body2" color="text.secondary" sx={{ width: 150, flexShrink: 0 }}>{status}</Typography>
-                    <Box sx={{ flex: 1, height: 8, bgcolor: "#F0EBE5", borderRadius: 4, overflow: "hidden" }}>
+                    <Box sx={{ flex: 1, height: 8, bgcolor: "#E4EDE6", borderRadius: 4, overflow: "hidden" }}>
                       <Box sx={{ width: `${pct}%`, height: "100%", bgcolor: color.fg }} />
                     </Box>
                     <Typography variant="caption" fontWeight={700} sx={{ width: 32, textAlign: "right" }}>{count}</Typography>
@@ -153,6 +172,15 @@ export function ConsultingPage() {
       )}
 
       <AddConsultingLeadModal open={addOpen} onClose={() => setAddOpen(false)} />
+      <AddConsultingLeadModal open={!!editing} onClose={() => setEditing(null)} lead={editing} />
+      <ConfirmDialog
+        open={!!toDelete}
+        title="Excluir empresa"
+        description={`Tem certeza que deseja excluir "${toDelete?.company}" do pipeline? Essa ação não pode ser desfeita.`}
+        loading={deleteLead.isPending}
+        onConfirm={handleDelete}
+        onClose={() => setToDelete(null)}
+      />
     </Box>
   );
 }

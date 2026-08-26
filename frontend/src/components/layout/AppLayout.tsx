@@ -14,14 +14,15 @@ import MenuRoundedIcon from "@mui/icons-material/MenuRounded";
 import AddRoundedIcon from "@mui/icons-material/AddRounded";
 import PersonAddAltRoundedIcon from "@mui/icons-material/PersonAddAltRounded";
 import LogoutRoundedIcon from "@mui/icons-material/LogoutRounded";
+import SettingsRoundedIcon from "@mui/icons-material/SettingsRounded";
 import { NavLink, useNavigate } from "react-router-dom";
 import { zIndex } from "../../theme/zIndex";
 import { useUIStore } from "../../store/uiStore";
 import { useAuthStore } from "../../features/auth/authStore";
 
 const drawerWidth = 248;
-const SIDEBAR_BG = "#241019";
-const SIDEBAR_BORDER = "#3A2029";
+const SIDEBAR_BG = "#0F241A";
+const SIDEBAR_BORDER = "#1E3A2B";
 
 const navItems = [
   { to: "/", label: "Home", icon: <HomeRoundedIcon fontSize="small" />, end: true },
@@ -75,7 +76,7 @@ export function AppLayout({ children }: { children: ReactNode }) {
           width: 28,
           height: 28,
           borderRadius: "8px",
-          background: "linear-gradient(135deg, #7D3A52, #C4849A)",
+          background: "linear-gradient(135deg, #2E6B4F, #7FAE8E)",
           flexShrink: 0,
           display: "flex",
           alignItems: "center",
@@ -138,11 +139,19 @@ export function AppLayout({ children }: { children: ReactNode }) {
           <Nav />
         </Box>
         <Box sx={{ borderTop: "1px solid", borderColor: SIDEBAR_BORDER, p: 2, display: "flex", alignItems: "center", gap: 1.25 }}>
-          <Avatar sx={{ width: 30, height: 30, bgcolor: "secondary.light", color: "primary.dark", fontSize: 12.5, fontWeight: 700 }}>BR</Avatar>
-          <Box sx={{ overflow: "hidden", flex: 1 }}>
-            <Typography fontSize={12.5} fontWeight={700} color="#fff" noWrap>Beatriz Rodrigues</Typography>
-            <Typography fontSize={11} color="rgba(255,255,255,.5)" noWrap>HR Manager</Typography>
+          <Box
+            onClick={() => navigate("/configuracoes")}
+            sx={{ display: "flex", alignItems: "center", gap: 1.25, flex: 1, minWidth: 0, cursor: "pointer", borderRadius: 2, p: 0.5, m: -0.5, "&:hover": { bgcolor: "rgba(255,255,255,.06)" } }}
+          >
+            <Avatar sx={{ width: 30, height: 30, bgcolor: "secondary.light", color: "primary.dark", fontSize: 12.5, fontWeight: 700 }}>BR</Avatar>
+            <Box sx={{ overflow: "hidden" }}>
+              <Typography fontSize={12.5} fontWeight={700} color="#fff" noWrap>Beatriz Rodrigues</Typography>
+              <Typography fontSize={11} color="rgba(255,255,255,.5)" noWrap>HR Manager</Typography>
+            </Box>
           </Box>
+          <IconButton onClick={() => navigate("/configuracoes")} size="small" title="Configurações" sx={{ color: "rgba(255,255,255,.55)", "&:hover": { color: "#fff", bgcolor: "rgba(255,255,255,.07)" } }}>
+            <SettingsRoundedIcon fontSize="small" />
+          </IconButton>
           <IconButton onClick={logout} size="small" title="Sair" sx={{ color: "rgba(255,255,255,.55)", "&:hover": { color: "#fff", bgcolor: "rgba(255,255,255,.07)" } }}>
             <LogoutRoundedIcon fontSize="small" />
           </IconButton>

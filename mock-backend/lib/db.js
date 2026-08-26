@@ -6,9 +6,19 @@
  * MongoDB aqui). O contrato de dados/endpoints é idêntico ao backend NestJS
  * real em `backend/src` — troque um pelo outro sem tocar no frontend.
  *
- * Tudo é perdido ao reiniciar o processo (`node server.js`), de propósito.
+ * Persistência simples em arquivo JSON (mock-backend/data/state.json): na
+ * primeira vez que o servidor sobe, semeia os dados de exemplo e salva esse
+ * arquivo. Nas próximas vezes, carrega o que estiver salvo em vez de
+ * semear de novo — assim, edições e exclusões feitas na interface (incluindo
+ * apagar os dados de exemplo) permanecem entre reinícios do servidor.
+ * Para voltar a começar do zero com os dados de exemplo, apague o arquivo
+ * mock-backend/data/state.json (ou defina RESET_DEMO_DATA=true) e reinicie.
  */
 const crypto = require("crypto");
+const fs = require("fs");
+const path = require("path");
+
+const DATA_FILE = path.join(__dirname, "..", "data", "state.json");
 
 const uid = () => crypto.randomUUID();
 const now = () => new Date().toISOString();
@@ -268,4 +278,44 @@ function seed() {
   seedExtras();
 }
 
-module.exports = { db, uid, now, seed, LIFECYCLE_STAGES, CONSULTING_SERVICES, computeProgress };
+const PERSISTED_KEYS = ["candidates", "vacancies", "applications", "employees", "onboardings", "consultingLeads", "insights", "documents"];
+
+function save() {
+  try {
+    fs.mkdirSync(path.dirname(DATA_FILE), { recursive: true });
+    const snapshot = Object.fromEntries(PERSISTED_KEYS.map((k) => [k, db[k]]));
+    fs.writeFileSync(DATA_FILE, JSON.stringify(snapshot), "utf8");
+  } catch (err) {
+    // eslint-disable-next-line no-console
+    console.error("[db] Falha ao salvar state.json:", err.message);
+  }
+}
+
+function load() {
+  const raw = fs.readFileSync(DATA_FILE, "utf8");
+  const parsed = JSON.parse(raw);
+  PERSISTED_KEYS.forEach((k) => {
+    db[k].length = 0;
+    if (Array.isArray(parsed[k])) db[k].push(...parsed[k]);
+  });
+}
+
+/** Chamado no boot do servidor: carrega dados salvos, ou semeia exemplos na primeira vez. */
+function init() {
+  const shouldReset = String(process.env.RESET_DEMO_DATA || "").toLowerCase() === "true";
+  if (!shouldReset && fs.existsSync(DATA_FILE)) {
+    try {
+      load();
+      // eslint-disable-next-line no-console
+      console.log(`[db] Dados carregados de ${DATA_FILE} (${db.vacancies.length} vagas, ${db.candidates.length} candidatos, ${db.employees.length} colaboradores).`);
+      return;
+    } catch (err) {
+      // eslint-disable-next-line no-console
+      console.error("[db] state.json corrompido, semeando dados de exemplo novamente:", err.message);
+    }
+  }
+  seed();
+  save();
+}
+
+module.exports = { db, uid, now, seed, init, save, LIFECYCLE_STAGES, CONSULTING_SERVICES, computeProgress };

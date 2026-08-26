@@ -12,7 +12,7 @@ import { INSIGHT_TYPES, type InsightType } from "../types";
 
 const TYPE_CONFIG: Record<InsightType, { label: string; icon: string; bg: string; border: string; badge: string; badgeFg: string }> = {
   problem: { label: "Problema", icon: "🔴", bg: "#FDF2F2", border: "#F3C6C6", badge: "#FDE2E2", badgeFg: "#B23A3A" },
-  opportunity: { label: "Oportunidade", icon: "🟡", bg: "#FBF1F4", border: "#E8B4C4", badge: "#F5D9E4", badgeFg: "#7D3A52" },
+  opportunity: { label: "Oportunidade", icon: "🟡", bg: "#F1F8F3", border: "#B7D8C2", badge: "#DCEFE1", badgeFg: "#2E6B4F" },
   suggestion: { label: "Sugestão", icon: "🔵", bg: "#F1F6FB", border: "#C6D9F3", badge: "#E3ECFA", badgeFg: "#2E5AA8" },
 };
 
@@ -74,7 +74,7 @@ export function InsightsPage() {
                 onClick={() => setNewType(t)}
                 sx={{
                   fontWeight: 700,
-                  bgcolor: newType === t ? TYPE_CONFIG[t].badge : "#F5EEE8",
+                  bgcolor: newType === t ? TYPE_CONFIG[t].badge : "#E7F2EA",
                   color: newType === t ? TYPE_CONFIG[t].badgeFg : "text.secondary",
                 }}
               />
@@ -89,9 +89,9 @@ export function InsightsPage() {
       )}
 
       <Stack direction="row" spacing={1} sx={{ mb: 2.5 }} flexWrap="wrap" useFlexGap>
-        <Chip label="Todos" onClick={() => setFilter("all")} sx={{ fontWeight: 700, bgcolor: filter === "all" ? "primary.main" : "#F5EEE8", color: filter === "all" ? "#fff" : "text.secondary" }} />
+        <Chip label="Todos" onClick={() => setFilter("all")} sx={{ fontWeight: 700, bgcolor: filter === "all" ? "primary.main" : "#E7F2EA", color: filter === "all" ? "#fff" : "text.secondary" }} />
         {INSIGHT_TYPES.map((t) => (
-          <Chip key={t} label={`${TYPE_CONFIG[t].icon} ${TYPE_CONFIG[t].label}`} onClick={() => setFilter(t)} sx={{ fontWeight: 700, bgcolor: filter === t ? "primary.main" : "#F5EEE8", color: filter === t ? "#fff" : "text.secondary" }} />
+          <Chip key={t} label={`${TYPE_CONFIG[t].icon} ${TYPE_CONFIG[t].label}`} onClick={() => setFilter(t)} sx={{ fontWeight: 700, bgcolor: filter === t ? "primary.main" : "#E7F2EA", color: filter === t ? "#fff" : "text.secondary" }} />
         ))}
       </Stack>
 

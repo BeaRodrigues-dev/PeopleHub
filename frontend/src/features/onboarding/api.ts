@@ -6,6 +6,7 @@ export const onboardingApi = {
   list: () => httpClient.get<PaginatedResult<OnboardingEntry>>("onboardings", { limit: 100 }),
   getById: (id: string) => httpClient.get<OnboardingEntry>(`onboardings/${id}`),
   create: (input: CreateOnboardingInput) => httpClient.post<OnboardingEntry>("onboardings", input),
+  update: (id: string, input: Partial<CreateOnboardingInput>) => httpClient.patch<OnboardingEntry>(`onboardings/${id}`, input),
   toggleItem: (id: string, phase: ChecklistPhase, index: number) =>
     httpClient.patch<OnboardingEntry>(`onboardings/${id}/checklist`, { phase, index }),
   remove: (id: string) => httpClient.delete<void>(`onboardings/${id}`),
