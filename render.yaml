@@ -1,0 +1,42 @@
+# Blueprint do Render (render.com) — sobe o mock-backend (zero-dependência)
+# e o frontend (site estático) com um clique, sem precisar de MongoDB/Docker.
+#
+# Como usar: veja a seção "Deploy" no README.md do repositório.
+services:
+  # Backend: Node puro, sem dependências, dados em memória.
+  - type: web
+    name: peoplehub-mock-backend
+    runtime: node
+    plan: free
+    rootDir: mock-backend
+    buildCommand: npm install
+    startCommand: node server.js
+    envVars:
+      # IMPORTANTE: defina estes 3 valores manualmente no dashboard do Render
+      # (Environment) antes de deixar o site público. Sem isso, o login usa
+      # a senha de desenvolvimento padrão, que está commitada neste repo
+      # público e NÃO protege dados reais. Veja a seção "Autenticação" do
+      # README para o passo a passo de geração dos valores.
+      - key: AUTH_EMAIL
+        sync: false
+      - key: AUTH_PASSWORD
+        sync: false
+      - key: AUTH_SECRET
+        sync: false
+        generateValue: true
+
+  # Frontend: site estático (build do Vite).
+  - type: web
+    name: peoplehub-frontend
+    runtime: static
+    plan: free
+    rootDir: frontend
+    buildCommand: npm install && npm run build
+    staticPublishPath: dist
+    envVars:
+      - key: VITE_API_URL
+        value: https://peoplehub-mock-backend.onrender.com/api/v1
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html

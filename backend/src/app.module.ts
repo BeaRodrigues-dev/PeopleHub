@@ -1,6 +1,7 @@
 import { Module } from "@nestjs/common";
 import { ConfigModule, ConfigService } from "@nestjs/config";
 import { MongooseModule } from "@nestjs/mongoose";
+import { APP_GUARD } from "@nestjs/core";
 import configuration, { envValidationSchema, type AppConfig } from "./config/configuration";
 import { CandidateModule } from "./modules/candidate/candidate.module";
 import { VacancyModule } from "./modules/vacancy/vacancy.module";
@@ -12,6 +13,8 @@ import { OnboardingModule } from "./modules/onboarding/onboarding.module";
 import { ConsultingModule } from "./modules/consulting/consulting.module";
 import { InsightModule } from "./modules/insight/insight.module";
 import { DocumentModule } from "./modules/document/document.module";
+import { AuthModule } from "./modules/auth/auth.module";
+import { JwtAuthGuard } from "./common/guards/jwt-auth.guard";
 
 @Module({
   imports: [
@@ -27,6 +30,7 @@ import { DocumentModule } from "./modules/document/document.module";
         uri: config.get<AppConfig>("app")!.mongodbUri,
       }),
     }),
+    AuthModule,
     AiModule,
     CandidateModule,
     VacancyModule,
@@ -38,5 +42,6 @@ import { DocumentModule } from "./modules/document/document.module";
     InsightModule,
     DocumentModule,
   ],
+  providers: [{ provide: APP_GUARD, useClass: JwtAuthGuard }],
 })
 export class AppModule {}

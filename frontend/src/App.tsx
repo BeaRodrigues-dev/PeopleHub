@@ -1,5 +1,7 @@
 import { Navigate, Route, Routes } from "react-router-dom";
 import { AppLayout } from "./components/layout/AppLayout";
+import { LoginPage } from "./features/auth/pages/LoginPage";
+import { isSessionValid, useAuthStore } from "./features/auth/authStore";
 import { HomePage } from "./features/home/pages/HomePage";
 import { VacanciesPage } from "./features/vacancy/pages/VacanciesPage";
 import { VacancyDetailPage } from "./features/vacancy/pages/VacancyDetailPage";
@@ -17,6 +19,10 @@ import { CandidateEditModal } from "./features/candidate/components/CandidateEdi
 import { AddCandidateModal } from "./features/candidate/components/AddCandidateModal";
 
 export default function App() {
+  const session = useAuthStore((s) => s.session);
+
+  if (!isSessionValid(session)) return <LoginPage />;
+
   return (
     <AppLayout>
       <Routes>

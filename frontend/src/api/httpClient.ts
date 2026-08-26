@@ -3,6 +3,8 @@
  * dependência instalada). Normaliza erros da API num formato único
  * (ApiError) e centraliza a base URL / JSON handling / upload de arquivos.
  */
+import { getAuthToken, useAuthStore } from "../features/auth/authStore";
+
 const API_BASE_URL = (import.meta.env.VITE_API_URL as string | undefined) ?? "http://localhost:3001/api/v1";
 
 export class ApiError extends Error {
@@ -21,6 +23,9 @@ async function parseResponse<T>(response: Response): Promise<T> {
   const body = isJson ? await response.json().catch(() => null) : null;
 
   if (!response.ok) {
+    // Token ausente/expirado/inválido — derruba a sessão local. O guard de
+    // rotas do App cuida de mostrar a tela de login novamente.
+    if (response.status === 401) useAuthStore.getState().logout();
     const message = Array.isArray(body?.message) ? body.message.join(", ") : body?.message || response.statusText;
     throw new ApiError(message || "Erro inesperado na API", response.status, body);
   }
@@ -39,31 +44,39 @@ function buildUrl(path: string, params?: Record<string, unknown>): string {
   return url.toString();
 }
 
+function authHeaders(extra?: Record<string, string>): Record<string, string> {
+  const token = getAuthToken();
+  return { ...(extra ?? {}), ...(token ? { Authorization: `Bearer ${token}` } : {}) };
+}
+
 export const httpClient = {
   get<T>(path: string, params?: Record<string, unknown>): Promise<T> {
-    return fetch(buildUrl(path, params)).then((r) => parseResponse<T>(r));
+    return fetch(buildUrl(path, params), { headers: authHeaders() }).then((r) => parseResponse<T>(r));
   },
   post<T>(path: string, body?: unknown): Promise<T> {
     return fetch(buildUrl(path), {
       method: "POST",
-      headers: body ? { "Content-Type": "application/json" } : undefined,
+      headers: authHeaders(body ? { "Content-Type": "application/json" } : undefined),
       body: body ? JSON.stringify(body) : undefined,
     }).then((r) => parseResponse<T>(r));
   },
   patch<T>(path: string, body?: unknown): Promise<T> {
     return fetch(buildUrl(path), {
       method: "PATCH",
-      headers: body ? { "Content-Type": "application/json" } : undefined,
+      headers: authHeaders(body ? { "Content-Type": "application/json" } : undefined),
       body: body ? JSON.stringify(body) : undefined,
     }).then((r) => parseResponse<T>(r));
   },
   delete<T>(path: string): Promise<T> {
-    return fetch(buildUrl(path), { method: "DELETE" }).then((r) => parseResponse<T>(r));
+    return fetch(buildUrl(path), { method: "DELETE", headers: authHeaders() }).then((r) => parseResponse<T>(r));
   },
   upload<T>(path: string, file: File): Promise<T> {
     const formData = new FormData();
     formData.append("file", file);
-    return fetch(buildUrl(path), { method: "POST", body: formData }).then((r) => parseResponse<T>(r));
+    return httpClient.uploadForm<T>(path, formData);
+  },
+  uploadForm<T>(path: string, formData: FormData): Promise<T> {
+    return fetch(buildUrl(path), { method: "POST", headers: authHeaders(), body: formData }).then((r) => parseResponse<T>(r));
   },
 };
 

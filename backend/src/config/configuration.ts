@@ -14,6 +14,11 @@ export const envValidationSchema = Joi.object({
   OPENAI_MODEL: Joi.string().default("gpt-4o-mini"),
   UPLOAD_DIR: Joi.string().default("./uploads"),
   UPLOAD_MAX_SIZE_MB: Joi.number().default(5),
+  // Autenticação (conta única). Os defaults abaixo são só para
+  // desenvolvimento local — DEFINA valores próprios em produção.
+  AUTH_EMAIL: Joi.string().default("beatriz@peoplehub.local"),
+  AUTH_PASSWORD: Joi.string().allow("").optional(),
+  AUTH_SECRET: Joi.string().default("dev-only-insecure-secret-troque-em-producao"),
 });
 
 export interface AppConfig {
@@ -25,6 +30,9 @@ export interface AppConfig {
   openaiModel: string;
   uploadDir: string;
   uploadMaxSizeBytes: number;
+  authEmail: string;
+  authPassword?: string;
+  authSecret: string;
 }
 
 export default (): { app: AppConfig } => ({
@@ -37,5 +45,8 @@ export default (): { app: AppConfig } => ({
     openaiModel: process.env.OPENAI_MODEL ?? "gpt-4o-mini",
     uploadDir: process.env.UPLOAD_DIR ?? "./uploads",
     uploadMaxSizeBytes: Number(process.env.UPLOAD_MAX_SIZE_MB ?? 5) * 1024 * 1024,
+    authEmail: (process.env.AUTH_EMAIL ?? "beatriz@peoplehub.local").toLowerCase(),
+    authPassword: process.env.AUTH_PASSWORD || undefined,
+    authSecret: process.env.AUTH_SECRET ?? "dev-only-insecure-secret-troque-em-producao",
   },
 });

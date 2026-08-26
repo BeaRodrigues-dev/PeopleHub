@@ -21,6 +21,7 @@ const { db, seed, computeProgress, CONSULTING_SERVICES } = require("./lib/db");
 const ai = require("./lib/ai");
 const { buildSyntheticResumeText } = require("./lib/resume");
 const { sendJson, HttpError, readJsonBody, readRawBody, parseMultipart } = require("./lib/http-utils");
+const auth = require("./lib/auth");
 
 const PORT = Number(process.env.PORT || 3001);
 const UPLOAD_DIR = path.join(__dirname, "uploads");
@@ -383,6 +384,15 @@ function findDocumentOrThrow(id) {
 }
 
 // ---------------------------------------------------------------------------
+// Handlers — Auth
+// ---------------------------------------------------------------------------
+function getAuthPayload(req) {
+  const header = req.headers.authorization || "";
+  const [, token] = header.split(" ");
+  return auth.verifyToken(token);
+}
+
+// ---------------------------------------------------------------------------
 // Router
 // ---------------------------------------------------------------------------
 const routes = [];
@@ -404,6 +414,17 @@ function route(method, pattern, handler) {
   );
   routes.push({ method, regex, paramNames, handler });
 }
+
+route("POST", "/auth/login", async (ctx) => {
+  const ip = ctx.req.socket?.remoteAddress || "unknown";
+  if (!auth.checkLoginRateLimit(ip)) throw new HttpError(429, "Muitas tentativas de login. Aguarde alguns minutos.");
+  const { email, password } = await readJsonBody(ctx.req);
+  if (!email || !password) throw new HttpError(400, "Informe email e senha.");
+  if (!auth.verifyPassword(email, password)) throw new HttpError(401, "Email ou senha inválidos.");
+  const { token, expiresAt } = auth.issueToken(String(email).toLowerCase());
+  sendJson(ctx.res, 200, { token, expiresAt, email: String(email).toLowerCase() });
+});
+route("GET", "/auth/me", async (ctx) => sendJson(ctx.res, 200, { email: ctx.req.authPayload.email }));
 
 route("GET", "/candidates", async (ctx) => sendJson(ctx.res, 200, listCandidates(ctx.query)));
 route("GET", "/candidates/counts-by-vacancy", async (ctx) => {
@@ -652,10 +673,12 @@ function serveUpload(req, res, pathname) {
   fs.createReadStream(filePath).pipe(res);
 }
 
+const PUBLIC_API_PATHS = new Set(["/auth/login"]);
+
 const server = http.createServer(async (req, res) => {
   res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader("Access-Control-Allow-Methods", "GET,POST,PATCH,DELETE,OPTIONS");
-  res.setHeader("Access-Control-Allow-Headers", "Content-Type");
+  res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
   if (req.method === "OPTIONS") {
     res.writeHead(204);
     res.end();
@@ -683,6 +706,16 @@ const server = http.createServer(async (req, res) => {
     return;
   }
   if (pathname.startsWith("/api/v1")) pathname = pathname.slice("/api/v1".length) || "/";
+
+  // Todas as rotas da API exigem um token válido, exceto o login.
+  if (!PUBLIC_API_PATHS.has(pathname)) {
+    const payload = getAuthPayload(req);
+    if (!payload) {
+      sendJson(res, 401, { statusCode: 401, message: "Não autenticado. Faça login novamente." });
+      return;
+    }
+    req.authPayload = payload;
+  }
 
   const match = routes.find((r) => r.method === req.method && r.regex.test(pathname));
   if (!match) {

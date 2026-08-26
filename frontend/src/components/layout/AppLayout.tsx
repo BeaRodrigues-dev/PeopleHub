@@ -13,9 +13,11 @@ import LibraryBooksRoundedIcon from "@mui/icons-material/LibraryBooksRounded";
 import MenuRoundedIcon from "@mui/icons-material/MenuRounded";
 import AddRoundedIcon from "@mui/icons-material/AddRounded";
 import PersonAddAltRoundedIcon from "@mui/icons-material/PersonAddAltRounded";
+import LogoutRoundedIcon from "@mui/icons-material/LogoutRounded";
 import { NavLink, useNavigate } from "react-router-dom";
 import { zIndex } from "../../theme/zIndex";
 import { useUIStore } from "../../store/uiStore";
+import { useAuthStore } from "../../features/auth/authStore";
 
 const drawerWidth = 248;
 const SIDEBAR_BG = "#241019";
@@ -64,6 +66,7 @@ export function AppLayout({ children }: { children: ReactNode }) {
   const [mobileOpen, setMobileOpen] = useState(false);
   const navigate = useNavigate();
   const openAddCandidate = useUIStore((s) => s.openAddCandidate);
+  const logout = useAuthStore((s) => s.logout);
 
   const brand = (
     <Box sx={{ height: 66, display: "flex", alignItems: "center", px: 2.75, gap: 1.1 }}>
@@ -136,10 +139,13 @@ export function AppLayout({ children }: { children: ReactNode }) {
         </Box>
         <Box sx={{ borderTop: "1px solid", borderColor: SIDEBAR_BORDER, p: 2, display: "flex", alignItems: "center", gap: 1.25 }}>
           <Avatar sx={{ width: 30, height: 30, bgcolor: "secondary.light", color: "primary.dark", fontSize: 12.5, fontWeight: 700 }}>BR</Avatar>
-          <Box sx={{ overflow: "hidden" }}>
+          <Box sx={{ overflow: "hidden", flex: 1 }}>
             <Typography fontSize={12.5} fontWeight={700} color="#fff" noWrap>Beatriz Rodrigues</Typography>
             <Typography fontSize={11} color="rgba(255,255,255,.5)" noWrap>HR Manager</Typography>
           </Box>
+          <IconButton onClick={logout} size="small" title="Sair" sx={{ color: "rgba(255,255,255,.55)", "&:hover": { color: "#fff", bgcolor: "rgba(255,255,255,.07)" } }}>
+            <LogoutRoundedIcon fontSize="small" />
+          </IconButton>
         </Box>
       </Drawer>
       <Drawer open={mobileOpen} onClose={() => setMobileOpen(false)} sx={{ display: { md: "none" }, "& .MuiDrawer-paper": { bgcolor: SIDEBAR_BG } }}>

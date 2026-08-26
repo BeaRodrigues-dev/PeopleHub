@@ -11,15 +11,6 @@ export const docsApi = {
     formData.append("title", meta.title);
     formData.append("category", meta.category);
     if (meta.description) formData.append("description", meta.description);
-    return fetch(`${(import.meta.env.VITE_API_URL as string | undefined) ?? "http://localhost:3001/api/v1"}/documents`.replace(/\/$/, ""), {
-      method: "POST",
-      body: formData,
-    }).then(async (r) => {
-      if (!r.ok) {
-        const body = await r.json().catch(() => null);
-        throw new Error(body?.message || "Falha ao enviar documento");
-      }
-      return r.json() as Promise<HrDocument>;
-    });
+    return httpClient.uploadForm<HrDocument>("documents", formData);
   },
 };
