@@ -1,3 +1,4 @@
+import { Box, CircularProgress } from "@mui/material";
 import { Navigate, Route, Routes } from "react-router-dom";
 import { AppLayout } from "./components/layout/AppLayout";
 import { LoginPage } from "./features/auth/pages/LoginPage";
@@ -21,6 +22,15 @@ import { AddCandidateModal } from "./features/candidate/components/AddCandidateM
 
 export default function App() {
   const session = useAuthStore((s) => s.session);
+  const initialized = useAuthStore((s) => s.initialized);
+
+  if (!initialized) {
+    return (
+      <Box sx={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", bgcolor: "#0F241A" }}>
+        <CircularProgress sx={{ color: "#9BCBAE" }} />
+      </Box>
+    );
+  }
 
   if (!isSessionValid(session)) return <LoginPage />;
 

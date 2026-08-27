@@ -8,7 +8,6 @@ import { useDeleteDocument, useDocuments } from "../queries";
 import { UploadDocumentModal } from "../components/UploadDocumentModal";
 import { EmptyState } from "../../../components/common/EmptyState";
 import { ErrorState } from "../../../components/common/ErrorState";
-import { resolveApiFileUrl } from "../../../api/httpClient";
 import { DOCUMENT_CATEGORIES } from "../types";
 
 export function DocsPage() {
@@ -59,7 +58,7 @@ export function DocsPage() {
                 <Chip label={doc.category} size="small" sx={{ bgcolor: "#E7F2EA", color: "primary.main", fontWeight: 700 }} />
                 <Typography
                   component="a"
-                  href={resolveApiFileUrl(doc.fileUrl)}
+                  href={doc.fileUrl}
                   target="_blank"
                   rel="noreferrer"
                   variant="caption"

@@ -18,7 +18,7 @@ import { errorMessage } from "../../../components/common/ErrorState";
 
 const INSIGHT_STYLE: Record<string, { bg: string; border: string; label: string; icon: string }> = {
   problem: { bg: "#FDF2F2", border: "#F3C6C6", label: "Problema", icon: "🔴" },
-  opportunity: { bg: "#F1F8F3", border: "#B7D8C2", label: "Oportunidade", icon: "🟡" },
+  opportunity: { bg: "#F1F8F3", border: "#CFE6D9", label: "Oportunidade", icon: "🟡" },
   suggestion: { bg: "#F1F6FB", border: "#C6D9F3", label: "Sugestão", icon: "🔵" },
 };
 
@@ -96,9 +96,9 @@ export function HomePage() {
       </Box>
 
       <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr 1fr", lg: "repeat(4, 1fr)" }, gap: 2, mb: 3 }}>
-        <StatCard label="Colaboradores" value={isLoading ? undefined : activeEmployees.length} sub={`${offboardingEmployees.length} em offboarding`} color="#B7D8C2" />
-        <StatCard label="Vagas abertas" value={isLoading ? undefined : openVacancies.length} sub={`${vacancies.length} total`} color="#7FAE8E" light />
-        <StatCard label="Candidatos ativos" value={isLoading ? undefined : activeCandidates} sub="em pipelines de vagas" color="#2E6B4F" light />
+        <StatCard label="Colaboradores" value={isLoading ? undefined : activeEmployees.length} sub={`${offboardingEmployees.length} em offboarding`} color="#CFE6D9" />
+        <StatCard label="Vagas abertas" value={isLoading ? undefined : openVacancies.length} sub={`${vacancies.length} total`} color="#9BCBAE" light />
+        <StatCard label="Candidatos ativos" value={isLoading ? undefined : activeCandidates} sub="em pipelines de vagas" color="#4C9773" light />
         <StatCard label="Pipeline Consulting" value={isLoading ? undefined : leads.length} sub={`${clients.length} cliente(s)`} color="#E7F2EA" />
       </Box>
 

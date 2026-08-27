@@ -17,7 +17,7 @@ import type { ConsultingLead } from "../types";
 const STATUS_COLOR: Record<string, { bg: string; fg: string }> = {
   "Pesquisado": { bg: "#E4EDE6", fg: "#6E7D74" },
   "Proposta enviada": { bg: "#E3ECFA", fg: "#2E5AA8" },
-  "Reunião agendada": { bg: "#DCEFE1", fg: "#2E6B4F" },
+  "Reunião agendada": { bg: "#DCEFE1", fg: "#4C9773" },
   "Em negociação": { bg: "#FBEBD2", fg: "#A66A1E" },
   "Cliente": { bg: "#DCEFE1", fg: "#2E7D4F" },
 };

@@ -10,7 +10,6 @@ import WorkOutlineRoundedIcon from "@mui/icons-material/WorkOutlineRounded";
 import LaunchRoundedIcon from "@mui/icons-material/LaunchRounded";
 import { useNavigate } from "react-router-dom";
 import { SidePanel } from "../../../components/common/SidePanel";
-import { resolveApiFileUrl } from "../../../api/httpClient";
 import { useUIStore } from "../../../store/uiStore";
 import { useCandidate } from "../queries";
 import { useVacancy } from "../../vacancy/queries";
@@ -154,7 +153,7 @@ export function CandidateDetailDrawer() {
               <Stack direction="row" spacing={1} alignItems="center" sx={{ p: 1.5, borderRadius: 2.5, bgcolor: "action.hover" }}>
                 <DescriptionOutlinedIcon color="action" />
                 <Typography variant="body2" color="text.secondary" sx={{ flex: 1 }}>Arquivo enviado pelo candidato</Typography>
-                <Button size="small" endIcon={<LaunchRoundedIcon fontSize="small" />} href={resolveApiFileUrl(candidate.resumeUrl) ?? "#"} target="_blank" rel="noreferrer">
+                <Button size="small" endIcon={<LaunchRoundedIcon fontSize="small" />} href={candidate.resumeUrl ?? "#"} target="_blank" rel="noreferrer">
                   Abrir
                 </Button>
               </Stack>

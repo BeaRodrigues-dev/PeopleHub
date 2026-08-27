@@ -5,8 +5,8 @@ import { createTheme } from "@mui/material/styles";
 // suave, tipografia com toque serifado nos títulos para um ar mais "HR OS" premium.
 export const theme = createTheme({
   palette: {
-    primary: { main: "#2E6B4F", light: "#4E8F6E", dark: "#1F4D38", contrastText: "#fff" },
-    secondary: { main: "#7FAE8E", light: "#B7D8C2", dark: "#548065", contrastText: "#1F4D38" },
+    primary: { main: "#4C9773", light: "#7CBE9C", dark: "#4C9773", contrastText: "#fff" },
+    secondary: { main: "#9BCBAE", light: "#CFE6D9", dark: "#6FA687", contrastText: "#2E6B4F" },
     background: { default: "#F7FAF6", paper: "#ffffff" },
     text: { primary: "#24302A", secondary: "#6E7D74" },
     divider: "#DCE6DE",

@@ -12,7 +12,7 @@ import { INSIGHT_TYPES, type InsightType } from "../types";
 
 const TYPE_CONFIG: Record<InsightType, { label: string; icon: string; bg: string; border: string; badge: string; badgeFg: string }> = {
   problem: { label: "Problema", icon: "🔴", bg: "#FDF2F2", border: "#F3C6C6", badge: "#FDE2E2", badgeFg: "#B23A3A" },
-  opportunity: { label: "Oportunidade", icon: "🟡", bg: "#F1F8F3", border: "#B7D8C2", badge: "#DCEFE1", badgeFg: "#2E6B4F" },
+  opportunity: { label: "Oportunidade", icon: "🟡", bg: "#F1F8F3", border: "#CFE6D9", badge: "#DCEFE1", badgeFg: "#4C9773" },
   suggestion: { label: "Sugestão", icon: "🔵", bg: "#F1F6FB", border: "#C6D9F3", badge: "#E3ECFA", badgeFg: "#2E5AA8" },
 };
 

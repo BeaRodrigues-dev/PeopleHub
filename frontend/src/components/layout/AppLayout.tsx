@@ -76,7 +76,7 @@ export function AppLayout({ children }: { children: ReactNode }) {
           width: 28,
           height: 28,
           borderRadius: "8px",
-          background: "linear-gradient(135deg, #2E6B4F, #7FAE8E)",
+          background: "linear-gradient(135deg, #4C9773, #9BCBAE)",
           flexShrink: 0,
           display: "flex",
           alignItems: "center",

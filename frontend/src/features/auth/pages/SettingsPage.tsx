@@ -3,16 +3,15 @@ import { Alert, Box, Button, Card, Stack, TextField, Typography } from "@mui/mat
 import LockRoundedIcon from "@mui/icons-material/LockRounded";
 import { authApi } from "../api";
 import { useAuthStore } from "../authStore";
-import { ApiError } from "../../../api/httpClient";
 import { useToast } from "../../../components/common/ToastProvider";
 
 export function SettingsPage() {
   const session = useAuthStore((s) => s.session);
-  const setSession = useAuthStore((s) => s.setSession);
+  const currentEmail = session?.user.email ?? "";
   const toast = useToast();
 
   const [currentPassword, setCurrentPassword] = useState("");
-  const [newEmail, setNewEmail] = useState(session?.email ?? "");
+  const [newEmail, setNewEmail] = useState(currentEmail);
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -33,18 +32,21 @@ export function SettingsPage() {
 
     setLoading(true);
     try {
-      const res = await authApi.updateCredentials({
+      await authApi.updateCredentials({
         currentPassword,
-        newEmail: newEmail.trim() !== session?.email ? newEmail.trim() : undefined,
+        newEmail: newEmail.trim() !== currentEmail ? newEmail.trim() : undefined,
         newPassword: newPassword || undefined,
       });
-      setSession({ token: res.token, email: res.email, expiresAt: res.expiresAt });
       setCurrentPassword("");
       setNewPassword("");
       setConfirmPassword("");
-      toast.success("Credenciais atualizadas.");
+      toast.success(
+        newEmail.trim() !== currentEmail
+          ? "Credenciais atualizadas. Se o email mudou, confirme o link enviado à nova caixa de entrada."
+          : "Credenciais atualizadas.",
+      );
     } catch (err) {
-      setError(err instanceof ApiError ? err.message : "Não foi possível atualizar as credenciais.");
+      setError(err instanceof Error ? err.message : "Não foi possível atualizar as credenciais.");
     } finally {
       setLoading(false);
     }
@@ -62,7 +64,7 @@ export function SettingsPage() {
           </Box>
           <Box>
             <Typography fontWeight={800}>Login</Typography>
-            <Typography variant="caption" color="text.secondary">Email atual: {session?.email}</Typography>
+            <Typography variant="caption" color="text.secondary">Email atual: {currentEmail}</Typography>
           </Box>
         </Stack>
 

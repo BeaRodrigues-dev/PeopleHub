@@ -1,12 +1,91 @@
-import { httpClient } from "../../api/httpClient";
+import { supabase, throwIfError } from "../../lib/supabaseClient";
+import { paginate } from "../../lib/paginate";
+import { qualifyConsultingLead } from "../../lib/ai";
 import type { PaginatedResult } from "../../api/types";
-import type { ConsultingLead, ConsultingService, CreateConsultingLeadInput, UpdateConsultingLeadInput } from "./types";
+import type { ConsultingLead, ConsultingService, ConsultingStatus, CreateConsultingLeadInput, UpdateConsultingLeadInput } from "./types";
+
+interface ConsultingLeadRow {
+  id: string;
+  company: string;
+  sector: string;
+  size: string;
+  contact: string;
+  need: string;
+  status: string;
+  value: string;
+  ai_qualification: ConsultingLead["aiQualification"];
+  created_at: string;
+  updated_at: string;
+}
+
+const CONSULTING_SERVICES: ConsultingService[] = [
+  { id: "recruitment", name: "Recruitment", desc: "Atração e seleção de talento para empresas parceiras", price: "€800–2.400/vaga", icon: "🎯" },
+  { id: "talent-hunting", name: "Talent Hunting", desc: "Pesquisa proativa de perfis estratégicos e headhunting", price: "€1.200–3.000/vaga", icon: "🕵️" },
+  { id: "hr-setup", name: "HR Setup", desc: "Criação de processos e estrutura de RH do zero", price: "€2.500–6.000/projeto", icon: "🏗️" },
+  { id: "onboarding-design", name: "Onboarding Design", desc: "Desenho e implementação de programas de onboarding", price: "€1.500–3.500/projeto", icon: "🚀" },
+  { id: "people-processes", name: "People Processes", desc: "Definição de OKRs, performance review e cultura", price: "€1.000–4.000/projeto", icon: "⚙️" },
+];
+
+function fromRow(row: ConsultingLeadRow): ConsultingLead {
+  return {
+    id: row.id,
+    company: row.company,
+    sector: row.sector,
+    size: row.size,
+    contact: row.contact,
+    need: row.need,
+    status: row.status as ConsultingStatus,
+    value: row.value,
+    aiQualification: row.ai_qualification ?? null,
+    createdAt: row.created_at,
+    updatedAt: row.updated_at,
+  };
+}
+
+function toRow(input: Partial<CreateConsultingLeadInput>): Record<string, unknown> {
+  const row: Record<string, unknown> = {};
+  if (input.company !== undefined) row.company = input.company;
+  if (input.sector !== undefined) row.sector = input.sector;
+  if (input.size !== undefined) row.size = input.size;
+  if (input.contact !== undefined) row.contact = input.contact;
+  if (input.need !== undefined) row.need = input.need;
+  if (input.status !== undefined) row.status = input.status;
+  if (input.value !== undefined) row.value = input.value;
+  return row;
+}
 
 export const consultingApi = {
-  list: () => httpClient.get<PaginatedResult<ConsultingLead>>("consulting-leads", { limit: 100 }),
-  create: (input: CreateConsultingLeadInput) => httpClient.post<ConsultingLead>("consulting-leads", input),
-  update: (id: string, input: UpdateConsultingLeadInput) => httpClient.patch<ConsultingLead>(`consulting-leads/${id}`, input),
-  remove: (id: string) => httpClient.delete<void>(`consulting-leads/${id}`),
-  qualifyWithAi: (id: string) => httpClient.post<ConsultingLead>(`consulting-leads/${id}/qualify`),
-  services: () => httpClient.get<ConsultingService[]>("consulting-leads/services"),
+  list: async (): Promise<PaginatedResult<ConsultingLead>> => {
+    const { data, error } = await supabase.from("consulting_leads").select("*").order("created_at", { ascending: false }).limit(100);
+    throwIfError(error);
+    return paginate((data as ConsultingLeadRow[]).map(fromRow));
+  },
+
+  create: async (input: CreateConsultingLeadInput): Promise<ConsultingLead> => {
+    const { data, error } = await supabase.from("consulting_leads").insert(toRow(input)).select("*").single();
+    throwIfError(error);
+    return fromRow(data as ConsultingLeadRow);
+  },
+
+  update: async (id: string, input: UpdateConsultingLeadInput): Promise<ConsultingLead> => {
+    const { data, error } = await supabase.from("consulting_leads").update(toRow(input)).eq("id", id).select("*").single();
+    throwIfError(error);
+    return fromRow(data as ConsultingLeadRow);
+  },
+
+  remove: async (id: string): Promise<void> => {
+    const { error } = await supabase.from("consulting_leads").delete().eq("id", id);
+    throwIfError(error);
+  },
+
+  qualifyWithAi: async (id: string): Promise<ConsultingLead> => {
+    const { data: current, error: fetchError } = await supabase.from("consulting_leads").select("*").eq("id", id).single();
+    throwIfError(fetchError);
+    const qualification = qualifyConsultingLead(fromRow(current as ConsultingLeadRow));
+    const { data, error } = await supabase.from("consulting_leads").update({ ai_qualification: qualification }).eq("id", id).select("*").single();
+    throwIfError(error);
+    return fromRow(data as ConsultingLeadRow);
+  },
+
+  services: async (): Promise<ConsultingService[]> => CONSULTING_SERVICES,
 };

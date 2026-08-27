@@ -1,40 +1,40 @@
 import { create } from "zustand";
-import { persist } from "zustand/middleware";
-
-interface AuthSession {
-  token: string;
-  email: string;
-  expiresAt: number;
-}
+import type { Session } from "@supabase/supabase-js";
+import { supabase } from "../../lib/supabaseClient";
 
 interface AuthState {
-  session: AuthSession | null;
-  setSession: (session: AuthSession) => void;
-  logout: () => void;
+  session: Session | null;
+  /** Fica `false` só durante o instante inicial em que ainda estamos lendo a sessão salva pelo Supabase. */
+  initialized: boolean;
+  setSession: (session: Session | null) => void;
+  logout: () => Promise<void>;
 }
 
 /**
- * Sessão de autenticação — única fonte de verdade do token, persistida em
- * localStorage (é um produto real rodando no navegador, não um artifact do
- * Claude, então localStorage é apropriado aqui). Verifica expiração do token
- * localmente antes de considerar a sessão válida.
+ * Sessão de autenticação — agora gerida pelo próprio Supabase Auth (que já
+ * persiste o token em localStorage e cuida de refresh automático). Este
+ * store só espelha o estado para os componentes React reagirem a ele.
  */
-export const useAuthStore = create<AuthState>()(
-  persist(
-    (set) => ({
-      session: null,
-      setSession: (session) => set({ session }),
-      logout: () => set({ session: null }),
-    }),
-    { name: "people-hub-auth" },
-  ),
-);
+export const useAuthStore = create<AuthState>((set) => ({
+  session: null,
+  initialized: false,
+  setSession: (session) => set({ session, initialized: true }),
+  logout: async () => {
+    await supabase.auth.signOut();
+    set({ session: null });
+  },
+}));
 
-export function isSessionValid(session: AuthSession | null): session is AuthSession {
-  return !!session && session.expiresAt > Date.now();
+supabase.auth.getSession().then(({ data }) => useAuthStore.getState().setSession(data.session));
+supabase.auth.onAuthStateChange((_event, session) => useAuthStore.getState().setSession(session));
+
+export function isSessionValid(session: Session | null): session is Session {
+  if (!session) return false;
+  if (!session.expires_at) return true;
+  return session.expires_at * 1000 > Date.now();
 }
 
 export function getAuthToken(): string | null {
   const session = useAuthStore.getState().session;
-  return isSessionValid(session) ? session.token : null;
+  return isSessionValid(session) ? session.access_token : null;
 }

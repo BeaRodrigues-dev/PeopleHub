@@ -5,10 +5,10 @@ import { useEmployees } from "../../people/queries";
 import { useConsultingLeads } from "../../consulting/queries";
 import { LIFECYCLE_STAGES } from "../../people/types";
 
-const AREA_PALETTE = ["#2E6B4F", "#7FAE8E", "#B7D8C2", "#A66A1E", "#4A6FA5", "#8A5DA5"];
+const AREA_PALETTE = ["#4C9773", "#9BCBAE", "#CFE6D9", "#A66A1E", "#4A6FA5", "#8A5DA5"];
 const LIFECYCLE_COLOR: Record<string, string> = {
   Recruitment: "#4A6FA5",
-  Onboarding: "#7FAE8E",
+  Onboarding: "#9BCBAE",
   Development: "#5A8A6A",
   Performance: "#8A5DA5",
   Offboarding: "#6E7D74",

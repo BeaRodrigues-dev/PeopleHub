@@ -34,10 +34,11 @@ jobs:
         working-directory: frontend
         env:
           GITHUB_PAGES: "true"
-          # Aponta para o backend hospedado (ver README > Deploy). Ajuste em
-          # Settings > Secrets and variables > Actions > Variables se o link
-          # do seu backend for diferente.
-          VITE_API_URL: ${{ vars.VITE_API_URL || 'https://peoplehub-mock-backend.onrender.com/api/v1' }}
+          # Credenciais do seu projeto Supabase — configure em Settings >
+          # Secrets and variables > Actions > "New repository secret"
+          # (ver README.md > "Publicar no GitHub Pages").
+          VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
+          VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
         run: npm run build
 
       - uses: actions/upload-pages-artifact@v3

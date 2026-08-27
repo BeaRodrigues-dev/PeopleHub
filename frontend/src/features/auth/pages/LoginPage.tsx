@@ -3,7 +3,6 @@ import { Alert, Box, Button, Paper, TextField, Typography } from "@mui/material"
 import LockRoundedIcon from "@mui/icons-material/LockRounded";
 import { authApi } from "../api";
 import { useAuthStore } from "../authStore";
-import { ApiError } from "../../../api/httpClient";
 
 export function LoginPage() {
   const [email, setEmail] = useState("");
@@ -18,9 +17,9 @@ export function LoginPage() {
     setLoading(true);
     try {
       const res = await authApi.login(email.trim(), password);
-      setSession({ token: res.token, email: res.email, expiresAt: res.expiresAt });
+      setSession(res.session);
     } catch (err) {
-      setError(err instanceof ApiError ? err.message : "Não foi possível entrar. Tente novamente.");
+      setError(err instanceof Error ? err.message : "Não foi possível entrar. Tente novamente.");
     } finally {
       setLoading(false);
     }
@@ -45,7 +44,7 @@ export function LoginPage() {
               width: 44,
               height: 44,
               borderRadius: "12px",
-              background: "linear-gradient(135deg, #2E6B4F, #7FAE8E)",
+              background: "linear-gradient(135deg, #4C9773, #9BCBAE)",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",

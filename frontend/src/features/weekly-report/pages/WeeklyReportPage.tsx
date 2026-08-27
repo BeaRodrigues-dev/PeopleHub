@@ -15,7 +15,7 @@ const INITIAL = {
 const SECTIONS: Array<{ key: keyof typeof INITIAL; icon: string; label: string; bg: string; border: string }> = [
   { key: "deliveries", icon: "✅", label: "Esta semana fiz:", bg: "#EAF6EE", border: "#BFE3C9" },
   { key: "observations", icon: "👁️", label: "Observei:", bg: "#EAF1FB", border: "#C6D9F3" },
-  { key: "proposals", icon: "💡", label: "Proponho:", bg: "#FFF9F0", border: "#B7D8C2" },
+  { key: "proposals", icon: "💡", label: "Proponho:", bg: "#FFF9F0", border: "#CFE6D9" },
   { key: "nextSteps", icon: "🚀", label: "Próximos passos:", bg: "#F1F7F2", border: "#DCE6DE" },
 ];
 
