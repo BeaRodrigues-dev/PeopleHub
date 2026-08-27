@@ -83,6 +83,7 @@ export const onboardingApi = {
   toggleItem: async (id: string, phase: ChecklistPhase, index: number): Promise<OnboardingEntry> => {
     const { data: current, error: fetchError } = await supabase.from("onboardings").select("checklist").eq("id", id).single();
     throwIfError(fetchError);
+    if (!current) throw new Error("Onboarding não encontrado.");
     const checklist = current.checklist as OnboardingChecklist;
     if (!checklist[phase]?.[index]) throw new Error("Item de checklist inválido");
     checklist[phase][index].done = !checklist[phase][index].done;

@@ -1,4 +1,4 @@
-import { supabase, throwIfError } from "../../lib/supabaseClient";
+import { supabase, throwIfError, SupabaseOpError } from "../../lib/supabaseClient";
 import { paginate } from "../../lib/paginate";
 import { matchCandidateToVacancy } from "../../lib/ai";
 import type { PaginatedResult } from "../../api/types";
@@ -140,12 +140,15 @@ export const applicationApi = {
   evaluate: async (id: string): Promise<Application> => {
     const { data: app, error: appError } = await supabase.from("applications").select("*").eq("id", id).single();
     throwIfError(appError);
+    if (!app) throw new SupabaseOpError("Candidatura não encontrada.");
+
     const [{ data: vacancy, error: vacancyError }, { data: candidate, error: candidateError }] = await Promise.all([
       supabase.from("vacancies").select("required_skills").eq("id", app.vacancy_id).single(),
       supabase.from("candidates").select("skills").eq("id", app.candidate_id).single(),
     ]);
     throwIfError(vacancyError);
     throwIfError(candidateError);
+    if (!vacancy || !candidate) throw new SupabaseOpError("Vaga ou candidato não encontrado.");
 
     const result = matchCandidateToVacancy({ requiredSkills: vacancy.required_skills ?? [] }, { skills: candidate.skills ?? [] });
     const aiEvaluation = { ...result, evaluatedAt: new Date().toISOString(), provider: "heuristic" };

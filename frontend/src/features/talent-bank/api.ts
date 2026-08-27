@@ -1,4 +1,4 @@
-import { supabase, throwIfError } from "../../lib/supabaseClient";
+import { supabase, throwIfError, SupabaseOpError } from "../../lib/supabaseClient";
 import { paginate } from "../../lib/paginate";
 import { matchCandidateToVacancy } from "../../lib/ai";
 import type { PaginatedResult } from "../../api/types";
@@ -66,6 +66,7 @@ async function fetchPool(params: CandidateQueryParams = {}): Promise<Candidate[]
 async function computeMatches(vacancyId: string): Promise<TalentBankMatch[]> {
   const { data: vacancy, error: vacancyError } = await supabase.from("vacancies").select("required_skills").eq("id", vacancyId).single();
   throwIfError(vacancyError);
+  if (!vacancy) throw new SupabaseOpError("Vaga não encontrada.");
   const pool = await fetchPool();
 
   return pool
