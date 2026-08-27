@@ -1,4 +1,4 @@
-export const DOCUMENT_CATEGORIES = ["Políticas", "Benefícios", "Onboarding", "Cultura", "Compliance", "Outro"] as const;
+export const DOCUMENT_CATEGORIES = ["Políticas", "Beneficios", "Onboarding", "Cultura", "Cumplimiento", "Otro"] as const;
 export type DocumentCategory = (typeof DOCUMENT_CATEGORIES)[number];
 
 export interface HrDocument {

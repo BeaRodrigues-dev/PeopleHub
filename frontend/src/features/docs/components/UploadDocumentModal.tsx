@@ -30,13 +30,13 @@ export function UploadDocumentModal({ open, onClose }: { open: boolean; onClose:
   };
 
   const handleSubmit = () => {
-    if (!file) { toast.error("Selecione um arquivo."); return; }
-    if (!title.trim()) { toast.error("Informe um título."); return; }
+    if (!file) { toast.error("Selecciona un archivo."); return; }
+    if (!title.trim()) { toast.error("Ingresa un título."); return; }
     upload.mutate(
       { file, meta: { title, category, description: description || undefined } },
       {
-        onSuccess: () => { toast.success("Documento adicionado."); handleClose(); },
-        onError: (error) => toast.error(errorMessage(error, "Não foi possível enviar o documento.")),
+        onSuccess: () => { toast.success("Documento agregado."); handleClose(); },
+        onError: (error) => toast.error(errorMessage(error, "No fue posible subir el documento.")),
       },
     );
   };
@@ -45,13 +45,13 @@ export function UploadDocumentModal({ open, onClose }: { open: boolean; onClose:
     <Modal
       open={open}
       onClose={handleClose}
-      title="Adicionar documento"
-      subtitle="Manuais, políticas e materiais de referência da área."
+      title="Agregar documento"
+      subtitle="Manuales, políticas y materiales de referencia del área."
       width={560}
       footer={
         <>
           <Button variant="text" onClick={handleClose}>Cancelar</Button>
-          <Button variant="contained" onClick={handleSubmit} disabled={upload.isPending}>{upload.isPending ? "Enviando…" : "Adicionar"}</Button>
+          <Button variant="contained" onClick={handleSubmit} disabled={upload.isPending}>{upload.isPending ? "Enviando…" : "Agregar"}</Button>
         </>
       }
     >
@@ -61,7 +61,7 @@ export function UploadDocumentModal({ open, onClose }: { open: boolean; onClose:
         <TextField select label="Categoria" fullWidth size="small" value={category} onChange={(e) => setCategory(e.target.value)}>
           {DOCUMENT_CATEGORIES.map((c) => <MenuItem key={c} value={c}>{c}</MenuItem>)}
         </TextField>
-        <TextField label="Descrição (opcional)" fullWidth size="small" multiline minRows={2} value={description} onChange={(e) => setDescription(e.target.value)} />
+        <TextField label="Descripción (opcional)" fullWidth size="small" multiline minRows={2} value={description} onChange={(e) => setDescription(e.target.value)} />
       </Stack>
     </Modal>
   );

@@ -7,10 +7,10 @@ import { LIFECYCLE_STAGES } from "../../people/types";
 
 const AREA_PALETTE = ["#4C9773", "#9BCBAE", "#CFE6D9", "#A66A1E", "#4A6FA5", "#8A5DA5"];
 const LIFECYCLE_COLOR: Record<string, string> = {
-  Recruitment: "#4A6FA5",
+  Reclutamiento: "#4A6FA5",
   Onboarding: "#9BCBAE",
-  Development: "#5A8A6A",
-  Performance: "#8A5DA5",
+  Desarrollo: "#5A8A6A",
+  Desempeño: "#8A5DA5",
   Offboarding: "#6E7D74",
 };
 
@@ -26,7 +26,7 @@ export function AnalyticsPage() {
 
   const isLoading = vacanciesLoading || appsLoading || employeesLoading;
 
-  const openVacancies = vacancies.filter((v) => v.status === "Aberta");
+  const openVacancies = vacancies.filter((v) => v.status === "Abierta");
   const activeApplications = applications.filter((a) => a.status === "ACTIVE");
   const hiredApplications = applications.filter((a) => a.status === "HIRED");
   const avgCandidatesPerVacancy = vacancies.length ? (applications.length / vacancies.length).toFixed(1) : "0";
@@ -38,10 +38,10 @@ export function AnalyticsPage() {
     .sort((a, b) => b.count - a.count);
   const funnelMax = Math.max(1, ...funnel.map((f) => f.count));
 
-  const activeEmployees = employees.filter((e) => e.status === "Active");
+  const activeEmployees = employees.filter((e) => e.status === "Activo");
   const areaCounts = Object.entries(
     activeEmployees.reduce<Record<string, number>>((acc, e) => {
-      const area = e.area || "Outro";
+      const area = e.area || "Otro";
       acc[area] = (acc[area] ?? 0) + 1;
       return acc;
     }, {}),
@@ -53,7 +53,7 @@ export function AnalyticsPage() {
     <Box sx={{ p: { xs: 2, md: 3.5 }, maxWidth: 1400, mx: "auto" }}>
       <Box sx={{ mb: 3 }}>
         <Typography variant="h4">People Analytics</Typography>
-        <Typography color="text.secondary" variant="body2" sx={{ mt: 0.4 }}>KPIs de Recruitment, People e impacto de negócio</Typography>
+        <Typography color="text.secondary" variant="body2" sx={{ mt: 0.4 }}>KPIs de Recruitment, People e impacto de negocio</Typography>
       </Box>
 
       {isLoading ? (
@@ -62,14 +62,14 @@ export function AnalyticsPage() {
         <Stack spacing={4}>
           <Section title="🎯 Recruitment KPIs">
             <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr 1fr", md: "repeat(4, 1fr)" }, gap: 2 }}>
-              <KpiCard label="Vagas abertas" value={String(openVacancies.length)} sub={`${vacancies.length} no total`} />
-              <KpiCard label="Candidatos/Vaga" value={avgCandidatesPerVacancy} sub="média geral" />
-              <KpiCard label="Conversion Rate" value={`${conversionRate}%`} sub="candidaturas → contratação" />
-              <KpiCard label="Candidaturas ativas" value={String(activeApplications.length)} sub={`${applications.length} no total`} />
+              <KpiCard label="Vacantes abiertas" value={String(openVacancies.length)} sub={`${vacancies.length} en total`} />
+              <KpiCard label="Candidatos/Vacante" value={avgCandidatesPerVacancy} sub="promedio general" />
+              <KpiCard label="Conversion Rate" value={`${conversionRate}%`} sub="candidaturas → contratación" />
+              <KpiCard label="Candidaturas activas" value={String(activeApplications.length)} sub={`${applications.length} en total`} />
             </Box>
             {funnel.length > 0 && (
               <Box sx={{ bgcolor: "background.paper", border: "1px solid", borderColor: "divider", borderRadius: 4, p: 2.5, mt: 2 }}>
-                <Typography variant="caption" fontWeight={800} color="text.secondary" sx={{ textTransform: "uppercase" }}>Funil de recrutamento (todas as vagas)</Typography>
+                <Typography variant="caption" fontWeight={800} color="text.secondary" sx={{ textTransform: "uppercase" }}>Embudo de reclutamiento (todas las vacantes)</Typography>
                 <Stack spacing={1} sx={{ mt: 1.5 }}>
                   {funnel.map((f) => (
                     <Stack key={f.stage} direction="row" alignItems="center" spacing={1.5}>
@@ -88,14 +88,14 @@ export function AnalyticsPage() {
 
           <Section title="👥 People KPIs">
             <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr 1fr", md: "repeat(4, 1fr)" }, gap: 2 }}>
-              <KpiCard label="Headcount" value={String(activeEmployees.length)} sub="colaboradores ativos" />
-              <KpiCard label="Offboarding" value={String(employees.filter((e) => e.status === "Offboarding").length)} sub="em transição" />
-              <KpiCard label="Onboarding" value={String(employees.filter((e) => e.lifecycle === "Onboarding").length)} sub="fase atual" />
+              <KpiCard label="Headcount" value={String(activeEmployees.length)} sub="colaboradores activos" />
+              <KpiCard label="Offboarding" value={String(employees.filter((e) => e.status === "Offboarding").length)} sub="en transición" />
+              <KpiCard label="Onboarding" value={String(employees.filter((e) => e.lifecycle === "Onboarding").length)} sub="fase actual" />
               <KpiCard label="Áreas" value={String(areaCounts.length)} sub="áreas distintas" />
             </Box>
             <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", md: "1fr 1fr" }, gap: 2, mt: 2 }}>
               <Box sx={{ bgcolor: "background.paper", border: "1px solid", borderColor: "divider", borderRadius: 4, p: 2.5 }}>
-                <Typography variant="caption" fontWeight={800} color="text.secondary" sx={{ textTransform: "uppercase" }}>Distribuição por área</Typography>
+                <Typography variant="caption" fontWeight={800} color="text.secondary" sx={{ textTransform: "uppercase" }}>Distribución por área</Typography>
                 <Stack spacing={1.25} sx={{ mt: 1.5 }}>
                   {areaCounts.map(([area, count], i) => (
                     <Stack key={area} direction="row" alignItems="center" spacing={1.5}>
@@ -107,7 +107,7 @@ export function AnalyticsPage() {
                       <Typography variant="caption" fontWeight={700}>{count}</Typography>
                     </Stack>
                   ))}
-                  {areaCounts.length === 0 && <Typography variant="body2" color="text.secondary">Sem dados suficientes.</Typography>}
+                  {areaCounts.length === 0 && <Typography variant="body2" color="text.secondary">No hay datos suficientes.</Typography>}
                 </Stack>
               </Box>
               <Box sx={{ bgcolor: "background.paper", border: "1px solid", borderColor: "divider", borderRadius: 4, p: 2.5 }}>
@@ -131,12 +131,12 @@ export function AnalyticsPage() {
             </Box>
           </Section>
 
-          <Section title="⭐ Impacto de negócio">
+          <Section title="⭐ Impacto de negocio">
             <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr 1fr", md: "repeat(4, 1fr)" }, gap: 2 }}>
-              <ImpactCard icon="🏢" label="Empresas em pipeline" value={String(leads.length)} />
-              <ImpactCard icon="🤝" label="Clientes ativos" value={String(clients.length)} />
-              <ImpactCard icon="🎯" label="Vagas abertas" value={String(openVacancies.length)} />
-              <ImpactCard icon="✅" label="Contratações" value={String(hiredApplications.length)} />
+              <ImpactCard icon="🏢" label="Empresas en pipeline" value={String(leads.length)} />
+              <ImpactCard icon="🤝" label="Clientes activos" value={String(clients.length)} />
+              <ImpactCard icon="🎯" label="Vacantes abiertas" value={String(openVacancies.length)} />
+              <ImpactCard icon="✅" label="Contrataciones" value={String(hiredApplications.length)} />
             </Box>
           </Section>
         </Stack>

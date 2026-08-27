@@ -79,10 +79,10 @@ export function AddCandidateModal() {
       if (vacancyId) {
         await createApplication.mutateAsync({ candidateId: candidate.id, vacancyId });
       }
-      toast.success(vacancyId ? "Candidato adicionado à vaga" : "Candidato adicionado ao Banco de Talentos");
+      toast.success(vacancyId ? "Candidato agregado a la vacante" : "Candidato agregado al Banco de Talentos");
       close();
     } catch (err) {
-      toast.error(errorMessage(err, "Não foi possível salvar o candidato"));
+      toast.error(errorMessage(err, "No fue posible guardar el candidato"));
     }
   };
 
@@ -100,7 +100,7 @@ export function AddCandidateModal() {
           phone: result.extracted.phone || "",
           location: result.extracted.location || "",
           skills: result.extracted.skills,
-          seniority: result.extracted.seniority || "Pleno",
+          seniority: result.extracted.seniority || "Semi Senior",
           linkedin: result.extracted.linkedin || "",
           portfolio: result.extracted.portfolio || "",
           notes: "",
@@ -116,34 +116,34 @@ export function AddCandidateModal() {
       },
       onError: (err) => {
         clearTimeout(processingTimer.current);
-        toast.error(errorMessage(err, "Não foi possível processar o currículo"));
+        toast.error(errorMessage(err, "No fue posible procesar el currículum"));
         setStep("upload");
       },
     });
   };
 
-  const title = vacancy ? `Adicionar candidato — ${vacancy.title}` : "Adicionar candidato";
+  const title = vacancy ? `Agregar candidato — ${vacancy.title}` : "Agregar candidato";
 
   return (
     <Modal
       open={open}
       onClose={close}
       title={title}
-      subtitle={step === "choose" ? "Escolha como deseja cadastrar o candidato" : undefined}
+      subtitle={step === "choose" ? "Elige cómo deseas registrar al candidato" : undefined}
       width={640}
       footer={
         step === "manual" || step === "confirm" ? (
           <>
             <Button onClick={() => setStep(step === "confirm" ? "upload" : "choose")} disabled={submitting} startIcon={<ArrowBackRoundedIcon fontSize="small" />}>
-              Voltar
+              Volver
             </Button>
             <Box sx={{ flex: 1 }} />
             <Button variant="contained" disabled={!isCandidateFormValid(values) || submitting} onClick={() => finish(values)}>
-              {submitting ? "Salvando…" : "Salvar candidato"}
+              {submitting ? "Guardando…" : "Guardar candidato"}
             </Button>
           </>
         ) : step === "upload" ? (
-          <Button onClick={() => setStep("choose")} startIcon={<ArrowBackRoundedIcon fontSize="small" />}>Voltar</Button>
+          <Button onClick={() => setStep("choose")} startIcon={<ArrowBackRoundedIcon fontSize="small" />}>Volver</Button>
         ) : undefined
       }
     >
@@ -154,16 +154,16 @@ export function AddCandidateModal() {
             sx={{ flex: 1, p: 3, borderRadius: 4, cursor: "pointer", textAlign: "center", "&:hover": { borderColor: "primary.main", boxShadow: "0 10px 24px rgba(23,26,46,.08)" } }}
           >
             <PersonAddAltRoundedIcon sx={{ fontSize: 30, color: "primary.main", mb: 1 }} />
-            <Typography fontWeight={750}>Adicionar manualmente</Typography>
-            <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>Preencha os dados do candidato em um formulário simples.</Typography>
+            <Typography fontWeight={750}>Agregar manualmente</Typography>
+            <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>Completa los datos del candidato en un formulario simple.</Typography>
           </Card>
           <Card
             onClick={() => setStep("upload")}
             sx={{ flex: 1, p: 3, borderRadius: 4, cursor: "pointer", textAlign: "center", "&:hover": { borderColor: "primary.main", boxShadow: "0 10px 24px rgba(23,26,46,.08)" } }}
           >
             <UploadFileRoundedIcon sx={{ fontSize: 30, color: "primary.main", mb: 1 }} />
-            <Typography fontWeight={750}>Enviar currículo</Typography>
-            <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>PDF ou DOCX — a IA extrai os dados automaticamente.</Typography>
+            <Typography fontWeight={750}>Subir currículum</Typography>
+            <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>PDF o DOCX — la IA extrae los datos automáticamente.</Typography>
           </Card>
         </Stack>
       )}
@@ -179,7 +179,7 @@ export function AddCandidateModal() {
           <Stack direction="row" spacing={1} alignItems="center" sx={{ mb: 2.5, p: 1.25, borderRadius: 2.5, bgcolor: "#e7f7ee" }}>
             <CheckCircleRoundedIcon sx={{ color: "#1c8a54" }} fontSize="small" />
             <Typography variant="body2" sx={{ color: "#1c8a54", fontWeight: 650 }}>
-              Dados extraídos do currículo — confira e ajuste antes de salvar.
+              Datos extraídos del currículum — revísalos y ajústalos antes de guardar.
             </Typography>
           </Stack>
           {extras.languages.length > 0 && (

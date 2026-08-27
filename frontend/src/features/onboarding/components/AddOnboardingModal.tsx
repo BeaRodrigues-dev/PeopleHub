@@ -48,16 +48,16 @@ export function AddOnboardingModal({ open, onClose, entry }: { open: boolean; on
 
   const handleSuggest = async () => {
     if (!role.trim()) {
-      toast.error("Informe o cargo para sugerir o checklist.");
+      toast.error("Ingresa el cargo para sugerir el checklist.");
       return;
     }
     setSuggesting(true);
     try {
       const suggestion = await onboardingApi.suggestChecklist(role);
       setChecklist(suggestion);
-      toast.success("Checklist sugerido pela IA a partir do cargo.");
+      toast.success("Checklist sugerido por la IA a partir del cargo.");
     } catch (error) {
-      toast.error(errorMessage(error, "Não foi possível sugerir o checklist."));
+      toast.error(errorMessage(error, "No fue posible sugerir el checklist."));
     } finally {
       setSuggesting(false);
     }
@@ -65,15 +65,15 @@ export function AddOnboardingModal({ open, onClose, entry }: { open: boolean; on
 
   const handleSubmit = () => {
     if (!employeeName.trim() || !role.trim()) {
-      toast.error("Preencha nome e cargo.");
+      toast.error("Completa el nombre y el cargo.");
       return;
     }
     if (isEditing && entry) {
       updateOnboarding.mutate(
         { id: entry.id, input: { employeeName, role, startDate, checklist } },
         {
-          onSuccess: () => { toast.success("Onboarding atualizado."); handleClose(); },
-          onError: (error) => toast.error(errorMessage(error, "Não foi possível salvar as alterações.")),
+          onSuccess: () => { toast.success("Onboarding actualizado."); handleClose(); },
+          onError: (error) => toast.error(errorMessage(error, "No se pudieron guardar los cambios.")),
         },
       );
       return;
@@ -82,10 +82,10 @@ export function AddOnboardingModal({ open, onClose, entry }: { open: boolean; on
       { employeeName, role, startDate, checklist },
       {
         onSuccess: () => {
-          toast.success("Onboarding criado.");
+          toast.success("Onboarding creado.");
           handleClose();
         },
-        onError: (error) => toast.error(errorMessage(error, "Não foi possível criar o onboarding.")),
+        onError: (error) => toast.error(errorMessage(error, "No fue posible crear el onboarding.")),
       },
     );
   };
@@ -96,41 +96,41 @@ export function AddOnboardingModal({ open, onClose, entry }: { open: boolean; on
     <Modal
       open={open}
       onClose={handleClose}
-      title={isEditing ? "Editar onboarding" : "Novo onboarding"}
-      subtitle={isEditing ? undefined : "Crie o processo de entrada de um novo colaborador."}
+      title={isEditing ? "Editar onboarding" : "Nuevo onboarding"}
+      subtitle={isEditing ? undefined : "Crea el proceso de ingreso de un nuevo colaborador."}
       width={560}
       footer={
         <>
           <Button variant="text" onClick={handleClose}>Cancelar</Button>
           <Button variant="contained" onClick={handleSubmit} disabled={isSaving}>
-            {isSaving ? "Salvando…" : isEditing ? "Salvar alterações" : "Criar onboarding"}
+            {isSaving ? "Guardando…" : isEditing ? "Guardar cambios" : "Crear onboarding"}
           </Button>
         </>
       }
     >
       <Grid container spacing={2} sx={{ mb: 2 }}>
         <Grid size={12}>
-          <TextField label="Nome do colaborador" fullWidth size="small" value={employeeName} onChange={(e) => setEmployeeName(e.target.value)} />
+          <TextField label="Nombre del colaborador" fullWidth size="small" value={employeeName} onChange={(e) => setEmployeeName(e.target.value)} />
         </Grid>
         <Grid size={7}>
           <TextField label="Cargo" fullWidth size="small" value={role} onChange={(e) => setRole(e.target.value)} />
         </Grid>
         <Grid size={5}>
-          <TextField label="Data de entrada" type="date" fullWidth size="small" value={startDate} onChange={(e) => setStartDate(e.target.value)} slotProps={{ inputLabel: { shrink: true } }} />
+          <TextField label="Fecha de ingreso" type="date" fullWidth size="small" value={startDate} onChange={(e) => setStartDate(e.target.value)} slotProps={{ inputLabel: { shrink: true } }} />
         </Grid>
       </Grid>
 
       <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ mb: 1 }}>
-        <Typography variant="body2" fontWeight={700}>Checklist ({totalItems} itens)</Typography>
+        <Typography variant="body2" fontWeight={700}>Checklist ({totalItems} ítems)</Typography>
         <Button size="small" variant="outlined" startIcon={<AutoAwesomeRoundedIcon fontSize="small" />} onClick={handleSuggest} disabled={suggesting}>
-          {suggesting ? "Sugerindo…" : "Sugerir com IA"}
+          {suggesting ? "Sugiriendo…" : "Sugerir con IA"}
         </Button>
       </Stack>
       <Stack spacing={1.25}>
         {(["before", "day1", "week1"] as const).map((phase) => (
           <Box key={phase} sx={{ bgcolor: "#F1F7F2", borderRadius: 2.5, p: 1.5 }}>
             <Typography variant="caption" fontWeight={800} color="text.secondary" sx={{ textTransform: "uppercase" }}>
-              {phase === "before" ? "Antes do 1º dia" : phase === "day1" ? "1º dia" : "1ª semana"}
+              {phase === "before" ? "Antes del 1er día" : phase === "day1" ? "1er día" : "1ª semana"}
             </Typography>
             <Stack direction="row" flexWrap="wrap" useFlexGap spacing={0.6} sx={{ mt: 0.6 }}>
               {checklist[phase].map((item, i) => (

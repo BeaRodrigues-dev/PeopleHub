@@ -14,10 +14,10 @@ import { useToast } from "../../../components/common/ToastProvider";
 import { LIFECYCLE_STAGES, type Employee, type LifecycleStage } from "../types";
 
 const LIFECYCLE_COLOR: Record<LifecycleStage, { bg: string; fg: string }> = {
-  Recruitment: { bg: "#E3ECFA", fg: "#2E5AA8" },
+  Reclutamiento: { bg: "#E3ECFA", fg: "#2E5AA8" },
   Onboarding: { bg: "#FBEBD2", fg: "#A66A1E" },
-  Development: { bg: "#DCEFE1", fg: "#2E7D4F" },
-  Performance: { bg: "#E9DFF5", fg: "#6A3FA0" },
+  Desarrollo: { bg: "#DCEFE1", fg: "#2E7D4F" },
+  Desempeño: { bg: "#E9DFF5", fg: "#6A3FA0" },
   Offboarding: { bg: "#E4EDE6", fg: "#6E7D74" },
 };
 
@@ -36,13 +36,13 @@ export function PeoplePage() {
 
   const { data, isLoading, isError, error, refetch } = useEmployees({ search });
   const employees = data?.items ?? [];
-  const activeCount = employees.filter((e) => e.status === "Active").length;
+  const activeCount = employees.filter((e) => e.status === "Activo").length;
 
   const handleDelete = () => {
     if (!toDelete) return;
     deleteEmployee.mutate(toDelete.id, {
-      onSuccess: () => { toast.success("Colaborador removido."); setToDelete(null); },
-      onError: (err) => toast.error(errorMessage(err, "Não foi possível remover.")),
+      onSuccess: () => { toast.success("Colaborador eliminado."); setToDelete(null); },
+      onError: (err) => toast.error(errorMessage(err, "No fue posible eliminar.")),
     });
   };
 
@@ -51,13 +51,13 @@ export function PeoplePage() {
       <Stack direction={{ xs: "column", sm: "row" }} alignItems={{ sm: "center" }} spacing={2} sx={{ mb: 3 }}>
         <Box sx={{ flex: 1 }}>
           <Typography variant="h4">People</Typography>
-          <Typography color="text.secondary" variant="body2" sx={{ mt: 0.4 }}>{isLoading ? "…" : activeCount} colaboradores ativos</Typography>
+          <Typography color="text.secondary" variant="body2" sx={{ mt: 0.4 }}>{isLoading ? "…" : activeCount} colaboradores activos</Typography>
         </Box>
         <ToggleButtonGroup exclusive size="small" value={view} onChange={(_, v) => v && setView(v)}>
-          <ToggleButton value="database" sx={{ px: 2, textTransform: "none", fontWeight: 700 }}>Base de dados</ToggleButton>
+          <ToggleButton value="database" sx={{ px: 2, textTransform: "none", fontWeight: 700 }}>Base de datos</ToggleButton>
           <ToggleButton value="lifecycle" sx={{ px: 2, textTransform: "none", fontWeight: 700 }}>Lifecycle</ToggleButton>
         </ToggleButtonGroup>
-        <Button variant="contained" startIcon={<PersonAddRoundedIcon />} onClick={() => setAddOpen(true)}>Adicionar</Button>
+        <Button variant="contained" startIcon={<PersonAddRoundedIcon />} onClick={() => setAddOpen(true)}>Agregar</Button>
       </Stack>
 
       {view === "database" && (
@@ -76,13 +76,13 @@ export function PeoplePage() {
       ) : isLoading ? (
         <Stack spacing={1}>{Array.from({ length: 6 }).map((_, i) => <Skeleton key={i} variant="rounded" height={48} />)}</Stack>
       ) : employees.length === 0 ? (
-        <EmptyState icon={<PeopleAltRoundedIcon />} title="Nenhum colaborador encontrado" description="Ajuste a busca ou adicione um novo colaborador." action={<Button variant="contained" startIcon={<PersonAddRoundedIcon />} onClick={() => setAddOpen(true)}>Adicionar colaborador</Button>} />
+        <EmptyState icon={<PeopleAltRoundedIcon />} title="Ningún colaborador encontrado" description="Ajusta la búsqueda o agrega un nuevo colaborador." action={<Button variant="contained" startIcon={<PersonAddRoundedIcon />} onClick={() => setAddOpen(true)}>Agregar colaborador</Button>} />
       ) : view === "database" ? (
         <Box sx={{ bgcolor: "background.paper", border: "1px solid", borderColor: "divider", borderRadius: 4, overflow: "hidden" }}>
           <Table size="small">
             <TableHead>
               <TableRow sx={{ bgcolor: "#F1F7F2" }}>
-                {["Colaborador", "Cargo", "Área", "País", "Entrada", "Manager", "Contrato", "Fase", "Status", ""].map((h) => (
+                {["Colaborador", "Cargo", "Área", "País", "Ingreso", "Manager", "Contrato", "Fase", "Status", ""].map((h) => (
                   <TableCell key={h} sx={{ fontWeight: 800, fontSize: 11, textTransform: "uppercase", letterSpacing: "0.04em", color: "text.secondary" }}>{h}</TableCell>
                 ))}
               </TableRow>
@@ -106,7 +106,7 @@ export function PeoplePage() {
                     <Chip label={e.lifecycle} size="small" sx={{ bgcolor: LIFECYCLE_COLOR[e.lifecycle].bg, color: LIFECYCLE_COLOR[e.lifecycle].fg, fontWeight: 700 }} />
                   </TableCell>
                   <TableCell>
-                    <Chip label={e.status} size="small" sx={{ bgcolor: e.status === "Active" ? "#DCEFE1" : "#E4EDE6", color: e.status === "Active" ? "#2E7D4F" : "#6E7D74", fontWeight: 700 }} />
+                    <Chip label={e.status} size="small" sx={{ bgcolor: e.status === "Activo" ? "#DCEFE1" : "#E4EDE6", color: e.status === "Activo" ? "#2E7D4F" : "#6E7D74", fontWeight: 700 }} />
                   </TableCell>
                   <TableCell align="right">
                     <IconButton size="small" onClick={() => setEditing(e)}><EditRoundedIcon fontSize="small" /></IconButton>
@@ -125,8 +125,8 @@ export function PeoplePage() {
       <AddEmployeeModal open={!!editing} onClose={() => setEditing(null)} employee={editing} />
       <ConfirmDialog
         open={!!toDelete}
-        title="Excluir colaborador"
-        description={`Tem certeza que deseja excluir "${toDelete?.name}"? Essa ação não pode ser desfeita.`}
+        title="Eliminar colaborador"
+        description={`¿Estás seguro de que deseas eliminar "${toDelete?.name}"? Esta acción no se puede deshacer.`}
         loading={deleteEmployee.isPending}
         onConfirm={handleDelete}
         onClose={() => setToDelete(null)}
@@ -156,7 +156,7 @@ function LifecycleBoard({ employees }: { employees: Employee[] }) {
                   <Typography variant="caption" color="text.secondary">{e.role}</Typography>
                 </Box>
               ))}
-              {group.length === 0 && <Typography variant="caption" color="text.secondary" fontStyle="italic">Nenhum</Typography>}
+              {group.length === 0 && <Typography variant="caption" color="text.secondary" fontStyle="italic">Ninguno</Typography>}
             </Stack>
           </Box>
         );

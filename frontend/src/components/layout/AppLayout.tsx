@@ -114,10 +114,10 @@ export function AppLayout({ children }: { children: ReactNode }) {
             onClick={() => openAddCandidate(null)}
             sx={{ display: { xs: "none", sm: "inline-flex" }, color: "text.secondary" }}
           >
-            Adicionar candidato
+            Agregar candidato
           </Button>
           <Button variant="contained" startIcon={<AddRoundedIcon fontSize="small" />} onClick={() => navigate("/criar-vaga")} sx={{ display: { xs: "none", sm: "inline-flex" } }}>
-            Criar vaga
+            Crear vacante
           </Button>
           <IconButton onClick={() => navigate("/criar-vaga")} size="small" sx={{ bgcolor: "primary.main", color: "#fff", "&:hover": { bgcolor: "primary.dark" }, display: { xs: "inline-flex", sm: "none" } }}>
             <AddRoundedIcon fontSize="small" />
@@ -146,13 +146,13 @@ export function AppLayout({ children }: { children: ReactNode }) {
             <Avatar sx={{ width: 30, height: 30, bgcolor: "secondary.light", color: "primary.dark", fontSize: 12.5, fontWeight: 700 }}>BR</Avatar>
             <Box sx={{ overflow: "hidden" }}>
               <Typography fontSize={12.5} fontWeight={700} color="#fff" noWrap>Beatriz Rodrigues</Typography>
-              <Typography fontSize={11} color="rgba(255,255,255,.5)" noWrap>HR Manager</Typography>
+              <Typography fontSize={11} color="rgba(255,255,255,.5)" noWrap>Gerente de RR. HH.</Typography>
             </Box>
           </Box>
-          <IconButton onClick={() => navigate("/configuracoes")} size="small" title="Configurações" sx={{ color: "rgba(255,255,255,.55)", "&:hover": { color: "#fff", bgcolor: "rgba(255,255,255,.07)" } }}>
+          <IconButton onClick={() => navigate("/configuracoes")} size="small" title="Configuración" sx={{ color: "rgba(255,255,255,.55)", "&:hover": { color: "#fff", bgcolor: "rgba(255,255,255,.07)" } }}>
             <SettingsRoundedIcon fontSize="small" />
           </IconButton>
-          <IconButton onClick={logout} size="small" title="Sair" sx={{ color: "rgba(255,255,255,.55)", "&:hover": { color: "#fff", bgcolor: "rgba(255,255,255,.07)" } }}>
+          <IconButton onClick={logout} size="small" title="Cerrar sesión" sx={{ color: "rgba(255,255,255,.55)", "&:hover": { color: "#fff", bgcolor: "rgba(255,255,255,.07)" } }}>
             <LogoutRoundedIcon fontSize="small" />
           </IconButton>
         </Box>

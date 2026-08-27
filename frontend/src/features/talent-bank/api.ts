@@ -66,7 +66,7 @@ async function fetchPool(params: CandidateQueryParams = {}): Promise<Candidate[]
 async function computeMatches(vacancyId: string): Promise<TalentBankMatch[]> {
   const { data: vacancy, error: vacancyError } = await supabase.from("vacancies").select("required_skills").eq("id", vacancyId).single();
   throwIfError(vacancyError);
-  if (!vacancy) throw new SupabaseOpError("Vaga não encontrada.");
+  if (!vacancy) throw new SupabaseOpError("Vacante no encontrada.");
   const pool = await fetchPool();
 
   return pool
@@ -92,7 +92,7 @@ export const talentBankApi = {
 
   match: (vacancyId: string) => computeMatches(vacancyId),
 
-  /** Não há um provider externo de IA configurado — reaproveita a mesma heurística, limitada aos 10 melhores colocados. */
+  /** No hay un proveedor externo de IA configurado — reutiliza la misma heurística, limitada a los 10 mejores clasificados. */
   matchWithAi: async (vacancyId: string): Promise<TalentBankMatch[]> => (await computeMatches(vacancyId)).slice(0, 10),
 
   assign: async (candidateIds: string[], vacancyId: string): Promise<void> => {

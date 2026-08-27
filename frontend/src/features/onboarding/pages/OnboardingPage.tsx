@@ -12,7 +12,7 @@ import { ConfirmDialog } from "../../../components/common/ConfirmDialog";
 import { useToast } from "../../../components/common/ToastProvider";
 import type { ChecklistPhase, OnboardingEntry } from "../types";
 
-const PHASE_LABEL: Record<ChecklistPhase, string> = { before: "📋 Antes do 1º dia", day1: "🌅 1º dia", week1: "📆 1ª semana" };
+const PHASE_LABEL: Record<ChecklistPhase, string> = { before: "📋 Antes del 1er día", day1: "🌅 1er día", week1: "📆 1ª semana" };
 
 export function OnboardingPage() {
   const { data, isLoading, isError, error, refetch } = useOnboardings();
@@ -30,8 +30,8 @@ export function OnboardingPage() {
   const handleDelete = () => {
     if (!toDelete) return;
     deleteOnboarding.mutate(toDelete.id, {
-      onSuccess: () => { toast.success("Onboarding removido."); setSelectedId(null); setToDelete(null); },
-      onError: (err) => toast.error(errorMessage(err, "Não foi possível remover.")),
+      onSuccess: () => { toast.success("Onboarding eliminado."); setSelectedId(null); setToDelete(null); },
+      onError: (err) => toast.error(errorMessage(err, "No fue posible eliminar.")),
     });
   };
 
@@ -40,9 +40,9 @@ export function OnboardingPage() {
       <Stack direction={{ xs: "column", sm: "row" }} alignItems={{ sm: "center" }} spacing={2} sx={{ mb: 3 }}>
         <Box sx={{ flex: 1 }}>
           <Typography variant="h4">Onboarding Center</Typography>
-          <Typography color="text.secondary" variant="body2" sx={{ mt: 0.4 }}>{isLoading ? "…" : entries.length} onboardings ativos</Typography>
+          <Typography color="text.secondary" variant="body2" sx={{ mt: 0.4 }}>{isLoading ? "…" : entries.length} onboardings activos</Typography>
         </Box>
-        <Button variant="contained" startIcon={<AddRoundedIcon />} onClick={() => setAddOpen(true)}>Novo onboarding</Button>
+        <Button variant="contained" startIcon={<AddRoundedIcon />} onClick={() => setAddOpen(true)}>Nuevo onboarding</Button>
       </Stack>
 
       {isError ? (
@@ -53,7 +53,7 @@ export function OnboardingPage() {
           <Skeleton variant="rounded" height={420} />
         </Box>
       ) : entries.length === 0 ? (
-        <EmptyState icon={<RocketLaunchRoundedIcon />} title="Nenhum onboarding ativo" description="Crie o processo de entrada de um novo colaborador." action={<Button variant="contained" startIcon={<AddRoundedIcon />} onClick={() => setAddOpen(true)}>Novo onboarding</Button>} />
+        <EmptyState icon={<RocketLaunchRoundedIcon />} title="Ningún onboarding activo" description="Crea el proceso de ingreso de un nuevo colaborador." action={<Button variant="contained" startIcon={<AddRoundedIcon />} onClick={() => setAddOpen(true)}>Nuevo onboarding</Button>} />
       ) : (
         <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", lg: "1fr 2fr" }, gap: 2.5 }}>
           <Stack spacing={1.5}>
@@ -76,7 +76,7 @@ export function OnboardingPage() {
                     <Chip
                       label={entry.status}
                       size="small"
-                      sx={{ fontWeight: 700, bgcolor: entry.status === "In Progress" ? "secondary.light" : entry.status === "Completed" ? "#DCEFE1" : "#E7F2EA", color: entry.status === "In Progress" ? "primary.dark" : entry.status === "Completed" ? "#2E7D4F" : "text.secondary" }}
+                      sx={{ fontWeight: 700, bgcolor: entry.status === "En progreso" ? "secondary.light" : entry.status === "Completado" ? "#DCEFE1" : "#E7F2EA", color: entry.status === "En progreso" ? "primary.dark" : entry.status === "Completado" ? "#2E7D4F" : "text.secondary" }}
                     />
                     <IconButton size="small" onClick={(e) => { e.stopPropagation(); setToDelete(entry); }}>
                       <DeleteOutlineRoundedIcon fontSize="small" />
@@ -84,11 +84,11 @@ export function OnboardingPage() {
                   </Stack>
                 </Stack>
                 <Stack direction="row" justifyContent="space-between" sx={{ mt: 1.25, mb: 0.4 }}>
-                  <Typography variant="caption" color="text.secondary">Progresso</Typography>
+                  <Typography variant="caption" color="text.secondary">Progreso</Typography>
                   <Typography variant="caption" fontWeight={700} color="primary.main">{entry.progress}%</Typography>
                 </Stack>
                 <LinearProgress variant="determinate" value={entry.progress} sx={{ height: 6, borderRadius: 3, bgcolor: "#E4EDE6" }} />
-                <Typography variant="caption" color="text.secondary" sx={{ mt: 1, display: "block" }}>📅 Entrada: {entry.startDate}</Typography>
+                <Typography variant="caption" color="text.secondary" sx={{ mt: 1, display: "block" }}>📅 Ingreso: {entry.startDate}</Typography>
               </Box>
             ))}
           </Stack>
@@ -107,8 +107,8 @@ export function OnboardingPage() {
       <AddOnboardingModal open={!!editing} onClose={() => setEditing(null)} entry={editing} />
       <ConfirmDialog
         open={!!toDelete}
-        title="Excluir onboarding"
-        description={`Tem certeza que deseja excluir o onboarding de "${toDelete?.employeeName}"? Essa ação não pode ser desfeita.`}
+        title="Eliminar onboarding"
+        description={`¿Estás seguro de que deseas eliminar el onboarding de "${toDelete?.employeeName}"? Esta acción no se puede deshacer.`}
         loading={deleteOnboarding.isPending}
         onConfirm={handleDelete}
         onClose={() => setToDelete(null)}
@@ -123,7 +123,7 @@ function ChecklistDetail({ entry, onToggle, onEdit }: { entry: OnboardingEntry; 
       <Stack direction="row" justifyContent="space-between" alignItems="flex-start" sx={{ mb: 2.5 }}>
         <Box>
           <Typography fontWeight={800} fontSize={16}>{entry.employeeName}</Typography>
-          <Typography variant="body2" color="text.secondary">{entry.role} · Entrada {entry.startDate}</Typography>
+          <Typography variant="body2" color="text.secondary">{entry.role} · Ingreso {entry.startDate}</Typography>
         </Box>
         <Stack direction="row" spacing={1.5} alignItems="center">
           <IconButton size="small" onClick={onEdit}><EditRoundedIcon fontSize="small" /></IconButton>

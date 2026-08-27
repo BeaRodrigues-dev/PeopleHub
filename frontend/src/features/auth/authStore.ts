@@ -4,14 +4,14 @@ import { supabase } from "../../lib/supabaseClient";
 
 interface AuthState {
   session: Session | null;
-  /** Fica `false` só durante o instante inicial em que ainda estamos lendo a sessão salva pelo Supabase. */
+  /** Es `false` solo durante el instante inicial en que todavía estamos leyendo la sesión guardada por Supabase. */
   initialized: boolean;
   setSession: (session: Session | null) => void;
   logout: () => Promise<void>;
 }
 
 /**
- * Sessão de autenticação — agora gerida pelo próprio Supabase Auth (que já
+ * Sesión de autenticación — ahora gestionada por el propio Supabase Auth (que ya
  * persiste o token em localStorage e cuida de refresh automático). Este
  * store só espelha o estado para os componentes React reagirem a ele.
  */

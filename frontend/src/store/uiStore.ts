@@ -11,7 +11,7 @@ interface UIState {
   selectedCandidateId: string | null;
   editingCandidateId: string | null;
   matchModalVacancyId: string | null;
-  addCandidateVacancyId: string | null | undefined; // undefined = modal fechado; null = sem vaga pré-selecionada
+  addCandidateVacancyId: string | null | undefined; // undefined = modal cerrado; null = sin vacante preseleccionada
 
   setFilters: (filters: CandidateFilters) => void;
   clearFilters: () => void;

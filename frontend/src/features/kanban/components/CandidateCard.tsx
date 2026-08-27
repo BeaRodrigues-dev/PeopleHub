@@ -8,7 +8,7 @@ import type { Candidate } from "../../candidate/types";
 
 const relativeDate = (date: string) => {
   const days = Math.max(0, Math.floor((Date.now() - new Date(date).getTime()) / 86_400_000));
-  return days === 0 ? "hoje" : days === 1 ? "há 1 dia" : `há ${days} dias`;
+  return days === 0 ? "hoy" : days === 1 ? "hace 1 día" : `hace ${days} días`;
 };
 
 interface Props {
@@ -19,10 +19,10 @@ interface Props {
 }
 
 /**
- * Card do Kanban. O listener de drag fica isolado no ícone "grip" (não no
- * card inteiro) — evita que o dnd-kit capture cliques em texto/links dentro
- * do card e permite rolar normalmente ao tocar em qualquer área que não seja
- * a alça de arraste.
+ * Card del Kanban. El listener de drag queda aislado en el ícono "grip" (no en
+ * el card entero) — evita que dnd-kit capture clics en texto/links dentro
+ * del card y permite hacer scroll normalmente al tocar cualquier área que no sea
+ * el asa de arrastre.
  */
 export const CandidateCard = memo(function CandidateCard({ applicationId, candidate, matchScore, onOpen }: Props) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: applicationId });
@@ -53,14 +53,14 @@ export const CandidateCard = memo(function CandidateCard({ applicationId, candid
           <Typography noWrap fontWeight={750} fontSize={14}>{candidate.name}</Typography>
           <Stack direction="row" spacing={0.5} alignItems="center" sx={{ mt: 0.25, color: "text.secondary" }}>
             <LocationOnOutlinedIcon sx={{ fontSize: 13 }} />
-            <Typography noWrap variant="caption">{candidate.location || "Localização não informada"}</Typography>
+            <Typography noWrap variant="caption">{candidate.location || "Ubicación no informada"}</Typography>
           </Stack>
         </Box>
         <Box
           {...attributes}
           {...listeners}
           onClick={(e) => e.stopPropagation()}
-          aria-label={`Arrastar ${candidate.name}`}
+          aria-label={`Arrastrar ${candidate.name}`}
           sx={{
             touchAction: "none",
             cursor: "grab",
@@ -95,7 +95,7 @@ export const CandidateCard = memo(function CandidateCard({ applicationId, candid
         ) : (
           <span />
         )}
-        <Typography variant="caption" color="text.secondary">Atualizado {relativeDate(candidate.updatedAt)}</Typography>
+        <Typography variant="caption" color="text.secondary">Actualizado {relativeDate(candidate.updatedAt)}</Typography>
       </Stack>
     </Card>
   );

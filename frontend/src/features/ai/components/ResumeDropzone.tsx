@@ -9,7 +9,7 @@ const ACCEPTED_MIME = new Set([
   "application/msword",
 ]);
 
-/** Zona de drag-and-drop nativa (sem libs externas) para upload de currículo em PDF/DOCX. */
+/** Zona de arrastrar y soltar nativa (sin librerías externas) para subir el currículum en PDF/DOCX. */
 export function ResumeDropzone({ onFile, disabled }: { onFile: (file: File) => void; disabled?: boolean }) {
   const [isDragging, setDragging] = useState(false);
   const [fileError, setFileError] = useState<string | null>(null);
@@ -17,11 +17,11 @@ export function ResumeDropzone({ onFile, disabled }: { onFile: (file: File) => v
 
   const validate = (file: File): boolean => {
     if (!ACCEPTED_MIME.has(file.type) && !ACCEPTED_EXTENSIONS.some((ext) => file.name.toLowerCase().endsWith(ext))) {
-      setFileError("Formato não suportado. Envie um arquivo PDF ou DOCX.");
+      setFileError("Formato no compatible. Sube un archivo PDF o DOCX.");
       return false;
     }
     if (file.size > 5 * 1024 * 1024) {
-      setFileError("Arquivo muito grande (máximo 5MB).");
+      setFileError("Archivo demasiado grande (máximo 5MB).");
       return false;
     }
     setFileError(null);
@@ -53,8 +53,8 @@ export function ResumeDropzone({ onFile, disabled }: { onFile: (file: File) => v
         }}
       >
         <UploadFileRoundedIcon sx={{ fontSize: 34, color: "primary.main", mb: 1 }} />
-        <Typography fontWeight={750} fontSize={15}>Arraste o currículo aqui</Typography>
-        <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>ou clique para selecionar um arquivo — PDF ou DOCX, até 5MB</Typography>
+        <Typography fontWeight={750} fontSize={15}>Arrastra el currículum aquí</Typography>
+        <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>o haz clic para seleccionar un archivo — PDF o DOCX, hasta 5MB</Typography>
         <input
           ref={inputRef}
           type="file"

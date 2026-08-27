@@ -9,7 +9,7 @@ import { PipelineStageEditor, type DraftStage } from "../components/PipelineStag
 import { errorMessage } from "../../../components/common/ErrorState";
 import { VACANCY_STATUSES, WORK_MODELS, SENIORITIES, type VacancyStatus, type WorkModel } from "../types";
 
-const DEFAULT_STAGES = ["Candidatura", "Triagem", "Entrevista RH", "Entrevista Técnica", "Oferta", "Contratado"];
+const DEFAULT_STAGES = ["Candidatura", "Preselección", "Entrevista RR. HH.", "Entrevista Técnica", "Oferta", "Contratado"];
 
 function SectionCard({ title, description, children }: { title: string; description?: string; children: ReactNode }) {
   return (
@@ -34,8 +34,8 @@ export function CreateVacancyPage() {
   const [department, setDepartment] = useState("");
   const [location, setLocation] = useState("");
   const [workModel, setWorkModel] = useState<WorkModel>("Híbrido");
-  const [seniority, setSeniority] = useState<string>("Pleno");
-  const [status, setStatus] = useState<VacancyStatus>("Aberta");
+  const [seniority, setSeniority] = useState<string>("Semi Senior");
+  const [status, setStatus] = useState<VacancyStatus>("Abierta");
 
   const [description, setDescription] = useState("");
   const [responsibilities, setResponsibilities] = useState("");
@@ -50,7 +50,7 @@ export function CreateVacancyPage() {
     setDepartment(existingVacancy.department ?? "");
     setLocation(existingVacancy.location ?? "");
     setWorkModel(existingVacancy.workModel);
-    setSeniority(existingVacancy.seniority ?? "Pleno");
+    setSeniority(existingVacancy.seniority ?? "Semi Senior");
     setStatus(existingVacancy.status);
     setDescription(existingVacancy.description ?? "");
     setResponsibilities(existingVacancy.responsibilities ?? "");
@@ -83,10 +83,10 @@ export function CreateVacancyPage() {
         { id, input: payload },
         {
           onSuccess: () => {
-            toast.success("Vaga atualizada com sucesso");
+            toast.success("Vacante actualizada con éxito");
             navigate(`/vagas/${id}`);
           },
-          onError: (err) => toast.error(errorMessage(err, "Não foi possível salvar as alterações")),
+          onError: (err) => toast.error(errorMessage(err, "No se pudieron guardar los cambios")),
         },
       );
       return;
@@ -94,10 +94,10 @@ export function CreateVacancyPage() {
 
     createVacancy.mutate(payload, {
       onSuccess: (vacancy) => {
-        toast.success("Vaga criada com sucesso");
+        toast.success("Vacante creada con éxito");
         navigate(`/vagas/${vacancy.id}`);
       },
-      onError: (err) => toast.error(errorMessage(err, "Não foi possível criar a vaga")),
+      onError: (err) => toast.error(errorMessage(err, "No fue posible crear la vacante")),
     });
   };
 
@@ -112,23 +112,23 @@ export function CreateVacancyPage() {
   return (
     <Box sx={{ p: { xs: 2, md: 3.5 }, maxWidth: 880, mx: "auto" }}>
       <Button startIcon={<ArrowBackRoundedIcon />} onClick={() => navigate(isEditing ? `/vagas/${id}` : "/vagas")} sx={{ mb: 1.5 }}>
-        {isEditing ? "Voltar para a vaga" : "Voltar para vagas"}
+        {isEditing ? "Volver a la vacante" : "Volver a vacantes"}
       </Button>
-      <Typography variant="h4" sx={{ mb: 0.5 }}>{isEditing ? "Editar vaga" : "Criar nova vaga"}</Typography>
+      <Typography variant="h4" sx={{ mb: 0.5 }}>{isEditing ? "Editar vacante" : "Crear nueva vacante"}</Typography>
       <Typography color="text.secondary" variant="body2" sx={{ mb: 3 }}>
-        {isEditing ? "Atualize as informações da vaga." : "Preencha as informações abaixo para publicar uma nova vaga."}
+        {isEditing ? "Actualiza la información de la vacante." : "Completa la información a continuación para publicar una nueva vacante."}
       </Typography>
 
-      <SectionCard title="Informações básicas">
+      <SectionCard title="Información básica">
         <Grid container spacing={2}>
           <Grid size={12}>
-            <TextField label="Nome da vaga" fullWidth size="small" value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Ex.: Engenheiro(a) de Software Backend" />
+            <TextField label="Nombre de la vacante" fullWidth size="small" value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Ej.: Ingeniero(a) de Software Backend" />
           </Grid>
           <Grid size={{ xs: 12, sm: 6 }}>
             <TextField label="Departamento" fullWidth size="small" value={department} onChange={(e) => setDepartment(e.target.value)} />
           </Grid>
           <Grid size={{ xs: 12, sm: 6 }}>
-            <TextField label="Localização" fullWidth size="small" value={location} onChange={(e) => setLocation(e.target.value)} placeholder="Ex.: Remoto, São Paulo…" />
+            <TextField label="Ubicación" fullWidth size="small" value={location} onChange={(e) => setLocation(e.target.value)} placeholder="Ej.: Remoto, Madrid…" />
           </Grid>
           <Grid size={{ xs: 12, sm: 4 }}>
             <Typography variant="caption" fontWeight={750} color="text.secondary" sx={{ mb: 0.75, display: "block" }}>Modalidade</Typography>
@@ -137,7 +137,7 @@ export function CreateVacancyPage() {
             </Select>
           </Grid>
           <Grid size={{ xs: 12, sm: 4 }}>
-            <Typography variant="caption" fontWeight={750} color="text.secondary" sx={{ mb: 0.75, display: "block" }}>Senioridade</Typography>
+            <Typography variant="caption" fontWeight={750} color="text.secondary" sx={{ mb: 0.75, display: "block" }}>Nivel de experiencia</Typography>
             <Select fullWidth size="small" value={seniority} onChange={(e) => setSeniority(e.target.value)}>
               {SENIORITIES.map((s) => <MenuItem key={s} value={s}>{s}</MenuItem>)}
             </Select>
@@ -151,26 +151,26 @@ export function CreateVacancyPage() {
         </Grid>
       </SectionCard>
 
-      <SectionCard title="Descrição">
+      <SectionCard title="Descripción">
         <Stack spacing={2}>
-          <TextField label="Descrição da vaga" fullWidth multiline minRows={3} size="small" value={description} onChange={(e) => setDescription(e.target.value)} />
+          <TextField label="Descripción de la vacante" fullWidth multiline minRows={3} size="small" value={description} onChange={(e) => setDescription(e.target.value)} />
           <TextField label="Responsabilidades" fullWidth multiline minRows={3} size="small" value={responsibilities} onChange={(e) => setResponsibilities(e.target.value)} />
           <TextField label="Requisitos" fullWidth multiline minRows={3} size="small" value={requirements} onChange={(e) => setRequirements(e.target.value)} />
         </Stack>
       </SectionCard>
 
-      <SectionCard title="Competências necessárias" description="Usadas no match automático com o Banco de Talentos.">
+      <SectionCard title="Competencias necesarias" description="Se usan en el match automático con el Banco de Talentos.">
         <SkillsEditor skills={requiredSkills} onChange={setRequiredSkills} />
       </SectionCard>
 
-      <SectionCard title="Pipeline do processo seletivo" description="Configure as etapas pelas quais os candidatos vão passar.">
+      <SectionCard title="Pipeline del proceso de selección" description="Configura las etapas por las que pasarán los candidatos.">
         <PipelineStageEditor stages={stages} onChange={setStages} />
       </SectionCard>
 
       <Stack direction="row" justifyContent="flex-end" spacing={1.5} sx={{ mt: 1 }}>
         <Button onClick={() => navigate(isEditing ? `/vagas/${id}` : "/vagas")} disabled={isSaving}>Cancelar</Button>
         <Button variant="contained" onClick={handleSubmit} disabled={!canSubmit}>
-          {isSaving ? "Salvando…" : isEditing ? "Salvar alterações" : "Criar vaga"}
+          {isSaving ? "Guardando…" : isEditing ? "Guardar cambios" : "Crear vacante"}
         </Button>
       </Stack>
     </Box>

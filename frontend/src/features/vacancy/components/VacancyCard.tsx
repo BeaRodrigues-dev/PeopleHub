@@ -7,10 +7,10 @@ import { useNavigate } from "react-router-dom";
 import type { Vacancy, VacancyStatus } from "../types";
 
 const statusStyle: Record<VacancyStatus, { bg: string; color: string }> = {
-  Aberta: { bg: "#e7f7ee", color: "#1c8a54" },
+  Abierta: { bg: "#e7f7ee", color: "#1c8a54" },
   Pausada: { bg: "#fff4e0", color: "#a8681a" },
-  Fechada: { bg: "#f1f1f5", color: "#5a5f72" },
-  Rascunho: { bg: "#eef0ff", color: "#5546c9" },
+  Cerrada: { bg: "#f1f1f5", color: "#5a5f72" },
+  Borrador: { bg: "#eef0ff", color: "#5546c9" },
 };
 
 export function VacancyCard({ vacancy, candidateCount, onDelete }: { vacancy: Vacancy; candidateCount?: number; onDelete?: (vacancy: Vacancy) => void }) {

@@ -13,8 +13,8 @@ const empty: CreateEmployeeInput = {
   country: "",
   startDate: new Date().toISOString().slice(0, 10),
   manager: "",
-  contract: "Full-time",
-  status: "Active",
+  contract: "Tiempo completo",
+  status: "Activo",
   lifecycle: "Onboarding",
 };
 
@@ -45,25 +45,25 @@ export function AddEmployeeModal({ open, onClose, employee }: { open: boolean; o
 
   const handleSubmit = () => {
     if (!form.name.trim() || !form.role.trim()) {
-      toast.error("Preencha nome e cargo.");
+      toast.error("Completa el nombre y el cargo.");
       return;
     }
     if (isEditing && employee) {
       updateEmployee.mutate(
         { id: employee.id, input: form },
         {
-          onSuccess: () => { toast.success("Colaborador atualizado."); handleClose(); },
-          onError: (error) => toast.error(errorMessage(error, "Não foi possível salvar as alterações.")),
+          onSuccess: () => { toast.success("Colaborador actualizado."); handleClose(); },
+          onError: (error) => toast.error(errorMessage(error, "No se pudieron guardar los cambios.")),
         },
       );
       return;
     }
     createEmployee.mutate(form, {
       onSuccess: () => {
-        toast.success("Colaborador adicionado.");
+        toast.success("Colaborador agregado.");
         handleClose();
       },
-      onError: (error) => toast.error(errorMessage(error, "Não foi possível adicionar o colaborador.")),
+      onError: (error) => toast.error(errorMessage(error, "No fue posible agregar al colaborador.")),
     });
   };
 
@@ -71,20 +71,20 @@ export function AddEmployeeModal({ open, onClose, employee }: { open: boolean; o
     <Modal
       open={open}
       onClose={handleClose}
-      title={isEditing ? "Editar colaborador" : "Adicionar colaborador"}
+      title={isEditing ? "Editar colaborador" : "Agregar colaborador"}
       width={560}
       footer={
         <>
           <Button variant="text" onClick={handleClose}>Cancelar</Button>
           <Button variant="contained" onClick={handleSubmit} disabled={isSaving}>
-            {isSaving ? "Salvando…" : isEditing ? "Salvar alterações" : "Adicionar"}
+            {isSaving ? "Guardando…" : isEditing ? "Guardar cambios" : "Agregar"}
           </Button>
         </>
       }
     >
       <Grid container spacing={2}>
         <Grid size={12}>
-          <TextField label="Nome" fullWidth size="small" value={form.name} onChange={(e) => set("name", e.target.value)} />
+          <TextField label="Nombre" fullWidth size="small" value={form.name} onChange={(e) => set("name", e.target.value)} />
         </Grid>
         <Grid size={6}>
           <TextField label="Cargo" fullWidth size="small" value={form.role} onChange={(e) => set("role", e.target.value)} />
@@ -96,7 +96,7 @@ export function AddEmployeeModal({ open, onClose, employee }: { open: boolean; o
           <TextField label="País" fullWidth size="small" value={form.country} onChange={(e) => set("country", e.target.value)} />
         </Grid>
         <Grid size={6}>
-          <TextField label="Data de entrada" type="date" fullWidth size="small" value={form.startDate} onChange={(e) => set("startDate", e.target.value)} slotProps={{ inputLabel: { shrink: true } }} />
+          <TextField label="Fecha de ingreso" type="date" fullWidth size="small" value={form.startDate} onChange={(e) => set("startDate", e.target.value)} slotProps={{ inputLabel: { shrink: true } }} />
         </Grid>
         <Grid size={6}>
           <TextField label="Manager" fullWidth size="small" value={form.manager} onChange={(e) => set("manager", e.target.value)} />

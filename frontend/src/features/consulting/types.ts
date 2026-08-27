@@ -1,4 +1,4 @@
-export const CONSULTING_STATUSES = ["Pesquisado", "Proposta enviada", "Reunião agendada", "Em negociação", "Cliente"] as const;
+export const CONSULTING_STATUSES = ["Investigado", "Propuesta enviada", "Reunión agendada", "En negociación", "Cliente"] as const;
 export type ConsultingStatus = (typeof CONSULTING_STATUSES)[number];
 
 export interface ConsultingLead {
@@ -11,7 +11,7 @@ export interface ConsultingLead {
   status: ConsultingStatus;
   value: string;
   aiQualification?: {
-    priority: "Alta" | "Média" | "Baixa";
+    priority: "Alta" | "Media" | "Baja";
     reasoning: string;
     suggestedNextStep: string;
     evaluatedAt: string;

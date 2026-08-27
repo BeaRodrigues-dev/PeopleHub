@@ -28,12 +28,12 @@ interface Props {
 }
 
 /**
- * Board Kanban de uma vaga. Boas práticas dnd-kit aplicadas para evitar o
+ * Board Kanban de una vacante. Buenas prácticas de dnd-kit aplicadas para evitar el
  * travamento/scroll quebrado do protótipo anterior:
  *  - MouseSensor + TouchSensor (com delay) em vez de PointerSensor único —
  *    evita bloquear o scroll da página em touch;
  *  - collisionDetection combinando pointerWithin → closestCenter;
- *  - alça de arraste isolada no card (ver CandidateCard);
+ *  - asa de arrastre aislada en el card (ver CandidateCard);
  *  - colunas memoizadas, cada uma só re-renderiza quando seus próprios dados mudam.
  */
 export function KanbanBoard({ vacancyId, stages, search, onOpen }: Props) {

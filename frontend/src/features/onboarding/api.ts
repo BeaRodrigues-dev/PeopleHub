@@ -31,7 +31,7 @@ function fromRow(row: OnboardingRow): OnboardingEntry {
 }
 
 function statusFromProgress(progress: number): OnboardingStatus {
-  return progress >= 100 ? "Completed" : progress > 0 ? "In Progress" : "Started";
+  return progress >= 100 ? "Completado" : progress > 0 ? "En progreso" : "Iniciado";
 }
 
 export const onboardingApi = {
@@ -55,7 +55,7 @@ export const onboardingApi = {
         employee_name: input.employeeName,
         role: input.role,
         start_date: input.startDate,
-        status: "Started",
+        status: "Iniciado",
         checklist,
         progress: computeProgress(checklist),
       })
@@ -83,7 +83,7 @@ export const onboardingApi = {
   toggleItem: async (id: string, phase: ChecklistPhase, index: number): Promise<OnboardingEntry> => {
     const { data: current, error: fetchError } = await supabase.from("onboardings").select("checklist").eq("id", id).single();
     throwIfError(fetchError);
-    if (!current) throw new Error("Onboarding não encontrado.");
+    if (!current) throw new Error("Onboarding no encontrado.");
     const checklist = current.checklist as OnboardingChecklist;
     if (!checklist[phase]?.[index]) throw new Error("Item de checklist inválido");
     checklist[phase][index].done = !checklist[phase][index].done;

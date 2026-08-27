@@ -9,7 +9,7 @@ export interface OnboardingChecklist {
   week1: ChecklistItem[];
 }
 
-export const ONBOARDING_STATUSES = ["Started", "In Progress", "Completed"] as const;
+export const ONBOARDING_STATUSES = ["Iniciado", "En progreso", "Completado"] as const;
 export type OnboardingStatus = (typeof ONBOARDING_STATUSES)[number];
 
 export interface OnboardingEntry {
@@ -26,21 +26,21 @@ export interface OnboardingEntry {
 
 export const DEFAULT_CHECKLIST: OnboardingChecklist = {
   before: [
-    { label: "Contrato assinado", done: false },
-    { label: "Acessos criados (email, Slack, ferramentas)", done: false },
-    { label: "Equipamento preparado", done: false },
-    { label: "Welcome email enviado", done: false },
+    { label: "Contrato firmado", done: false },
+    { label: "Accesos creados (correo, Slack, herramientas)", done: false },
+    { label: "Equipo preparado", done: false },
+    { label: "Correo de bienvenida enviado", done: false },
   ],
   day1: [
-    { label: "Welcome meeting com HR", done: false },
-    { label: "Apresentação à equipa", done: false },
-    { label: "Tour cultura & valores", done: false },
-    { label: "Setup ferramentas", done: false },
+    { label: "Reunión de bienvenida con RR. HH.", done: false },
+    { label: "Presentación al equipo", done: false },
+    { label: "Recorrido por cultura y valores", done: false },
+    { label: "Configuración de herramientas", done: false },
   ],
   week1: [
-    { label: "Follow-up 1:1 com manager", done: false },
-    { label: "Feedback do novo colaborador", done: false },
-    { label: "30-day plan alinhado", done: false },
+    { label: "Seguimiento 1:1 con el manager", done: false },
+    { label: "Feedback del nuevo colaborador", done: false },
+    { label: "Plan de 30 días alineado", done: false },
   ],
 };
 

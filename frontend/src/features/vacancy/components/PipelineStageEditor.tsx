@@ -8,7 +8,7 @@ import { stageColor } from "../../../utils/stageColor";
 
 export interface DraftStage { id: string; name: string; }
 
-/** Editor de etapas do pipeline da vaga: adicionar, remover e reordenar. */
+/** Editor de etapas del pipeline de la vacante: agregar, eliminar y reordenar. */
 export function PipelineStageEditor({ stages, onChange }: { stages: DraftStage[]; onChange: (stages: DraftStage[]) => void }) {
   const [draft, setDraft] = useState("");
 
@@ -53,12 +53,12 @@ export function PipelineStageEditor({ stages, onChange }: { stages: DraftStage[]
         <TextField
           size="small"
           fullWidth
-          placeholder="Nova etapa (ex.: Entrevista Técnica)"
+          placeholder="Nueva etapa (ej.: Entrevista Técnica)"
           value={draft}
           onChange={(e) => setDraft(e.target.value)}
           onKeyDown={(e) => e.key === "Enter" && (e.preventDefault(), add())}
         />
-        <Chip icon={<AddRoundedIcon fontSize="small" />} label="Adicionar etapa" clickable onClick={add} sx={{ fontWeight: 650, flexShrink: 0 }} />
+        <Chip icon={<AddRoundedIcon fontSize="small" />} label="Agregar etapa" clickable onClick={add} sx={{ fontWeight: 650, flexShrink: 0 }} />
       </Stack>
     </Box>
   );

@@ -27,7 +27,7 @@ export function CandidateList({ onOpen, search, filters }: { onOpen: (id: string
 
   const rows = data?.items ?? [];
   if (rows.length === 0) {
-    return <EmptyState icon={<PeopleAltRoundedIcon />} title="Nenhum candidato encontrado" description="Ajuste a busca ou os filtros aplicados." />;
+    return <EmptyState icon={<PeopleAltRoundedIcon />} title="No se encontró ningún candidato" description="Ajusta la búsqueda o los filtros aplicados." />;
   }
 
   return (
@@ -36,7 +36,7 @@ export function CandidateList({ onOpen, search, filters }: { onOpen: (id: string
         <Table stickyHeader size="small">
           <TableHead>
             <TableRow>
-              {["Candidato", "Vaga", "Localização", "Competências", "Cadastro"].map((x) => (
+              {["Candidato", "Vacante", "Ubicación", "Competencias", "Registro"].map((x) => (
                 <TableCell key={x} sx={{ fontWeight: 750, bgcolor: "#fafaff" }}>{x}</TableCell>
               ))}
             </TableRow>
@@ -73,7 +73,7 @@ export function CandidateList({ onOpen, search, filters }: { onOpen: (id: string
         <Typography variant="caption" color="text.secondary">{data?.total ?? 0} candidatos encontrados</Typography>
         <Box sx={{ display: "flex", gap: 1 }}>
           <Chip label="Anterior" disabled={page <= 1 || isFetching} onClick={() => setPage((p) => p - 1)} clickable />
-          <Chip label={isFetching ? "Carregando…" : "Próxima"} disabled={!data?.hasMore || isFetching} onClick={() => setPage((p) => p + 1)} clickable />
+          <Chip label={isFetching ? "Cargando…" : "Siguiente"} disabled={!data?.hasMore || isFetching} onClick={() => setPage((p) => p + 1)} clickable />
         </Box>
       </Box>
     </Card>

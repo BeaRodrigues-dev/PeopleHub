@@ -9,7 +9,7 @@ const ACCEPTED_MIME = new Set([
   "application/msword",
 ]);
 
-/** Zona de drag-and-drop nativa (sem libs externas) para upload de manuais/documentos em PDF/DOCX. */
+/** Zona de arrastrar y soltar nativa (sin librerías externas) para subir manuales/documentos en PDF/DOCX. */
 export function DocumentDropzone({ onFile, disabled, fileName }: { onFile: (file: File) => void; disabled?: boolean; fileName?: string }) {
   const [isDragging, setDragging] = useState(false);
   const [fileError, setFileError] = useState<string | null>(null);
@@ -17,11 +17,11 @@ export function DocumentDropzone({ onFile, disabled, fileName }: { onFile: (file
 
   const validate = (file: File): boolean => {
     if (!ACCEPTED_MIME.has(file.type) && !ACCEPTED_EXTENSIONS.some((ext) => file.name.toLowerCase().endsWith(ext))) {
-      setFileError("Formato não suportado. Envie um arquivo PDF ou DOCX.");
+      setFileError("Formato no compatible. Sube un archivo PDF o DOCX.");
       return false;
     }
     if (file.size > 10 * 1024 * 1024) {
-      setFileError("Arquivo muito grande (máximo 10MB).");
+      setFileError("Archivo demasiado grande (máximo 10MB).");
       return false;
     }
     setFileError(null);
@@ -53,8 +53,8 @@ export function DocumentDropzone({ onFile, disabled, fileName }: { onFile: (file
         }}
       >
         <UploadFileRoundedIcon sx={{ fontSize: 30, color: "primary.main", mb: 1 }} />
-        <Typography fontWeight={750} fontSize={14}>{fileName || "Arraste o documento aqui"}</Typography>
-        <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>ou clique para selecionar — PDF ou DOCX, até 10MB</Typography>
+        <Typography fontWeight={750} fontSize={14}>{fileName || "Arrastra el documento aquí"}</Typography>
+        <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>o haz clic para seleccionar — PDF o DOCX, hasta 10MB</Typography>
         <input
           ref={inputRef}
           type="file"

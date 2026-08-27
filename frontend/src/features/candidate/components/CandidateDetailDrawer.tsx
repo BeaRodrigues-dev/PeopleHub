@@ -47,7 +47,7 @@ export function CandidateDetailDrawer() {
     <SidePanel
       open={!!selectedId}
       onClose={close}
-      title={candidate?.name ?? (isLoading ? "Carregando…" : "Candidato")}
+      title={candidate?.name ?? (isLoading ? "Cargando…" : "Candidato")}
       subtitle={vacancy ? `${vacancy.title} · ${currentStage?.name ?? "—"}` : "Banco de Talentos"}
       width={460}
       footer={
@@ -61,7 +61,7 @@ export function CandidateDetailDrawer() {
                 onClick={() => nextStage && moveStage.mutate({ applicationId: activeApplication.id, stage: nextStage.name })}
                 sx={{ flexShrink: 0 }}
               >
-                {nextStage ? "Avançar etapa" : "Etapa final"}
+                {nextStage ? "Avanzar etapa" : "Etapa final"}
               </Button>
               <Select
                 size="small"
@@ -69,7 +69,7 @@ export function CandidateDetailDrawer() {
                 value={currentStage?.name ?? ""}
                 displayEmpty
                 onChange={(e) => moveStage.mutate({ applicationId: activeApplication.id, stage: e.target.value })}
-                renderValue={(value) => (value ? `Mover para: ${value}` : "Mover para…")}
+                renderValue={(value) => (value ? `Mover a: ${value}` : "Mover a…")}
               >
                 {stages.map((stage) => <MenuItem key={stage.id} value={stage.name}>{stage.name}</MenuItem>)}
               </Select>
@@ -81,7 +81,7 @@ export function CandidateDetailDrawer() {
       {isLoading && !candidate ? (
         <Box sx={{ display: "grid", placeItems: "center", py: 8 }}><CircularProgress size={28} /></Box>
       ) : !candidate ? (
-        <Typography color="text.secondary">Candidato não encontrado.</Typography>
+        <Typography color="text.secondary">Candidato no encontrado.</Typography>
       ) : (
         <Box>
           <Stack direction="row" spacing={2} alignItems="center" sx={{ mb: 1 }}>
@@ -111,7 +111,7 @@ export function CandidateDetailDrawer() {
           </Button>
 
           {vacancy && (
-            <Section title="Vaga">
+            <Section title="Vacante">
               <Box
                 onClick={() => { close(); navigate(`/vagas/${vacancy.id}`); }}
                 sx={{ display: "flex", alignItems: "center", gap: 1.25, p: 1.5, borderRadius: 2.5, border: "1px solid", borderColor: "divider", cursor: "pointer", "&:hover": { borderColor: "primary.main", bgcolor: "action.hover" } }}
@@ -125,9 +125,9 @@ export function CandidateDetailDrawer() {
             </Section>
           )}
 
-          <Section title="Competências">
+          <Section title="Competencias">
             <Stack direction="row" flexWrap="wrap" gap={0.75}>
-              {candidate.skills.length === 0 && <Typography variant="body2" color="text.secondary">Nenhuma competência registrada.</Typography>}
+              {candidate.skills.length === 0 && <Typography variant="body2" color="text.secondary">Ninguna competencia registrada.</Typography>}
               {candidate.skills.map((skill) => (
                 <Chip key={skill} label={skill} size="small" color="primary" variant="outlined" sx={{ fontWeight: 650 }} />
               ))}
@@ -135,12 +135,12 @@ export function CandidateDetailDrawer() {
           </Section>
 
           {candidate.experience.length > 0 && (
-            <Section title="Experiência">
+            <Section title="Experiencia">
               <Stack spacing={1.25}>
                 {candidate.experience.map((exp, i) => (
                   <Box key={i}>
                     <Typography fontWeight={700} fontSize={13.5}>{exp.role} · {exp.company}</Typography>
-                    <Typography variant="caption" color="text.secondary">{[exp.startDate, exp.current ? "atual" : exp.endDate].filter(Boolean).join(" — ")}</Typography>
+                    <Typography variant="caption" color="text.secondary">{[exp.startDate, exp.current ? "actual" : exp.endDate].filter(Boolean).join(" — ")}</Typography>
                     {exp.description && <Typography variant="body2" color="text.secondary" sx={{ mt: 0.4 }}>{exp.description}</Typography>}
                   </Box>
                 ))}
@@ -149,10 +149,10 @@ export function CandidateDetailDrawer() {
           )}
 
           {candidate.resumeUrl && (
-            <Section title="Currículo">
+            <Section title="Currículum">
               <Stack direction="row" spacing={1} alignItems="center" sx={{ p: 1.5, borderRadius: 2.5, bgcolor: "action.hover" }}>
                 <DescriptionOutlinedIcon color="action" />
-                <Typography variant="body2" color="text.secondary" sx={{ flex: 1 }}>Arquivo enviado pelo candidato</Typography>
+                <Typography variant="body2" color="text.secondary" sx={{ flex: 1 }}>Archivo enviado por el candidato</Typography>
                 <Button size="small" endIcon={<LaunchRoundedIcon fontSize="small" />} href={candidate.resumeUrl ?? "#"} target="_blank" rel="noreferrer">
                   Abrir
                 </Button>
@@ -160,8 +160,8 @@ export function CandidateDetailDrawer() {
             </Section>
           )}
 
-          <Section title="Observações">
-            <Typography variant="body2" color="text.secondary">{candidate.notes || "Nenhuma observação registrada."}</Typography>
+          <Section title="Observaciones">
+            <Typography variant="body2" color="text.secondary">{candidate.notes || "Ninguna observación registrada."}</Typography>
           </Section>
         </Box>
       )}

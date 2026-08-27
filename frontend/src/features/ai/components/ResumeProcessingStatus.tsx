@@ -6,16 +6,16 @@ import CloudUploadRoundedIcon from "@mui/icons-material/CloudUploadRounded";
 export type ResumeProcessingStep = "uploading" | "extracting" | "done";
 
 const STEPS: Array<{ key: ResumeProcessingStep; label: string; icon: React.ReactNode }> = [
-  { key: "uploading", label: "Enviando arquivo", icon: <CloudUploadRoundedIcon fontSize="small" /> },
-  { key: "extracting", label: "Extraindo dados com IA", icon: <AutoAwesomeRoundedIcon fontSize="small" /> },
+  { key: "uploading", label: "Enviando archivo", icon: <CloudUploadRoundedIcon fontSize="small" /> },
+  { key: "extracting", label: "Extrayendo datos con IA", icon: <AutoAwesomeRoundedIcon fontSize="small" /> },
 ];
 
-/** Feedback visual de progresso do upload + extração via IA (item 3/7 do escopo). */
+/** Feedback visual del progreso de carga + extracción vía IA (item 3/7 del alcance). */
 export function ResumeProcessingStatus({ step, fileName }: { step: ResumeProcessingStep; fileName: string }) {
   const activeIndex = STEPS.findIndex((s) => s.key === step);
   return (
     <Box sx={{ py: 5, textAlign: "center" }}>
-      <Typography fontWeight={750} sx={{ mb: 3 }}>Processando "{fileName}"…</Typography>
+      <Typography fontWeight={750} sx={{ mb: 3 }}>Procesando "{fileName}"…</Typography>
       <Stack spacing={2} sx={{ maxWidth: 320, mx: "auto" }}>
         {STEPS.map((s, i) => {
           const done = i < activeIndex || step === "done";

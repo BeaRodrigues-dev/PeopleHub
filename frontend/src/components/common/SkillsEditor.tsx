@@ -2,11 +2,11 @@ import { useState } from "react";
 import { Box, Chip, TextField } from "@mui/material";
 import AddRoundedIcon from "@mui/icons-material/AddRounded";
 
-/** Editor de tags reutilizável para "competências" (vaga ou candidato). */
+/** Editor de tags reutilizable para "competencias" (vacante o candidato). */
 export function SkillsEditor({
   skills,
   onChange,
-  placeholder = "Adicionar competência e pressionar Enter",
+  placeholder = "Agregar competencia y presionar Enter",
 }: {
   skills: string[];
   onChange: (skills: string[]) => void;
@@ -48,7 +48,7 @@ export function SkillsEditor({
             endAdornment: (
               <Chip
                 icon={<AddRoundedIcon fontSize="small" />}
-                label="Adicionar"
+                label="Agregar"
                 size="small"
                 onClick={commit}
                 clickable

@@ -1,10 +1,10 @@
-export const VACANCY_STATUSES = ["Aberta", "Pausada", "Fechada", "Rascunho"] as const;
+export const VACANCY_STATUSES = ["Abierta", "Pausada", "Cerrada", "Borrador"] as const;
 export type VacancyStatus = (typeof VACANCY_STATUSES)[number];
 
 export const WORK_MODELS = ["Presencial", "Híbrido", "Remoto"] as const;
 export type WorkModel = (typeof WORK_MODELS)[number];
 
-export const SENIORITIES = ["Estágio", "Júnior", "Pleno", "Sênior", "Especialista"] as const;
+export const SENIORITIES = ["Prácticas", "Junior", "Semi Senior", "Senior", "Especialista"] as const;
 
 export interface PipelineStage {
   id: string;
@@ -36,7 +36,7 @@ export type CreateVacancyInput = Omit<Vacancy, "id" | "createdAt" | "updatedAt" 
 
 export interface TimeToFillPrediction {
   estimatedDays: number;
-  confidence: "Alta" | "Média" | "Baixa";
+  confidence: "Alta" | "Media" | "Baja";
   reasoning: string;
   benchmarkDays: number;
 }

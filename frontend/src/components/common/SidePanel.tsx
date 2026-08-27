@@ -17,7 +17,7 @@ interface SidePanelProps {
 
 /**
  * Painel lateral renderizado via createPortal diretamente em document.body.
- * Isso garante que ele nunca fique preso atrás de elementos com posição
+ * Esto garantiza que nunca quede atrapado detrás de elementos con posición
  * fixa (como o header) nem seja cortado por `overflow:hidden` de containers
  * pais — o único jeito confiável de resolver esse tipo de bug em layouts
  * com header fixo. z-index vem da escala central em theme/zIndex.ts.
@@ -78,7 +78,7 @@ export function SidePanel({ open, onClose, title, subtitle, width = 480, childre
               {subtitle && <Typography variant="body2" color="text.secondary" sx={{ mt: 0.25 }}>{subtitle}</Typography>}
             </Box>
             {headerExtra}
-            <IconButton onClick={onClose} size="small" aria-label="Fechar painel">
+            <IconButton onClick={onClose} size="small" aria-label="Cerrar panel">
               <CloseRoundedIcon fontSize="small" />
             </IconButton>
           </Box>

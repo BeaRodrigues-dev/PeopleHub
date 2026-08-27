@@ -1,8 +1,8 @@
-export const LIFECYCLE_STAGES = ["Recruitment", "Onboarding", "Development", "Performance", "Offboarding"] as const;
+export const LIFECYCLE_STAGES = ["Reclutamiento", "Onboarding", "Desarrollo", "Desempeño", "Offboarding"] as const;
 export type LifecycleStage = (typeof LIFECYCLE_STAGES)[number];
 
-export const CONTRACT_TYPES = ["Full-time", "Part-time", "PJ / Contractor"] as const;
-export const EMPLOYEE_STATUSES = ["Active", "Offboarding"] as const;
+export const CONTRACT_TYPES = ["Tiempo completo", "Medio tiempo", "Freelance / Contratista"] as const;
+export const EMPLOYEE_STATUSES = ["Activo", "Offboarding"] as const;
 export type EmployeeStatus = (typeof EMPLOYEE_STATUSES)[number];
 
 export interface Employee {

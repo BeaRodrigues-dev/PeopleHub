@@ -19,7 +19,7 @@ export function LoginPage() {
       const res = await authApi.login(email.trim(), password);
       setSession(res.session);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Não foi possível entrar. Tente novamente.");
+      setError(err instanceof Error ? err.message : "No se pudo iniciar sesión. Intenta de nuevo.");
     } finally {
       setLoading(false);
     }
@@ -55,13 +55,13 @@ export function LoginPage() {
             <LockRoundedIcon fontSize="small" />
           </Box>
           <Typography fontWeight={800} fontSize={19} letterSpacing="-0.01em">People Hub</Typography>
-          <Typography fontSize={12.5} color="text.secondary">Entre para acessar o HR OS</Typography>
+          <Typography fontSize={12.5} color="text.secondary">Ingresa para acceder al HR OS</Typography>
         </Box>
 
         <Box component="form" onSubmit={handleSubmit} sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
           {error && <Alert severity="error">{error}</Alert>}
           <TextField
-            label="Email"
+            label="Correo electrónico"
             type="email"
             autoComplete="username"
             value={email}
@@ -71,7 +71,7 @@ export function LoginPage() {
             size="small"
           />
           <TextField
-            label="Senha"
+            label="Contraseña"
             type="password"
             autoComplete="current-password"
             value={password}
@@ -81,7 +81,7 @@ export function LoginPage() {
             size="small"
           />
           <Button type="submit" variant="contained" size="large" disabled={loading} sx={{ mt: 0.5 }}>
-            {loading ? "Entrando..." : "Entrar"}
+            {loading ? "Ingresando..." : "Ingresar"}
           </Button>
         </Box>
       </Paper>

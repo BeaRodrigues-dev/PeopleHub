@@ -21,7 +21,7 @@ export const emptyCandidateForm: CandidateFormValues = {
   phone: "",
   location: "",
   skills: [],
-  seniority: "Pleno",
+  seniority: "Semi Senior",
   linkedin: "",
   portfolio: "",
   notes: "",
@@ -33,7 +33,7 @@ export function isCandidateFormValid(values: CandidateFormValues): boolean {
 
 /**
  * Formulário de candidato — componente controlado, reaproveitado por 3
- * fluxos: edição, criação manual e confirmação após extração de currículo
+ * flujos: edición, creación manual y confirmación después de la extracción del currículum
  * via IA. Evita duplicar a mesma lógica de campos em três lugares.
  */
 export function CandidateForm({
@@ -52,19 +52,19 @@ export function CandidateForm({
       {extraContent}
       <Grid container spacing={2.5}>
         <Grid size={{ xs: 12, sm: 6 }}>
-          <TextField label="Nome" fullWidth size="small" required value={values.name} onChange={(e) => patch({ name: e.target.value })} />
+          <TextField label="Nombre" fullWidth size="small" required value={values.name} onChange={(e) => patch({ name: e.target.value })} />
         </Grid>
         <Grid size={{ xs: 12, sm: 6 }}>
           <TextField label="Email" type="email" fullWidth size="small" required value={values.email} onChange={(e) => patch({ email: e.target.value })} />
         </Grid>
         <Grid size={{ xs: 12, sm: 6 }}>
-          <TextField label="Telefone" fullWidth size="small" value={values.phone} onChange={(e) => patch({ phone: e.target.value })} />
+          <TextField label="Teléfono" fullWidth size="small" value={values.phone} onChange={(e) => patch({ phone: e.target.value })} />
         </Grid>
         <Grid size={{ xs: 12, sm: 6 }}>
-          <TextField label="Localização" fullWidth size="small" value={values.location} onChange={(e) => patch({ location: e.target.value })} />
+          <TextField label="Ubicación" fullWidth size="small" value={values.location} onChange={(e) => patch({ location: e.target.value })} />
         </Grid>
         <Grid size={{ xs: 12, sm: 6 }}>
-          <Typography variant="caption" fontWeight={750} color="text.secondary" sx={{ mb: 0.75, display: "block" }}>Senioridade</Typography>
+          <Typography variant="caption" fontWeight={750} color="text.secondary" sx={{ mb: 0.75, display: "block" }}>Nivel de experiencia</Typography>
           <Select fullWidth size="small" value={values.seniority} onChange={(e) => patch({ seniority: e.target.value })}>
             {SENIORITIES.map((s) => <MenuItem key={s} value={s}>{s}</MenuItem>)}
           </Select>
@@ -73,11 +73,11 @@ export function CandidateForm({
           <TextField label="LinkedIn" fullWidth size="small" value={values.linkedin} onChange={(e) => patch({ linkedin: e.target.value })} />
         </Grid>
         <Grid size={12}>
-          <Typography variant="caption" fontWeight={750} color="text.secondary" sx={{ mb: 0.75, display: "block" }}>Competências</Typography>
+          <Typography variant="caption" fontWeight={750} color="text.secondary" sx={{ mb: 0.75, display: "block" }}>Competencias</Typography>
           <SkillsEditor skills={values.skills} onChange={(skills) => patch({ skills })} />
         </Grid>
         <Grid size={12}>
-          <TextField label="Observações" fullWidth multiline minRows={3} size="small" value={values.notes} onChange={(e) => patch({ notes: e.target.value })} />
+          <TextField label="Observaciones" fullWidth multiline minRows={3} size="small" value={values.notes} onChange={(e) => patch({ notes: e.target.value })} />
         </Grid>
       </Grid>
     </>

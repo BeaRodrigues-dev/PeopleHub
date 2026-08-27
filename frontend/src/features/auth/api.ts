@@ -8,18 +8,18 @@ export const authApi = {
   },
 
   /**
-   * Reautentica com a senha atual (para confirmar identidade) e então
-   * atualiza email e/ou senha via Supabase Auth. Se o email for alterado, o
-   * Supabase pode exigir confirmação por link enviado à nova caixa de
-   * entrada (depende da configuração "Confirm email" do projeto).
+   * Reautentica con la contraseña actual (para confirmar identidad) y luego
+   * actualiza email e/ou senha via Supabase Auth. Se o email for alterado, o
+   * Supabase puede exigir confirmación por link enviado a la nueva casilla de
+   * entrada (depende de la configuración "Confirm email" del proyecto).
    */
   updateCredentials: async ({ currentPassword, newEmail, newPassword }: { currentPassword: string; newEmail?: string; newPassword?: string }) => {
     const { data: sessionData } = await supabase.auth.getSession();
     const email = sessionData.session?.user.email;
-    if (!email) throw new Error("Sessão inválida. Faça login novamente.");
+    if (!email) throw new Error("Sesión inválida. Inicia sesión de nuevo.");
 
     const { error: reauthError } = await supabase.auth.signInWithPassword({ email, password: currentPassword });
-    if (reauthError) throw new Error("Senha atual incorreta.");
+    if (reauthError) throw new Error("Contraseña actual incorrecta.");
 
     const { data, error } = await supabase.auth.updateUser({
       ...(newEmail ? { email: newEmail } : {}),

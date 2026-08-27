@@ -22,11 +22,11 @@ export function SettingsPage() {
     setError(null);
 
     if (newPassword && newPassword !== confirmPassword) {
-      setError("A nova senha e a confirmação não coincidem.");
+      setError("La nueva contraseña y la confirmación no coinciden.");
       return;
     }
     if (!newEmail.trim() && !newPassword) {
-      setError("Altere o email e/ou a senha antes de salvar.");
+      setError("Cambia el correo y/o la contraseña antes de guardar.");
       return;
     }
 
@@ -42,11 +42,11 @@ export function SettingsPage() {
       setConfirmPassword("");
       toast.success(
         newEmail.trim() !== currentEmail
-          ? "Credenciais atualizadas. Se o email mudou, confirme o link enviado à nova caixa de entrada."
-          : "Credenciais atualizadas.",
+          ? "Credenciales actualizadas. Si cambiaste el correo, confirma el enlace enviado a la nueva bandeja de entrada."
+          : "Credenciales actualizadas.",
       );
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Não foi possível atualizar as credenciais.");
+      setError(err instanceof Error ? err.message : "No se pudieron actualizar las credenciales.");
     } finally {
       setLoading(false);
     }
@@ -54,8 +54,8 @@ export function SettingsPage() {
 
   return (
     <Box sx={{ p: { xs: 2, md: 3.5 }, maxWidth: 560, mx: "auto" }}>
-      <Typography variant="h4" sx={{ mb: 0.5 }}>Configurações</Typography>
-      <Typography color="text.secondary" variant="body2" sx={{ mb: 3 }}>Gerencie o email e a senha de acesso ao People Hub.</Typography>
+      <Typography variant="h4" sx={{ mb: 0.5 }}>Configuración</Typography>
+      <Typography color="text.secondary" variant="body2" sx={{ mb: 3 }}>Gestiona el correo y la contraseña de acceso a People Hub.</Typography>
 
       <Card sx={{ p: { xs: 2.5, md: 3 }, borderRadius: 4 }}>
         <Stack direction="row" spacing={1.25} alignItems="center" sx={{ mb: 2.5 }}>
@@ -63,8 +63,8 @@ export function SettingsPage() {
             <LockRoundedIcon fontSize="small" />
           </Box>
           <Box>
-            <Typography fontWeight={800}>Login</Typography>
-            <Typography variant="caption" color="text.secondary">Email atual: {currentEmail}</Typography>
+            <Typography fontWeight={800}>Inicio de sesión</Typography>
+            <Typography variant="caption" color="text.secondary">Correo actual: {currentEmail}</Typography>
           </Box>
         </Stack>
 
@@ -72,7 +72,7 @@ export function SettingsPage() {
           {error && <Alert severity="error">{error}</Alert>}
 
           <TextField
-            label="Senha atual"
+            label="Contraseña actual"
             type="password"
             autoComplete="current-password"
             value={currentPassword}
@@ -80,10 +80,10 @@ export function SettingsPage() {
             required
             fullWidth
             size="small"
-            helperText="Obrigatória para confirmar qualquer alteração."
+            helperText="Obligatoria para confirmar cualquier cambio."
           />
           <TextField
-            label="Novo email"
+            label="Nuevo correo"
             type="email"
             autoComplete="username"
             value={newEmail}
@@ -92,18 +92,18 @@ export function SettingsPage() {
             size="small"
           />
           <TextField
-            label="Nova senha"
+            label="Nueva contraseña"
             type="password"
             autoComplete="new-password"
             value={newPassword}
             onChange={(e) => setNewPassword(e.target.value)}
             fullWidth
             size="small"
-            helperText="Deixe em branco para manter a senha atual."
+            helperText="Deja en blanco para mantener la contraseña actual."
           />
           {newPassword && (
             <TextField
-              label="Confirmar nova senha"
+              label="Confirmar nueva contraseña"
               type="password"
               autoComplete="new-password"
               value={confirmPassword}
@@ -113,7 +113,7 @@ export function SettingsPage() {
             />
           )}
           <Button type="submit" variant="contained" disabled={loading} sx={{ alignSelf: "flex-start", mt: 0.5 }}>
-            {loading ? "Salvando…" : "Salvar alterações"}
+            {loading ? "Guardando…" : "Guardar cambios"}
           </Button>
         </Box>
       </Card>

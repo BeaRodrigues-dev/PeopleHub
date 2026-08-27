@@ -46,7 +46,7 @@ export function useUpdateCandidate() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: ({ id, input }: { id: string; input: UpdateCandidateInput }) => candidateApi.update(id, input),
-    // Optimistic update: aplica a mudança no cache antes da resposta do servidor.
+    // Optimistic update: aplica el cambio en el caché antes de la respuesta del servidor.
     onMutate: async ({ id, input }) => {
       await queryClient.cancelQueries({ queryKey: candidateKeys.detail(id) });
       const previous = queryClient.getQueryData(candidateKeys.detail(id));

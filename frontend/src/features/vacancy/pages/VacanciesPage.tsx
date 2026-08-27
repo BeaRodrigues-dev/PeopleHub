@@ -25,13 +25,13 @@ export function VacanciesPage() {
   const vacancies = data?.items ?? [];
   const { data: counts } = useVacancyCandidateCounts(vacancies.map((v) => v.id));
 
-  const summary = useMemo(() => `${data?.total ?? 0} vagas encontradas`, [data?.total]);
+  const summary = useMemo(() => `${data?.total ?? 0} vacantes encontradas`, [data?.total]);
 
   const handleDelete = () => {
     if (!toDelete) return;
     deleteVacancy.mutate(toDelete.id, {
-      onSuccess: () => { toast.success("Vaga removida."); setToDelete(null); },
-      onError: (err) => toast.error(errorMessage(err, "Não foi possível remover a vaga.")),
+      onSuccess: () => { toast.success("Vacante eliminada."); setToDelete(null); },
+      onError: (err) => toast.error(errorMessage(err, "No se pudo eliminar la vacante.")),
     });
   };
 
@@ -39,15 +39,15 @@ export function VacanciesPage() {
     <Box sx={{ p: { xs: 2, md: 3.5 }, maxWidth: 1400, mx: "auto" }}>
       <Stack direction={{ xs: "column", sm: "row" }} alignItems={{ sm: "center" }} spacing={2} sx={{ mb: 3 }}>
         <Box sx={{ flex: 1 }}>
-          <Typography variant="h4">Vagas</Typography>
-          <Typography color="text.secondary" variant="body2" sx={{ mt: 0.4 }}>Gerencie processos seletivos e acompanhe cada pipeline.</Typography>
+          <Typography variant="h4">Vacantes</Typography>
+          <Typography color="text.secondary" variant="body2" sx={{ mt: 0.4 }}>Gestiona procesos de selección y da seguimiento a cada pipeline.</Typography>
         </Box>
-        <Button variant="contained" startIcon={<AddRoundedIcon />} onClick={() => navigate("/criar-vaga")}>Criar vaga</Button>
+        <Button variant="contained" startIcon={<AddRoundedIcon />} onClick={() => navigate("/criar-vaga")}>Crear vacante</Button>
       </Stack>
 
       <Stack direction={{ xs: "column", sm: "row" }} gap={1.25} sx={{ mb: 1 }}>
         <TextField
-          placeholder="Buscar por vaga, departamento ou localização…"
+          placeholder="Buscar por vacante, departamento o ubicación…"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           size="small"
@@ -72,9 +72,9 @@ export function VacanciesPage() {
       ) : vacancies.length === 0 ? (
         <EmptyState
           icon={<WorkOutlineRoundedIcon />}
-          title="Nenhuma vaga encontrada"
-          description="Ajuste a busca ou os filtros, ou crie uma nova vaga para começar a receber candidatos."
-          action={<Button variant="contained" startIcon={<AddRoundedIcon />} onClick={() => navigate("/criar-vaga")}>Criar vaga</Button>}
+          title="No se encontró ninguna vacante"
+          description="Ajusta la búsqueda o los filtros, o crea una nueva vacante para empezar a recibir candidatos."
+          action={<Button variant="contained" startIcon={<AddRoundedIcon />} onClick={() => navigate("/criar-vaga")}>Crear vacante</Button>}
         />
       ) : (
         <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", sm: "1fr 1fr", lg: "1fr 1fr 1fr" }, gap: 2 }}>
@@ -84,8 +84,8 @@ export function VacanciesPage() {
 
       <ConfirmDialog
         open={!!toDelete}
-        title="Excluir vaga"
-        description={`Tem certeza que deseja excluir a vaga "${toDelete?.title}"? Candidaturas associadas também serão afetadas. Essa ação não pode ser desfeita.`}
+        title="Eliminar vacante"
+        description={`¿Estás seguro de que deseas eliminar la vacante "${toDelete?.title}"? Las candidaturas asociadas también se verán afectadas. Esta acción no se puede deshacer.`}
         loading={deleteVacancy.isPending}
         onConfirm={handleDelete}
         onClose={() => setToDelete(null)}

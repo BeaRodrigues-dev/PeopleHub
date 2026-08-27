@@ -6,7 +6,7 @@ import { useUIStore } from "../../store/uiStore";
 /**
  * Drawer de filtros — usa o SidePanel (Portal, z-index próprio, scroll
  * interno independente). Corrige os bugs do drawer anterior: nunca fica
- * atrás do header, não corta conteúdo, funciona igual em mobile/desktop.
+ * detrás del header, no corta contenido, funciona igual en mobile/desktop.
  */
 export function FiltersDrawer({ open, onClose }: { open: boolean; onClose: () => void }) {
   const filters = useUIStore((s) => s.filters);
@@ -18,35 +18,35 @@ export function FiltersDrawer({ open, onClose }: { open: boolean; onClose: () =>
       open={open}
       onClose={onClose}
       title="Filtros"
-      subtitle="Refine sua busca de talentos"
+      subtitle="Refina tu búsqueda de talentos"
       width={400}
       footer={
         <Stack direction="row" gap={1.5}>
-          <Button fullWidth onClick={() => { clearFilters(); }}>Limpar</Button>
+          <Button fullWidth onClick={() => { clearFilters(); }}>Limpiar</Button>
           <Button fullWidth variant="contained" onClick={onClose}>Aplicar filtros</Button>
         </Stack>
       }
     >
       <Stack spacing={3}>
         <FormControl fullWidth>
-          <FormLabel sx={{ fontSize: 13, fontWeight: 750, color: "text.primary", mb: 1 }}>Localização</FormLabel>
+          <FormLabel sx={{ fontSize: 13, fontWeight: 750, color: "text.primary", mb: 1 }}>Ubicación</FormLabel>
           <SkillsEditor
             skills={filters.locations}
             onChange={(locations) => setFilters({ ...filters, locations })}
-            placeholder="Adicionar localização e pressionar Enter"
+            placeholder="Agregar ubicación y presionar Enter"
           />
         </FormControl>
         <FormControl fullWidth>
-          <FormLabel sx={{ fontSize: 13, fontWeight: 750, color: "text.primary", mb: 1 }}>Competências</FormLabel>
+          <FormLabel sx={{ fontSize: 13, fontWeight: 750, color: "text.primary", mb: 1 }}>Competencias</FormLabel>
           <SkillsEditor
             skills={filters.skills}
             onChange={(skills) => setFilters({ ...filters, skills })}
-            placeholder="Adicionar competência e pressionar Enter"
+            placeholder="Agregar competencia y presionar Enter"
           />
         </FormControl>
         {(filters.locations.length > 0 || filters.skills.length > 0) && (
           <Typography variant="caption" color="text.secondary">
-            {filters.locations.length + filters.skills.length} filtro(s) ativo(s).
+            {filters.locations.length + filters.skills.length} filtro(s) activo(s).
           </Typography>
         )}
       </Stack>

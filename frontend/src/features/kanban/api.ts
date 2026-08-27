@@ -120,7 +120,7 @@ export const applicationApi = {
       .select("*")
       .single();
     throwIfError(error);
-    // Marca o candidato como "em processo" nesta vaga (espelha o comportamento anterior do mock-backend).
+    // Marca al candidato como "en proceso" en esta vacante (refleja el comportamiento anterior del mock-backend).
     await supabase.from("candidates").update({ vacancy_id: input.vacancyId }).eq("id", input.candidateId);
     return fromRow(data as ApplicationRow);
   },
@@ -140,7 +140,7 @@ export const applicationApi = {
   evaluate: async (id: string): Promise<Application> => {
     const { data: app, error: appError } = await supabase.from("applications").select("*").eq("id", id).single();
     throwIfError(appError);
-    if (!app) throw new SupabaseOpError("Candidatura não encontrada.");
+    if (!app) throw new SupabaseOpError("Candidatura no encontrada.");
 
     const [{ data: vacancy, error: vacancyError }, { data: candidate, error: candidateError }] = await Promise.all([
       supabase.from("vacancies").select("required_skills").eq("id", app.vacancy_id).single(),
@@ -148,7 +148,7 @@ export const applicationApi = {
     ]);
     throwIfError(vacancyError);
     throwIfError(candidateError);
-    if (!vacancy || !candidate) throw new SupabaseOpError("Vaga ou candidato não encontrado.");
+    if (!vacancy || !candidate) throw new SupabaseOpError("Vacante o candidato no encontrado.");
 
     const result = matchCandidateToVacancy({ requiredSkills: vacancy.required_skills ?? [] }, { skills: candidate.skills ?? [] });
     const aiEvaluation = { ...result, evaluatedAt: new Date().toISOString(), provider: "heuristic" };

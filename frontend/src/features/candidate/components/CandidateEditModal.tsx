@@ -9,7 +9,7 @@ import { useCandidate, useDeleteCandidate, useUpdateCandidate } from "../queries
 import { useVacancy } from "../../vacancy/queries";
 import { CandidateForm, emptyCandidateForm, isCandidateFormValid, type CandidateFormValues } from "./CandidateForm";
 
-/** Modal de edição — item 7 do escopo original. Salva via PATCH /candidates/:id (React Query + optimistic update). */
+/** Modal de edición — ítem 7 del alcance original. Guarda vía PATCH /candidates/:id (React Query + optimistic update). */
 export function CandidateEditModal() {
   const editingId = useUIStore((s) => s.editingCandidateId);
   const close = useUIStore((s) => s.closeEdit);
@@ -30,7 +30,7 @@ export function CandidateEditModal() {
         phone: candidate.phone ?? "",
         location: candidate.location ?? "",
         skills: candidate.skills,
-        seniority: candidate.seniority ?? "Pleno",
+        seniority: candidate.seniority ?? "Semi Senior",
         linkedin: candidate.linkedin ?? "",
         portfolio: candidate.portfolio ?? "",
         notes: candidate.notes ?? "",
@@ -45,10 +45,10 @@ export function CandidateEditModal() {
       { id: candidate.id, input: values },
       {
         onSuccess: () => {
-          toast.success("Candidato atualizado");
+          toast.success("Candidato actualizado");
           close();
         },
-        onError: (err) => toast.error(errorMessage(err, "Não foi possível salvar as alterações")),
+        onError: (err) => toast.error(errorMessage(err, "No se pudieron guardar los cambios")),
       },
     );
   };
@@ -56,11 +56,11 @@ export function CandidateEditModal() {
   const handleDelete = () => {
     deleteCandidate.mutate(candidate.id, {
       onSuccess: () => {
-        toast.success("Candidato removido");
+        toast.success("Candidato eliminado");
         setConfirmDelete(false);
         close();
       },
-      onError: (err) => toast.error(errorMessage(err, "Não foi possível remover o candidato")),
+      onError: (err) => toast.error(errorMessage(err, "No se pudo eliminar el candidato")),
     });
   };
 
@@ -73,11 +73,11 @@ export function CandidateEditModal() {
       width={680}
       footer={
         <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ width: "100%" }}>
-          <Button color="error" onClick={() => setConfirmDelete(true)} disabled={updateCandidate.isPending}>Excluir candidato</Button>
+          <Button color="error" onClick={() => setConfirmDelete(true)} disabled={updateCandidate.isPending}>Eliminar candidato</Button>
           <Stack direction="row" spacing={1.25}>
             <Button onClick={close} disabled={updateCandidate.isPending}>Cancelar</Button>
             <Button variant="contained" onClick={handleSave} disabled={!isCandidateFormValid(values) || updateCandidate.isPending}>
-              {updateCandidate.isPending ? "Salvando…" : "Salvar alterações"}
+              {updateCandidate.isPending ? "Guardando…" : "Guardar cambios"}
             </Button>
           </Stack>
         </Stack>
@@ -89,7 +89,7 @@ export function CandidateEditModal() {
         extraContent={
           <Stack direction="row" spacing={1} alignItems="center" sx={{ mb: 2.5, p: 1.25, borderRadius: 2.5, bgcolor: "action.hover" }}>
             <Typography variant="body2" color="text.secondary" sx={{ flex: 1 }}>
-              Vaga atribuída: <strong>{vacancy?.title ?? "Banco de Talentos"}</strong>. Para mudar a vaga ou a etapa, use o Kanban ou o Banco de Talentos.
+              Vacante atribuída: <strong>{vacancy?.title ?? "Banco de Talentos"}</strong>. Para cambiar la vacante o la etapa, usa el Kanban o el Banco de Talentos.
             </Typography>
             {vacancy && <Chip label={vacancy.status} size="small" />}
           </Stack>
@@ -97,8 +97,8 @@ export function CandidateEditModal() {
       />
       <ConfirmDialog
         open={confirmDelete}
-        title="Excluir candidato"
-        description={`Tem certeza que deseja excluir "${candidate.name}"? Essa ação não pode ser desfeita.`}
+        title="Eliminar candidato"
+        description={`¿Estás seguro de que deseas eliminar "${candidate.name}"? Esta acción no se puede deshacer.`}
         loading={deleteCandidate.isPending}
         onConfirm={handleDelete}
         onClose={() => setConfirmDelete(false)}

@@ -19,11 +19,11 @@ interface ConsultingLeadRow {
 }
 
 const CONSULTING_SERVICES: ConsultingService[] = [
-  { id: "recruitment", name: "Recruitment", desc: "Atração e seleção de talento para empresas parceiras", price: "€800–2.400/vaga", icon: "🎯" },
-  { id: "talent-hunting", name: "Talent Hunting", desc: "Pesquisa proativa de perfis estratégicos e headhunting", price: "€1.200–3.000/vaga", icon: "🕵️" },
-  { id: "hr-setup", name: "HR Setup", desc: "Criação de processos e estrutura de RH do zero", price: "€2.500–6.000/projeto", icon: "🏗️" },
-  { id: "onboarding-design", name: "Onboarding Design", desc: "Desenho e implementação de programas de onboarding", price: "€1.500–3.500/projeto", icon: "🚀" },
-  { id: "people-processes", name: "People Processes", desc: "Definição de OKRs, performance review e cultura", price: "€1.000–4.000/projeto", icon: "⚙️" },
+  { id: "recruitment", name: "Recruitment", desc: "Atracción y selección de talento para empresas asociadas", price: "€800–2.400/vacante", icon: "🎯" },
+  { id: "talent-hunting", name: "Talent Hunting", desc: "Búsqueda proactiva de perfiles estratégicos y headhunting", price: "€1.200–3.000/vacante", icon: "🕵️" },
+  { id: "hr-setup", name: "HR Setup", desc: "Creación de procesos y estructura de RR. HH. desde cero", price: "€2.500–6.000/proyecto", icon: "🏗️" },
+  { id: "onboarding-design", name: "Onboarding Design", desc: "Diseño e implementación de programas de onboarding", price: "€1.500–3.500/proyecto", icon: "🚀" },
+  { id: "people-processes", name: "People Processes", desc: "Definición de OKRs, performance review y cultura", price: "€1.000–4.000/proyecto", icon: "⚙️" },
 ];
 
 function fromRow(row: ConsultingLeadRow): ConsultingLead {

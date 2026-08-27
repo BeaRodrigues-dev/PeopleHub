@@ -11,8 +11,8 @@ interface ConfirmDialogProps {
   onClose: () => void;
 }
 
-/** Diálogo de confirmação genérico para ações destrutivas (excluir vaga, colaborador, etc.). */
-export function ConfirmDialog({ open, title, description, confirmLabel = "Excluir", loading, onConfirm, onClose }: ConfirmDialogProps) {
+/** Diálogo de confirmación genérico para acciones destructivas (eliminar vacante, colaborador, etc.). */
+export function ConfirmDialog({ open, title, description, confirmLabel = "Eliminar", loading, onConfirm, onClose }: ConfirmDialogProps) {
   return (
     <Modal
       open={open}
@@ -23,7 +23,7 @@ export function ConfirmDialog({ open, title, description, confirmLabel = "Exclui
         <>
           <Button onClick={onClose} disabled={loading}>Cancelar</Button>
           <Button variant="contained" color="error" onClick={onConfirm} disabled={loading}>
-            {loading ? "Excluindo…" : confirmLabel}
+            {loading ? "Eliminando…" : confirmLabel}
           </Button>
         </>
       }

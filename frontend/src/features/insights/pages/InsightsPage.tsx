@@ -12,8 +12,8 @@ import { INSIGHT_TYPES, type InsightType } from "../types";
 
 const TYPE_CONFIG: Record<InsightType, { label: string; icon: string; bg: string; border: string; badge: string; badgeFg: string }> = {
   problem: { label: "Problema", icon: "🔴", bg: "#FDF2F2", border: "#F3C6C6", badge: "#FDE2E2", badgeFg: "#B23A3A" },
-  opportunity: { label: "Oportunidade", icon: "🟡", bg: "#F1F8F3", border: "#CFE6D9", badge: "#DCEFE1", badgeFg: "#4C9773" },
-  suggestion: { label: "Sugestão", icon: "🔵", bg: "#F1F6FB", border: "#C6D9F3", badge: "#E3ECFA", badgeFg: "#2E5AA8" },
+  opportunity: { label: "Oportunidad", icon: "🟡", bg: "#F1F8F3", border: "#CFE6D9", badge: "#DCEFE1", badgeFg: "#4C9773" },
+  suggestion: { label: "Sugerencia", icon: "🔵", bg: "#F1F6FB", border: "#C6D9F3", badge: "#E3ECFA", badgeFg: "#2E5AA8" },
 };
 
 export function InsightsPage() {
@@ -36,15 +36,15 @@ export function InsightsPage() {
       { type: newType, text: newText.trim() },
       {
         onSuccess: () => { setNewText(""); setShowForm(false); },
-        onError: (err) => toast.error(errorMessage(err, "Não foi possível salvar o insight.")),
+        onError: (err) => toast.error(errorMessage(err, "No fue posible guardar el insight.")),
       },
     );
   };
 
   const handleGenerate = () => {
     generateInsights.mutate(undefined, {
-      onSuccess: (created) => toast.success(created.length ? `${created.length} novo(s) insight(s) gerado(s).` : "Nenhum novo insight identificado no momento."),
-      onError: (err) => toast.error(errorMessage(err, "Não foi possível gerar insights.")),
+      onSuccess: (created) => toast.success(created.length ? `${created.length} nuevo(s) insight(s) generado(s).` : "Ningún insight nuevo identificado por el momento."),
+      onError: (err) => toast.error(errorMessage(err, "No fue posible generar insights.")),
     });
   };
 
@@ -53,19 +53,19 @@ export function InsightsPage() {
       <Stack direction={{ xs: "column", sm: "row" }} alignItems={{ sm: "center" }} spacing={2} sx={{ mb: 2.5 }}>
         <Box sx={{ flex: 1 }}>
           <Typography variant="h4">HR Insights</Typography>
-          <Typography color="text.secondary" variant="body2" sx={{ mt: 0.4 }}>Observações, oportunidades e sugestões — manuais ou geradas por IA a partir dos dados do sistema.</Typography>
+          <Typography color="text.secondary" variant="body2" sx={{ mt: 0.4 }}>Observaciones, oportunidades y sugerencias — manuales o generadas por IA a partir de los datos del sistema.</Typography>
         </Box>
         <Stack direction="row" spacing={1.25}>
           <Button variant="outlined" startIcon={<AutoAwesomeRoundedIcon />} onClick={handleGenerate} disabled={generateInsights.isPending}>
-            {generateInsights.isPending ? "Gerando…" : "Gerar com IA"}
+            {generateInsights.isPending ? "Generando…" : "Generar con IA"}
           </Button>
-          <Button variant="contained" startIcon={<AddRoundedIcon />} onClick={() => setShowForm((v) => !v)}>Novo insight</Button>
+          <Button variant="contained" startIcon={<AddRoundedIcon />} onClick={() => setShowForm((v) => !v)}>Nuevo insight</Button>
         </Stack>
       </Stack>
 
       {showForm && (
         <Box sx={{ bgcolor: "background.paper", border: "1px solid", borderColor: "divider", borderRadius: 4, p: 2.5, mb: 2.5 }}>
-          <Typography fontWeight={800} sx={{ mb: 1.5 }}>Novo insight</Typography>
+          <Typography fontWeight={800} sx={{ mb: 1.5 }}>Nuevo insight</Typography>
           <Stack direction="row" spacing={1} sx={{ mb: 1.5 }}>
             {INSIGHT_TYPES.map((t) => (
               <Chip
@@ -80,7 +80,7 @@ export function InsightsPage() {
               />
             ))}
           </Stack>
-          <TextField multiline minRows={3} fullWidth placeholder="Descreva o insight…" value={newText} onChange={(e) => setNewText(e.target.value)} sx={{ bgcolor: "#fff" }} />
+          <TextField multiline minRows={3} fullWidth placeholder="Describe el insight…" value={newText} onChange={(e) => setNewText(e.target.value)} sx={{ bgcolor: "#fff" }} />
           <Stack direction="row" spacing={1.5} sx={{ mt: 1.5 }}>
             <Button variant="contained" onClick={handleAdd} disabled={createInsight.isPending}>Guardar</Button>
             <Button variant="text" onClick={() => setShowForm(false)}>Cancelar</Button>
@@ -100,7 +100,7 @@ export function InsightsPage() {
       ) : isLoading ? (
         <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", sm: "1fr 1fr" }, gap: 2 }}>{Array.from({ length: 4 }).map((_, i) => <Skeleton key={i} variant="rounded" height={120} />)}</Box>
       ) : filtered.length === 0 ? (
-        <EmptyState icon={<LightbulbRoundedIcon />} title="Nenhum insight registado" description='Adicione manualmente ou clique em "Gerar com IA".' />
+        <EmptyState icon={<LightbulbRoundedIcon />} title="Ningún insight registrado" description='Agrega uno manualmente o haz clic en "Generar con IA".' />
       ) : (
         <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", sm: "1fr 1fr" }, gap: 2 }}>
           {filtered.map((insight) => {

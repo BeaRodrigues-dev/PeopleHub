@@ -134,7 +134,7 @@ export const candidateApi = {
   },
 
   /**
-   * Este app não extrai o conteúdo binário real do PDF/DOCX — gera um texto
+   * Esta app no extrae el contenido binario real del PDF/DOCX — genera un texto
    * de currículo plausível a partir do nome do arquivo (ver lib/ai.ts), o
    * suficiente para exercitar o fluxo completo de ponta a ponta. O arquivo
    * em si é enviado de verdade ao Supabase Storage.

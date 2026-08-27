@@ -18,8 +18,8 @@ import { errorMessage } from "../../../components/common/ErrorState";
 
 const INSIGHT_STYLE: Record<string, { bg: string; border: string; label: string; icon: string }> = {
   problem: { bg: "#FDF2F2", border: "#F3C6C6", label: "Problema", icon: "🔴" },
-  opportunity: { bg: "#F1F8F3", border: "#CFE6D9", label: "Oportunidade", icon: "🟡" },
-  suggestion: { bg: "#F1F6FB", border: "#C6D9F3", label: "Sugestão", icon: "🔵" },
+  opportunity: { bg: "#F1F8F3", border: "#CFE6D9", label: "Oportunidad", icon: "🟡" },
+  suggestion: { bg: "#F1F6FB", border: "#C6D9F3", label: "Sugerencia", icon: "🔵" },
 };
 
 interface LocalTask {
@@ -30,17 +30,17 @@ interface LocalTask {
 }
 
 const INITIAL_TASKS: LocalTask[] = [
-  { id: 1, text: "Rever candidaturas em Triagem", day: "today", done: false },
-  { id: 2, text: "Follow-up com empresas em negociação", day: "today", done: false },
-  { id: 3, text: "Atualizar checklist de onboarding ativo", day: "today", done: true },
-  { id: 4, text: "Publicar nova vaga em aberto", day: "week", done: false },
-  { id: 5, text: "Preparar weekly report", day: "week", done: false },
-  { id: 6, text: "Revisar pipeline de consulting", day: "week", done: false },
-  { id: 7, text: "Definir metas de People para o próximo ciclo", day: "pending", done: false },
+  { id: 1, text: "Revisar candidaturas en Preselección", day: "today", done: false },
+  { id: 2, text: "Dar seguimiento a empresas en negociación", day: "today", done: false },
+  { id: 3, text: "Actualizar checklist de onboarding activo", day: "today", done: true },
+  { id: 4, text: "Publicar nueva vacante abierta", day: "week", done: false },
+  { id: 5, text: "Preparar reporte semanal", day: "week", done: false },
+  { id: 6, text: "Revisar pipeline de consultoría", day: "week", done: false },
+  { id: 7, text: "Definir metas de People para el próximo ciclo", day: "pending", done: false },
 ];
 
 function formatToday(): string {
-  const text = new Date().toLocaleDateString("pt-BR", { weekday: "long", day: "numeric", month: "long", year: "numeric" });
+  const text = new Date().toLocaleDateString("es-ES", { weekday: "long", day: "numeric", month: "long", year: "numeric" });
   return text.charAt(0).toUpperCase() + text.slice(1);
 }
 
@@ -64,11 +64,11 @@ export function HomePage() {
   const { data: poolData } = useTalentPool({ limit: 1 });
   const generateInsights = useGenerateInsightsWithAi();
 
-  const openVacancies = vacancies.filter((v) => v.status === "Aberta");
+  const openVacancies = vacancies.filter((v) => v.status === "Abierta");
   const activeCandidates = Object.values(counts ?? {}).reduce((sum, n) => sum + n, 0);
-  const activeEmployees = employees.filter((e) => e.status === "Active");
+  const activeEmployees = employees.filter((e) => e.status === "Activo");
   const offboardingEmployees = employees.filter((e) => e.status === "Offboarding");
-  const activeOnboardings = onboardings.filter((o) => o.status !== "Completed");
+  const activeOnboardings = onboardings.filter((o) => o.status !== "Completado");
   const clients = leads.filter((l) => l.status === "Cliente");
 
   const filteredTasks = tasks.filter((t) => t.day === activeDay);
@@ -80,8 +80,8 @@ export function HomePage() {
 
   const handleGenerateInsights = () => {
     generateInsights.mutate(undefined, {
-      onSuccess: (created) => toast.success(`${created.length} novo(s) insight(s) gerado(s) com IA.`),
-      onError: (error) => toast.error(errorMessage(error, "Não foi possível gerar insights.")),
+      onSuccess: (created) => toast.success(`${created.length} nuevo(s) insight(s) generado(s) con IA.`),
+      onError: (error) => toast.error(errorMessage(error, "No se pudieron generar insights.")),
     });
   };
 
@@ -91,23 +91,23 @@ export function HomePage() {
         <Typography variant="caption" fontWeight={700} color="text.secondary" sx={{ textTransform: "uppercase", letterSpacing: "0.08em" }}>
           {formatToday()}
         </Typography>
-        <Typography variant="h4" sx={{ mt: 0.4 }}>Olá, Beatriz 👋</Typography>
-        <Typography color="text.secondary" sx={{ mt: 0.5 }}>Aqui está o teu resumo de People & HR para hoje.</Typography>
+        <Typography variant="h4" sx={{ mt: 0.4 }}>Hola, Beatriz 👋</Typography>
+        <Typography color="text.secondary" sx={{ mt: 0.5 }}>Aquí está tu resumen de People & HR para hoy.</Typography>
       </Box>
 
       <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr 1fr", lg: "repeat(4, 1fr)" }, gap: 2, mb: 3 }}>
-        <StatCard label="Colaboradores" value={isLoading ? undefined : activeEmployees.length} sub={`${offboardingEmployees.length} em offboarding`} color="#CFE6D9" />
-        <StatCard label="Vagas abertas" value={isLoading ? undefined : openVacancies.length} sub={`${vacancies.length} total`} color="#9BCBAE" light />
-        <StatCard label="Candidatos ativos" value={isLoading ? undefined : activeCandidates} sub="em pipelines de vagas" color="#4C9773" light />
+        <StatCard label="Colaboradores" value={isLoading ? undefined : activeEmployees.length} sub={`${offboardingEmployees.length} en offboarding`} color="#CFE6D9" />
+        <StatCard label="Vacantes abiertas" value={isLoading ? undefined : openVacancies.length} sub={`${vacancies.length} total`} color="#9BCBAE" light />
+        <StatCard label="Candidatos activos" value={isLoading ? undefined : activeCandidates} sub="en pipelines de vacantes" color="#4C9773" light />
         <StatCard label="Pipeline Consulting" value={isLoading ? undefined : leads.length} sub={`${clients.length} cliente(s)`} color="#E7F2EA" />
       </Box>
 
       <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", lg: "1fr 1fr 1fr" }, gap: 2.5, mb: 3 }}>
         <PanelCard title="HR Overview" icon={<BarChartRoundedIcon fontSize="small" />}>
-          <OverviewRow label="Onboardings ativos" value={String(activeOnboardings.length)} />
-          <OverviewRow label="Talentos no pool" value={String(poolData?.total ?? 0)} />
-          <OverviewRow label="Empresas em pipeline" value={String(leads.length)} />
-          <OverviewRow label="Insights registados" value={String(insights.length)} />
+          <OverviewRow label="Onboardings activos" value={String(activeOnboardings.length)} />
+          <OverviewRow label="Talentos en el pool" value={String(poolData?.total ?? 0)} />
+          <OverviewRow label="Empresas en pipeline" value={String(leads.length)} />
+          <OverviewRow label="Insights registrados" value={String(insights.length)} />
           <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap sx={{ pt: 1.5, mt: 1, borderTop: "1px solid", borderColor: "divider" }}>
             {[{ label: "Recruitment", to: "/vagas" }, { label: "People", to: "/pessoas" }, { label: "Onboarding", to: "/onboarding" }].map((s) => (
               <Chip key={s.to} label={`→ ${s.label}`} size="small" onClick={() => navigate(s.to)} sx={{ bgcolor: "#E7F2EA", color: "primary.main", fontWeight: 700, "&:hover": { bgcolor: "secondary.light" } }} />
@@ -120,7 +120,7 @@ export function HomePage() {
             {(["today", "week", "pending"] as const).map((d) => (
               <Chip
                 key={d}
-                label={d === "today" ? "Hoje" : d === "week" ? "Semana" : "Pendentes"}
+                label={d === "today" ? "Hoy" : d === "week" ? "Semana" : "Pendientes"}
                 size="small"
                 onClick={() => setActiveDay(d)}
                 sx={{
@@ -150,18 +150,18 @@ export function HomePage() {
                 </Typography>
               </Stack>
             ))}
-            {filteredTasks.length === 0 && <Typography variant="body2" color="text.secondary" fontStyle="italic">Tudo feito! 🎉</Typography>}
+            {filteredTasks.length === 0 && <Typography variant="body2" color="text.secondary" fontStyle="italic">¡Todo listo! 🎉</Typography>}
           </Stack>
         </PanelCard>
 
         <PanelCard title="KPI Summary" icon={<TrendingUpRoundedIcon fontSize="small" />}>
           <KpiGroup label="Recruitment" items={[
-            { k: "Vagas abertas", v: String(openVacancies.length) },
-            { k: "Candidatos ativos", v: String(activeCandidates) },
+            { k: "Vacantes abiertas", v: String(openVacancies.length) },
+            { k: "Candidatos activos", v: String(activeCandidates) },
           ]} />
           <KpiGroup label="People" items={[
             { k: "Headcount", v: String(activeEmployees.length) },
-            { k: "Em onboarding", v: String(activeOnboardings.length) },
+            { k: "En onboarding", v: String(activeOnboardings.length) },
           ]} />
           <KpiGroup label="Business" items={[
             { k: "Pipeline Consulting", v: `${leads.length} leads` },
@@ -181,7 +181,7 @@ export function HomePage() {
             onClick={handleGenerateInsights}
             disabled={generateInsights.isPending}
           >
-            {generateInsights.isPending ? "Gerando…" : "Gerar com IA"}
+            {generateInsights.isPending ? "Generando…" : "Generar con IA"}
           </Button>
         }
       >
@@ -199,7 +199,7 @@ export function HomePage() {
           })}
           {recentInsights.length === 0 && (
             <Typography variant="body2" color="text.secondary" sx={{ gridColumn: "1 / -1" }}>
-              Nenhum insight ainda — clique em "Gerar com IA" ou adicione um manualmente na página Insights.
+              Aún no hay insights — haz clic en "Generar con IA" o agrega uno manualmente en la página Insights.
             </Typography>
           )}
         </Box>

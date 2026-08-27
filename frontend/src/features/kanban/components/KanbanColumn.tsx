@@ -76,12 +76,12 @@ export const KanbanColumn = memo(function KanbanColumn({ stage, applications, on
         )}
         {applications.length === 0 && (
           <Typography variant="caption" textAlign="center" color="text.secondary" sx={{ display: "block", p: 2 }}>
-            Nenhum candidato nesta etapa
+            Ningún candidato en esta etapa
           </Typography>
         )}
         {visible < applications.length && (
           <Button size="small" fullWidth sx={{ mt: 1 }} onClick={() => setVisible((v) => v + PAGE_SIZE)}>
-            Carregar mais ({applications.length - visible})
+            Cargar más ({applications.length - visible})
           </Button>
         )}
       </Box>

@@ -13,7 +13,7 @@ export interface AiEvaluation {
   provider?: string;
 }
 
-/** Candidatura (candidato x vaga). Quando `populate=candidate`, `candidateId` vem populado com o objeto completo. */
+/** Candidatura (candidato x vacante). Cuando `populate=candidate`, `candidateId` viene poblado con el objeto completo. */
 export interface Application {
   id: string;
   candidateId: string | Candidate;

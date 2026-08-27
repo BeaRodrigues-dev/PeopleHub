@@ -63,7 +63,7 @@ function toRow(input: Partial<CreateVacancyInput>): Record<string, unknown> {
   return row;
 }
 
-/** Gera ids estáveis para as etapas do pipeline, reaproveitando os ids existentes (por posição) quando disponíveis. */
+/** Genera ids estables para las etapas del pipeline, reutilizando los ids existentes (por posición) cuando estén disponibles. */
 function buildStages(stages: CreateVacancyInput["stages"], existing?: PipelineStage[]): PipelineStage[] {
   return stages.map((s, i) => ({
     id: existing?.[i]?.id || crypto.randomUUID(),

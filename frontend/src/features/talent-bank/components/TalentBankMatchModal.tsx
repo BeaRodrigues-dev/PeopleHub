@@ -31,10 +31,10 @@ function matchColor(percent: number) {
 }
 
 /**
- * Seleção inteligente de candidatos do Banco de Talentos — compara as
- * competências da vaga com as de cada candidato do pool. Por padrão usa um
- * ranking rápido (local, sem custo de IA); o botão "Reforçar com IA" chama
- * o endpoint que avalia os melhores colocados com o AiService de verdade.
+ * Selección inteligente de candidatos del Banco de Talentos — compara las
+ * competencias de la vacante con las de cada candidato del pool. Por defecto usa un
+ * ranking rápido (local, sin costo de IA); el botón "Reforzar con IA" llama
+ * al endpoint que evalúa a los mejores clasificados con el AiService real.
  */
 export function TalentBankMatchModal() {
   const vacancyId = useUIStore((s) => s.matchModalVacancyId);
@@ -67,7 +67,7 @@ export function TalentBankMatchModal() {
     if (!vacancyId) return;
     matchWithAi.mutate(vacancyId, {
       onSuccess: (data) => setAiResults(data),
-      onError: (err) => toast.error(err instanceof Error ? err.message : "Falha ao avaliar candidatos com IA"),
+      onError: (err) => toast.error(err instanceof Error ? err.message : "Error al evaluar candidatos con IA"),
     });
   };
 
@@ -77,10 +77,10 @@ export function TalentBankMatchModal() {
       { candidateIds: Array.from(selected), vacancyId },
       {
         onSuccess: () => {
-          toast.success(`${selected.size} candidato(s) adicionado(s) à vaga`);
+          toast.success(`${selected.size} candidato(s) agregado(s) a la vacante`);
           handleClose();
         },
-        onError: (err) => toast.error(err instanceof Error ? err.message : "Falha ao adicionar candidatos"),
+        onError: (err) => toast.error(err instanceof Error ? err.message : "Error al agregar candidatos"),
       },
     );
   };
@@ -96,18 +96,18 @@ export function TalentBankMatchModal() {
     <Modal
       open={!!vacancyId}
       onClose={handleClose}
-      title="Adicionar candidatos do Banco de Talentos"
-      subtitle={vacancy ? `Compatibilidade com as competências de "${vacancy.title}"` : undefined}
+      title="Agregar candidatos del Banco de Talentos"
+      subtitle={vacancy ? `Compatibilidad con las competencias de "${vacancy.title}"` : undefined}
       width={720}
       footer={
         <>
           <Button startIcon={<AutoAwesomeRoundedIcon />} onClick={handleAiRefine} disabled={matchWithAi.isPending || !results.length}>
-            {matchWithAi.isPending ? "Avaliando com IA…" : "Reforçar com IA"}
+            {matchWithAi.isPending ? "Evaluando con IA…" : "Reforzar con IA"}
           </Button>
           <Box sx={{ flex: 1 }} />
           <Button onClick={handleClose} disabled={assign.isPending}>Cancelar</Button>
           <Button variant="contained" disabled={selected.size === 0 || assign.isPending} onClick={handleAssign}>
-            {assign.isPending ? "Adicionando…" : `Adicionar ${selected.size || ""} candidato${selected.size === 1 ? "" : "s"}`.trim()}
+            {assign.isPending ? "Agregando…" : `Agregar ${selected.size || ""} candidato${selected.size === 1 ? "" : "s"}`.trim()}
           </Button>
         </>
       }
@@ -115,7 +115,7 @@ export function TalentBankMatchModal() {
       <TextField
         fullWidth
         size="small"
-        placeholder="Buscar por nome ou competência…"
+        placeholder="Buscar por nombre o competencia…"
         value={search}
         onChange={(e) => setSearch(e.target.value)}
         slotProps={{ input: { startAdornment: <SearchRoundedIcon fontSize="small" sx={{ mr: 1, color: "text.secondary" }} /> } }}
@@ -129,7 +129,7 @@ export function TalentBankMatchModal() {
           <CircularProgress size={26} />
         </Box>
       ) : filtered.length === 0 ? (
-        <EmptyState icon={<SearchRoundedIcon />} title="Nenhum candidato encontrado" description="Ajuste a busca ou cadastre novos candidatos no Banco de Talentos." />
+        <EmptyState icon={<SearchRoundedIcon />} title="No se encontró ningún candidato" description="Ajuste la búsqueda o registre nuevos candidatos en el Banco de Talentos." />
       ) : (
         <Stack spacing={1.25}>
           {filtered.map(({ candidate, score, matchingSkills, missingSkills, reasoning }) => (

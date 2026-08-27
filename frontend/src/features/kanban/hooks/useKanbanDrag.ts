@@ -5,10 +5,10 @@ import type { Application } from "../types";
 import { useMoveApplicationStage } from "../queries";
 
 /**
- * Drag and drop do Kanban de uma vaga. Cada coluna é identificada pelo nome
- * da etapa (currentStage). Usa mutation com atualização otimista (ver
- * useMoveApplicationStage) — a UI reordena/move o card antes da confirmação
- * do servidor, e reverte automaticamente em caso de erro.
+ * Drag and drop del Kanban de una vacante. Cada columna se identifica por el nombre
+ * de la etapa (currentStage). Usa mutation con actualización optimista (ver
+ * useMoveApplicationStage) — la UI reordena/mueve el card antes de la confirmación
+ * del servidor, y revierte automáticamente en caso de error.
  */
 export function useKanbanDrag(vacancyId: string, stages: PipelineStage[], applications: Application[]) {
   const stageNames = useMemo(() => new Set(stages.map((s) => s.name)), [stages]);

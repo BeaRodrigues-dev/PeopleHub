@@ -29,7 +29,7 @@ export function useCandidateApplications(candidateId?: string | null) {
   });
 }
 
-/** Move o candidato de etapa com atualização otimista da coluna do Kanban. */
+/** Mueve al candidato de etapa con actualización optimista de la columna del Kanban. */
 export function useMoveApplicationStage(vacancyId: string) {
   const queryClient = useQueryClient();
   return useMutation({

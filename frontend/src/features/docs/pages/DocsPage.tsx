@@ -24,9 +24,9 @@ export function DocsPage() {
       <Stack direction={{ xs: "column", sm: "row" }} alignItems={{ sm: "center" }} spacing={2} sx={{ mb: 2.5 }}>
         <Box sx={{ flex: 1 }}>
           <Typography variant="h4">Documentos</Typography>
-          <Typography color="text.secondary" variant="body2" sx={{ mt: 0.4 }}>Manuais, políticas e materiais de referência da área de People.</Typography>
+          <Typography color="text.secondary" variant="body2" sx={{ mt: 0.4 }}>Manuales, políticas y materiales de referencia del área de People.</Typography>
         </Box>
-        <Button variant="contained" startIcon={<AddRoundedIcon />} onClick={() => setUploadOpen(true)}>Adicionar documento</Button>
+        <Button variant="contained" startIcon={<AddRoundedIcon />} onClick={() => setUploadOpen(true)}>Agregar documento</Button>
       </Stack>
 
       <Stack direction="row" spacing={1} sx={{ mb: 2.5 }} flexWrap="wrap" useFlexGap>
@@ -41,7 +41,7 @@ export function DocsPage() {
       ) : isLoading ? (
         <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", sm: "1fr 1fr", lg: "1fr 1fr 1fr" }, gap: 2 }}>{Array.from({ length: 6 }).map((_, i) => <Skeleton key={i} variant="rounded" height={120} />)}</Box>
       ) : filtered.length === 0 ? (
-        <EmptyState icon={<LibraryBooksRoundedIcon />} title="Nenhum documento ainda" description="Adicione manuais, políticas ou guias da área de People." action={<Button variant="contained" startIcon={<AddRoundedIcon />} onClick={() => setUploadOpen(true)}>Adicionar documento</Button>} />
+        <EmptyState icon={<LibraryBooksRoundedIcon />} title="Todavía no hay documentos" description="Agrega manuales, políticas o guías del área de People." action={<Button variant="contained" startIcon={<AddRoundedIcon />} onClick={() => setUploadOpen(true)}>Agregar documento</Button>} />
       ) : (
         <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", sm: "1fr 1fr", lg: "1fr 1fr 1fr" }, gap: 2 }}>
           {filtered.map((doc) => (

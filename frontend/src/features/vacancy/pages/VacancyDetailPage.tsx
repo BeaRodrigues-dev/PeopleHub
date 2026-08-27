@@ -20,7 +20,7 @@ export function VacancyDetailPage() {
   const navigate = useNavigate();
   const toast = useToast();
   const { data: vacancy, isLoading, isError, error, refetch } = useVacancy(id);
-  const { data: timeToFill } = useTimeToFill(vacancy?.status === "Aberta" ? id : null);
+  const { data: timeToFill } = useTimeToFill(vacancy?.status === "Abierta" ? id : null);
   const openCandidate = useUIStore((s) => s.openCandidate);
   const openMatchModal = useUIStore((s) => s.openMatchModal);
   const openAddCandidate = useUIStore((s) => s.openAddCandidate);
@@ -31,8 +31,8 @@ export function VacancyDetailPage() {
   const handleDelete = () => {
     if (!vacancy) return;
     deleteVacancy.mutate(vacancy.id, {
-      onSuccess: () => { toast.success("Vaga removida."); navigate("/vagas"); },
-      onError: (err) => toast.error(errorMessage(err, "Não foi possível remover a vaga.")),
+      onSuccess: () => { toast.success("Vacante eliminada."); navigate("/vagas"); },
+      onError: (err) => toast.error(errorMessage(err, "No se pudo eliminar la vacante.")),
     });
   };
 
@@ -44,13 +44,13 @@ export function VacancyDetailPage() {
     );
   }
   if (isError) return <Box sx={{ p: 4 }}><ErrorState error={error} onRetry={() => refetch()} /></Box>;
-  if (!vacancy) return <Box sx={{ p: 4 }}><Alert severity="error">Vaga não encontrada.</Alert></Box>;
+  if (!vacancy) return <Box sx={{ p: 4 }}><Alert severity="error">Vacante no encontrada.</Alert></Box>;
 
   const stages = [...vacancy.stages].sort((a, b) => a.order - b.order);
 
   return (
     <Box sx={{ p: { xs: 2, md: 3.5 }, maxWidth: 1800, mx: "auto" }}>
-      <Button startIcon={<ArrowBackRoundedIcon />} onClick={() => navigate("/vagas")} sx={{ mb: 1.5 }}>Voltar para vagas</Button>
+      <Button startIcon={<ArrowBackRoundedIcon />} onClick={() => navigate("/vagas")} sx={{ mb: 1.5 }}>Volver a vacantes</Button>
 
       <Stack direction={{ xs: "column", md: "row" }} alignItems={{ md: "center" }} spacing={2} sx={{ mb: 1 }}>
         <Box sx={{ flex: 1, minWidth: 0 }}>
@@ -64,7 +64,7 @@ export function VacancyDetailPage() {
         </Box>
         <Stack direction="row" spacing={1.25}>
           <Button variant="outlined" startIcon={<PersonAddAltRoundedIcon />} onClick={() => openAddCandidate(vacancy.id)}>
-            Adicionar candidato
+            Agregar candidato
           </Button>
           <Button variant="contained" startIcon={<PersonAddAltRoundedIcon />} onClick={() => openMatchModal(vacancy.id)}>
             Banco de Talentos
@@ -73,7 +73,7 @@ export function VacancyDetailPage() {
             Editar
           </Button>
           <Button variant="outlined" color="error" startIcon={<DeleteOutlineRoundedIcon />} onClick={() => setConfirmDelete(true)}>
-            Excluir
+            Eliminar
           </Button>
         </Stack>
       </Stack>
@@ -86,7 +86,7 @@ export function VacancyDetailPage() {
           <Tooltip title={timeToFill.reasoning}>
             <Chip
               icon={<AutoAwesomeRoundedIcon sx={{ fontSize: 15 }} />}
-              label={`IA: ~${timeToFill.estimatedDays}d para preencher (confiança ${timeToFill.confidence.toLowerCase()})`}
+              label={`IA: ~${timeToFill.estimatedDays}d para completar (confianza ${timeToFill.confidence.toLowerCase()})`}
               size="small"
               sx={{ fontWeight: 700, bgcolor: "#E7F2EA", color: "primary.main", ml: 0.5 }}
             />
@@ -95,7 +95,7 @@ export function VacancyDetailPage() {
       </Stack>
 
       <TextField
-        placeholder="Buscar candidato por nome ou competência…"
+        placeholder="Buscar candidato por nombre o competencia…"
         value={search}
         onChange={(e) => setSearch(e.target.value)}
         size="small"
@@ -112,8 +112,8 @@ export function VacancyDetailPage() {
       <TalentBankMatchModal />
       <ConfirmDialog
         open={confirmDelete}
-        title="Excluir vaga"
-        description={`Tem certeza que deseja excluir a vaga "${vacancy.title}"? Candidaturas associadas também serão afetadas. Essa ação não pode ser desfeita.`}
+        title="Eliminar vacante"
+        description={`¿Estás seguro de que deseas eliminar la vacante "${vacancy.title}"? Las candidaturas asociadas también se verán afectadas. Esta acción no se puede deshacer.`}
         loading={deleteVacancy.isPending}
         onConfirm={handleDelete}
         onClose={() => setConfirmDelete(false)}

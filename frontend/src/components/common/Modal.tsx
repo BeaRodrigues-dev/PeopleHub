@@ -62,7 +62,7 @@ export function Modal({ open, onClose, title, subtitle, width = 640, children, f
             <Typography variant="h6" fontWeight={800}>{title}</Typography>
             {subtitle && <Typography variant="body2" color="text.secondary" sx={{ mt: 0.25 }}>{subtitle}</Typography>}
           </Box>
-          <IconButton onClick={onClose} size="small" aria-label="Fechar">
+          <IconButton onClick={onClose} size="small" aria-label="Cerrar">
             <CloseRoundedIcon fontSize="small" />
           </IconButton>
         </Box>

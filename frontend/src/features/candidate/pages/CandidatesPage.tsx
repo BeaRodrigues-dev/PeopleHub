@@ -7,7 +7,7 @@ import { CandidateList } from "../components/CandidateList";
 import { FiltersDrawer } from "../../../components/filters/FiltersDrawer";
 import { useUIStore } from "../../../store/uiStore";
 
-/** Diretório global de candidatos (atribuídos a vagas + Banco de Talentos). */
+/** Directorio global de candidatos (asignados a vacantes + Banco de Talentos). */
 export function CandidatesPage() {
   const [typed, setTyped] = useState("");
   const [search, setSearch] = useState("");
@@ -28,13 +28,13 @@ export function CandidatesPage() {
       <Stack direction={{ xs: "column", sm: "row" }} alignItems={{ sm: "center" }} spacing={2} sx={{ mb: 3 }}>
         <Box sx={{ flex: 1 }}>
           <Typography variant="h4">Candidatos</Typography>
-          <Typography color="text.secondary" variant="body2" sx={{ mt: 0.4 }}>Todos os candidatos da organização, atribuídos ou não a uma vaga.</Typography>
+          <Typography color="text.secondary" variant="body2" sx={{ mt: 0.4 }}>Todos los candidatos de la organización, asignados o no a una vacante.</Typography>
         </Box>
-        <Button variant="contained" startIcon={<PersonAddAltRoundedIcon />} onClick={() => openAddCandidate(null)}>Adicionar candidato</Button>
+        <Button variant="contained" startIcon={<PersonAddAltRoundedIcon />} onClick={() => openAddCandidate(null)}>Agregar candidato</Button>
       </Stack>
       <Stack direction={{ xs: "column", sm: "row" }} gap={1.25} sx={{ mb: 2.5 }}>
         <TextField
-          placeholder="Busque por nome, email ou competência…"
+          placeholder="Busca por nombre, correo o competencia…"
           value={typed}
           onChange={(e) => setTyped(e.target.value)}
           size="small"

@@ -15,17 +15,17 @@ import { useToast } from "../../../components/common/ToastProvider";
 import type { ConsultingLead } from "../types";
 
 const STATUS_COLOR: Record<string, { bg: string; fg: string }> = {
-  "Pesquisado": { bg: "#E4EDE6", fg: "#6E7D74" },
-  "Proposta enviada": { bg: "#E3ECFA", fg: "#2E5AA8" },
-  "Reunião agendada": { bg: "#DCEFE1", fg: "#4C9773" },
-  "Em negociação": { bg: "#FBEBD2", fg: "#A66A1E" },
+  "Investigado": { bg: "#E4EDE6", fg: "#6E7D74" },
+  "Propuesta enviada": { bg: "#E3ECFA", fg: "#2E5AA8" },
+  "Reunión agendada": { bg: "#DCEFE1", fg: "#4C9773" },
+  "En negociación": { bg: "#FBEBD2", fg: "#A66A1E" },
   "Cliente": { bg: "#DCEFE1", fg: "#2E7D4F" },
 };
 
 const PRIORITY_COLOR: Record<string, { bg: string; fg: string }> = {
   Alta: { bg: "#FDE2E2", fg: "#B23A3A" },
-  Média: { bg: "#FBEBD2", fg: "#A66A1E" },
-  Baixa: { bg: "#E4EDE6", fg: "#6E7D74" },
+  Media: { bg: "#FBEBD2", fg: "#A66A1E" },
+  Baja: { bg: "#E4EDE6", fg: "#6E7D74" },
 };
 
 export function ConsultingPage() {
@@ -43,16 +43,16 @@ export function ConsultingPage() {
   const handleDelete = () => {
     if (!toDelete) return;
     deleteLead.mutate(toDelete.id, {
-      onSuccess: () => { toast.success("Empresa removida."); setToDelete(null); },
-      onError: (err) => toast.error(errorMessage(err, "Não foi possível remover.")),
+      onSuccess: () => { toast.success("Empresa eliminada."); setToDelete(null); },
+      onError: (err) => toast.error(errorMessage(err, "No fue posible eliminar.")),
     });
   };
 
   const bdStats = [
-    { label: "Pesquisadas", count: leads.filter((l) => l.status === "Pesquisado").length },
-    { label: "Contactadas", count: leads.filter((l) => l.status === "Proposta enviada").length },
-    { label: "Reuniões", count: leads.filter((l) => l.status === "Reunião agendada").length },
-    { label: "Negociação", count: leads.filter((l) => l.status === "Em negociação").length },
+    { label: "Investigadas", count: leads.filter((l) => l.status === "Investigado").length },
+    { label: "Contactadas", count: leads.filter((l) => l.status === "Propuesta enviada").length },
+    { label: "Reuniones", count: leads.filter((l) => l.status === "Reunión agendada").length },
+    { label: "Negociación", count: leads.filter((l) => l.status === "En negociación").length },
     { label: "Clientes", count: leads.filter((l) => l.status === "Cliente").length },
   ];
 
@@ -61,14 +61,14 @@ export function ConsultingPage() {
       <Stack direction={{ xs: "column", sm: "row" }} alignItems={{ sm: "center" }} spacing={2} sx={{ mb: 2 }}>
         <Box sx={{ flex: 1 }}>
           <Typography variant="h4">HR Consulting Business</Typography>
-          <Typography color="text.secondary" variant="body2" sx={{ mt: 0.4 }}>Transforma o teu RH numa fonte de receita</Typography>
+          <Typography color="text.secondary" variant="body2" sx={{ mt: 0.4 }}>Transforma tu RR. HH. en una fuente de ingresos</Typography>
         </Box>
-        <Button variant="contained" startIcon={<AddRoundedIcon />} onClick={() => setAddOpen(true)}>Nova empresa</Button>
+        <Button variant="contained" startIcon={<AddRoundedIcon />} onClick={() => setAddOpen(true)}>Nueva empresa</Button>
       </Stack>
 
       <Tabs value={tab} onChange={(_, v) => setTab(v)} sx={{ mb: 2.5, borderBottom: "1px solid", borderColor: "divider" }}>
         <Tab value="pipeline" label="🏢 Pipeline" sx={{ textTransform: "none", fontWeight: 700 }} />
-        <Tab value="services" label="💼 Serviços" sx={{ textTransform: "none", fontWeight: 700 }} />
+        <Tab value="services" label="💼 Servicios" sx={{ textTransform: "none", fontWeight: 700 }} />
         <Tab value="bd" label="📈 Business Dev" sx={{ textTransform: "none", fontWeight: 700 }} />
       </Tabs>
 
@@ -78,13 +78,13 @@ export function ConsultingPage() {
         <Skeleton variant="rounded" height={320} />
       ) : tab === "pipeline" ? (
         leads.length === 0 ? (
-          <EmptyState icon={<BusinessCenterRoundedIcon />} title="Nenhuma empresa no pipeline" description="Adicione a primeira empresa para começar a acompanhar oportunidades." action={<Button variant="contained" startIcon={<AddRoundedIcon />} onClick={() => setAddOpen(true)}>Nova empresa</Button>} />
+          <EmptyState icon={<BusinessCenterRoundedIcon />} title="Ninguna empresa en el pipeline" description="Agrega la primera empresa para empezar a dar seguimiento a las oportunidades." action={<Button variant="contained" startIcon={<AddRoundedIcon />} onClick={() => setAddOpen(true)}>Nueva empresa</Button>} />
         ) : (
           <Box sx={{ bgcolor: "background.paper", border: "1px solid", borderColor: "divider", borderRadius: 4, overflow: "hidden" }}>
             <Table size="small">
               <TableHead>
                 <TableRow sx={{ bgcolor: "#F1F7F2" }}>
-                  {["Empresa", "Setor", "Dimensão", "Contacto", "Necessidade", "Status", "Valor", "IA", ""].map((h) => (
+                  {["Empresa", "Sector", "Tamaño", "Contacto", "Necesidad", "Status", "Valor", "IA", ""].map((h) => (
                     <TableCell key={h} sx={{ fontWeight: 800, fontSize: 11, textTransform: "uppercase", letterSpacing: "0.04em", color: "text.secondary" }}>{h}</TableCell>
                   ))}
                 </TableRow>
@@ -101,7 +101,7 @@ export function ConsultingPage() {
                     <TableCell><Typography variant="body2" fontWeight={700} color="primary.main">{lead.value}</Typography></TableCell>
                     <TableCell>
                       {lead.aiQualification ? (
-                        <Tooltip title={`${lead.aiQualification.reasoning} Próximo passo: ${lead.aiQualification.suggestedNextStep}`}>
+                        <Tooltip title={`${lead.aiQualification.reasoning} Próximo paso: ${lead.aiQualification.suggestedNextStep}`}>
                           <Chip label={lead.aiQualification.priority} size="small" sx={{ bgcolor: PRIORITY_COLOR[lead.aiQualification.priority]?.bg, color: PRIORITY_COLOR[lead.aiQualification.priority]?.fg, fontWeight: 700 }} />
                         </Tooltip>
                       ) : (
@@ -110,9 +110,9 @@ export function ConsultingPage() {
                           variant="text"
                           startIcon={<AutoAwesomeRoundedIcon fontSize="small" />}
                           disabled={qualify.isPending}
-                          onClick={() => qualify.mutate(lead.id, { onError: (error) => toast.error(errorMessage(error, "Não foi possível qualificar.")) })}
+                          onClick={() => qualify.mutate(lead.id, { onError: (error) => toast.error(errorMessage(error, "No fue posible calificar.")) })}
                         >
-                          Qualificar
+                          Calificar
                         </Button>
                       )}
                     </TableCell>
@@ -151,7 +151,7 @@ export function ConsultingPage() {
             ))}
           </Box>
           <Box sx={{ bgcolor: "background.paper", border: "1px solid", borderColor: "divider", borderRadius: 4, p: 2.5 }}>
-            <Typography fontWeight={800} sx={{ mb: 1.5 }}>Distribuição por status</Typography>
+            <Typography fontWeight={800} sx={{ mb: 1.5 }}>Distribución por status</Typography>
             <Stack spacing={1}>
               {Object.entries(STATUS_COLOR).map(([status, color]) => {
                 const count = leads.filter((l) => l.status === status).length;
@@ -175,8 +175,8 @@ export function ConsultingPage() {
       <AddConsultingLeadModal open={!!editing} onClose={() => setEditing(null)} lead={editing} />
       <ConfirmDialog
         open={!!toDelete}
-        title="Excluir empresa"
-        description={`Tem certeza que deseja excluir "${toDelete?.company}" do pipeline? Essa ação não pode ser desfeita.`}
+        title="Eliminar empresa"
+        description={`¿Estás seguro de que deseas eliminar "${toDelete?.company}" del pipeline? Esta acción no se puede deshacer.`}
         loading={deleteLead.isPending}
         onConfirm={handleDelete}
         onClose={() => setToDelete(null)}

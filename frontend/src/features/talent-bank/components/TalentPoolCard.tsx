@@ -26,7 +26,7 @@ export function TalentPoolCard({
           <Typography noWrap fontWeight={750} fontSize={14.5}>{candidate.name}</Typography>
           <Stack direction="row" spacing={0.5} alignItems="center" color="text.secondary">
             <LocationOnOutlinedIcon sx={{ fontSize: 13 }} />
-            <Typography noWrap variant="caption">{candidate.location || "Localização não informada"}</Typography>
+            <Typography noWrap variant="caption">{candidate.location || "Ubicación no informada"}</Typography>
           </Stack>
         </Box>
       </Stack>
@@ -35,12 +35,12 @@ export function TalentPoolCard({
           <Chip key={skill} label={skill} size="small" variant="outlined" sx={{ height: 21, fontSize: 10.5, fontWeight: 600 }} />
         ))}
       </Stack>
-      <Typography variant="caption" color="text.secondary" sx={{ mt: 1.1, display: "block" }}>{candidate.seniority || "Senioridade não informada"}</Typography>
+      <Typography variant="caption" color="text.secondary" sx={{ mt: 1.1, display: "block" }}>{candidate.seniority || "Nivel de experiencia no informado"}</Typography>
       <Button fullWidth size="small" variant="outlined" startIcon={<PersonAddAltRoundedIcon fontSize="small" />} onClick={(e) => setAnchor(e.currentTarget)} sx={{ mt: 1.35 }}>
-        Atribuir a vaga
+        Asignar a vacante
       </Button>
       <Menu anchorEl={anchor} open={!!anchor} onClose={() => setAnchor(null)}>
-        {vacancies.length === 0 && <MenuItem disabled>Nenhuma vaga aberta</MenuItem>}
+        {vacancies.length === 0 && <MenuItem disabled>Ninguna vacante abierta</MenuItem>}
         {vacancies.map((vacancy) => (
           <MenuItem key={vacancy.id} onClick={() => { setAnchor(null); onAssign(candidate.id, vacancy); }}>{vacancy.title}</MenuItem>
         ))}

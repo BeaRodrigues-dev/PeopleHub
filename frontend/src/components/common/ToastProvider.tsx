@@ -14,7 +14,7 @@ const ToastContext = createContext<ToastContextValue | null>(null);
 
 let counter = 0;
 
-/** Provider global de notificações (feedback de ações: salvar, mover, erro de API, etc.). */
+/** Provider global de notificaciones (feedback de acciones: guardar, mover, error de API, etc.). */
 export function ToastProvider({ children }: { children: ReactNode }) {
   const [toasts, setToasts] = useState<Toast[]>([]);
 
@@ -57,6 +57,6 @@ export function ToastProvider({ children }: { children: ReactNode }) {
 
 export function useToast(): ToastContextValue {
   const ctx = useContext(ToastContext);
-  if (!ctx) throw new Error("useToast deve ser usado dentro de <ToastProvider>");
+  if (!ctx) throw new Error("useToast debe usarse dentro de <ToastProvider>");
   return ctx;
 }

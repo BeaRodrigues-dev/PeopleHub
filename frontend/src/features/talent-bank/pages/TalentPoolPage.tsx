@@ -31,7 +31,7 @@ export function TalentPoolPage() {
   }, [typed]);
 
   const { data, isLoading, isError, error, refetch } = useTalentPool({ search, skills: filters.skills, locations: filters.locations, limit: 60 });
-  const { data: vacanciesPage } = useVacancies({ status: "Aberta", limit: 100 });
+  const { data: vacanciesPage } = useVacancies({ status: "Abierta", limit: 100 });
   const openVacancies = vacanciesPage?.items ?? [];
   const createApplication = useCreateApplication();
 
@@ -39,8 +39,8 @@ export function TalentPoolPage() {
     createApplication.mutate(
       { candidateId, vacancyId: vacancy.id },
       {
-        onSuccess: () => toast.success(`Candidato adicionado à vaga "${vacancy.title}"`),
-        onError: (err) => toast.error(errorMessage(err, "Não foi possível atribuir o candidato")),
+        onSuccess: () => toast.success(`Candidato agregado a la vacante "${vacancy.title}"`),
+        onError: (err) => toast.error(errorMessage(err, "No fue posible asignar el candidato")),
       },
     );
   };
@@ -53,14 +53,14 @@ export function TalentPoolPage() {
       <Stack direction={{ xs: "column", sm: "row" }} alignItems={{ sm: "center" }} spacing={2} sx={{ mb: 3 }}>
         <Box sx={{ flex: 1 }}>
           <Typography variant="h4">Banco de Talentos</Typography>
-          <Typography color="text.secondary" variant="body2" sx={{ mt: 0.4 }}>Candidatos sem vaga vinculada, prontos para serem avaliados em novos processos.</Typography>
+          <Typography color="text.secondary" variant="body2" sx={{ mt: 0.4 }}>Candidatos sin vacante vinculada, listos para ser evaluados en nuevos procesos.</Typography>
         </Box>
-        <Button variant="contained" startIcon={<PersonAddAltRoundedIcon />} onClick={() => openAddCandidate(null)}>Adicionar candidato</Button>
+        <Button variant="contained" startIcon={<PersonAddAltRoundedIcon />} onClick={() => openAddCandidate(null)}>Agregar candidato</Button>
       </Stack>
 
       <Stack direction={{ xs: "column", sm: "row" }} gap={1.25} sx={{ mb: 2.5 }}>
         <TextField
-          placeholder="Buscar por nome, email ou competência…"
+          placeholder="Buscar por nombre, email o competencia…"
           value={typed}
           onChange={(e) => setTyped(e.target.value)}
           size="small"
@@ -79,7 +79,7 @@ export function TalentPoolPage() {
           {Array.from({ length: 6 }).map((_, i) => <Skeleton key={i} variant="rounded" height={180} />)}
         </Box>
       ) : candidates.length === 0 ? (
-        <EmptyState icon={<GroupsRoundedIcon />} title="Banco de talentos vazio" description="Nenhum candidato sem vaga encontrado com os filtros atuais." />
+        <EmptyState icon={<GroupsRoundedIcon />} title="Banco de talentos vacío" description="No se encontró ningún candidato sin vacante con los filtros actuales." />
       ) : (
         <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", sm: "1fr 1fr", lg: "1fr 1fr 1fr" }, gap: 1.75 }}>
           {candidates.map((candidate) => (
