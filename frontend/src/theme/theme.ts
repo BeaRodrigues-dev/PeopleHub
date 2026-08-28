@@ -15,6 +15,13 @@ export const theme = createTheme({
     warning: { main: "#B8863A" },
   },
   shape: { borderRadius: 14 },
+  // Los menús/selects/tooltips nativos de MUI (Popover) usan zIndex.modal por
+  // defecto (1300), que queda por debajo de nuestro Modal/SidePanel custom
+  // (ver theme/zIndex.ts, hasta 1401). Eso hacía que el dropdown de un
+  // <Select> abierto dentro de un modal se renderizara detrás del backdrop
+  // del modal (con blur), pareciendo "roto" y bloqueando los clics. Se sube
+  // por encima de toda la escala custom para que siempre quede arriba.
+  zIndex: { mobileStepper: 1000, appBar: 1100, drawer: 1200, modal: 1450, snackbar: 1460, tooltip: 1470 },
   typography: {
     fontFamily: "'Inter', ui-sans-serif, system-ui, -apple-system, sans-serif",
     h4: { fontWeight: 700, letterSpacing: "-0.01em", fontSize: "1.7rem", fontFamily: "'Georgia', 'Iowan Old Style', serif" },
