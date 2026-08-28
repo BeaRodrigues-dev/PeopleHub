@@ -3,6 +3,7 @@ import { createPortal } from "react-dom";
 import { Box, IconButton, Typography } from "@mui/material";
 import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
 import { zIndex } from "../../theme/zIndex";
+import { lockBodyScroll } from "../../lib/scrollLock";
 
 interface SidePanelProps {
   open: boolean;
@@ -25,14 +26,13 @@ interface SidePanelProps {
 export function SidePanel({ open, onClose, title, subtitle, width = 480, children, footer, headerExtra }: SidePanelProps) {
   useEffect(() => {
     if (!open) return;
-    const previousOverflow = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
+    const unlock = lockBodyScroll();
     const onKeyDown = (e: KeyboardEvent) => {
       if (e.key === "Escape") onClose();
     };
     window.addEventListener("keydown", onKeyDown);
     return () => {
-      document.body.style.overflow = previousOverflow;
+      unlock();
       window.removeEventListener("keydown", onKeyDown);
     };
   }, [open, onClose]);
