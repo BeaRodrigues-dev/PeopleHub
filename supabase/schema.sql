@@ -134,6 +134,10 @@ create table if not exists documents (
 alter table vacancies add column if not exists opening_date date not null default current_date;
 alter table vacancies add column if not exists closed_at date;
 
+-- Fecha real de salida del colaborador, para distinguir quién sigue activo
+-- de quién ya salió (se completa sola al pasar el status a "Offboarding").
+alter table employees add column if not exists exit_date date;
+
 -- Panel personal/de empresa: KPIs, tareas y notas 100% editables por el
 -- usuario (no vienen del ATS, no se calculan solos — los crea, edita y
 -- borra quien use la app, tanto para métricas propias como de la empresa).

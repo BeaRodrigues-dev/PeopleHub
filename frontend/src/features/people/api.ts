@@ -21,6 +21,7 @@ interface EmployeeRow {
   contract: string;
   status: string;
   lifecycle: string;
+  exit_date: string | null;
   created_at: string;
   updated_at: string;
 }
@@ -37,6 +38,7 @@ function fromRow(row: EmployeeRow): Employee {
     contract: row.contract,
     status: row.status as EmployeeStatus,
     lifecycle: row.lifecycle as LifecycleStage,
+    exitDate: row.exit_date ?? null,
     createdAt: row.created_at,
     updatedAt: row.updated_at,
   };
@@ -51,7 +53,13 @@ function toRow(input: Partial<CreateEmployeeInput>): Record<string, unknown> {
   if (input.startDate !== undefined) row.start_date = input.startDate;
   if (input.manager !== undefined) row.manager = input.manager;
   if (input.contract !== undefined) row.contract = input.contract;
-  if (input.status !== undefined) row.status = input.status;
+  if (input.status !== undefined) {
+    row.status = input.status;
+    // Registra la fecha real de salida cuando el colaborador pasa a
+    // "Offboarding" (para distinguir quién sigue activo de quién ya salió)
+    // y la limpia si vuelve a estar activo.
+    row.exit_date = input.status === "Offboarding" ? new Date().toISOString().slice(0, 10) : null;
+  }
   if (input.lifecycle !== undefined) row.lifecycle = input.lifecycle;
   return row;
 }

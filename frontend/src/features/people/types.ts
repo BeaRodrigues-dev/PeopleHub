@@ -16,9 +16,10 @@ export interface Employee {
   contract: string;
   status: EmployeeStatus;
   lifecycle: LifecycleStage;
+  exitDate?: string | null;
   createdAt: string;
   updatedAt: string;
 }
 
-export type CreateEmployeeInput = Omit<Employee, "id" | "createdAt" | "updatedAt">;
+export type CreateEmployeeInput = Omit<Employee, "id" | "createdAt" | "updatedAt" | "exitDate">;
 export type UpdateEmployeeInput = Partial<CreateEmployeeInput>;
