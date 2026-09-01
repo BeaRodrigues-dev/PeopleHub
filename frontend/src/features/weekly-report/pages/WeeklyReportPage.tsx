@@ -13,10 +13,10 @@ const INITIAL = {
 };
 
 const SECTIONS: Array<{ key: keyof typeof INITIAL; icon: string; label: string; bg: string; border: string }> = [
-  { key: "deliveries", icon: "✅", label: "Esta semana hice:", bg: "#EAF5EE", border: "#E0F0E6" },
-  { key: "observations", icon: "👁️", label: "Observé:", bg: "#E3F2E8", border: "#DDEEE3" },
-  { key: "proposals", icon: "💡", label: "Propongo:", bg: "#F6EFDD", border: "#D9EEDE" },
-  { key: "nextSteps", icon: "🚀", label: "Próximos pasos:", bg: "#EFF7F1", border: "#DCEBE1" },
+  { key: "deliveries", icon: "✅", label: "Esta semana hice:", bg: "#E7E2FB", border: "#E7E2FB" },
+  { key: "observations", icon: "👁️", label: "Observé:", bg: "#E7E2FB", border: "#E7E2FB" },
+  { key: "proposals", icon: "💡", label: "Propongo:", bg: "#F7EFE0", border: "#F1EEFD" },
+  { key: "nextSteps", icon: "🚀", label: "Próximos pasos:", bg: "#F3F1FC", border: "#E7E7F0" },
 ];
 
 function currentWeekLabel(): string {
@@ -91,7 +91,7 @@ export function WeeklyReportPage() {
 
       <Box sx={{ mt: 2.5, bgcolor: "background.paper", border: "1px solid", borderColor: "divider", borderRadius: 4, p: 2.5 }}>
         <Typography variant="caption" fontWeight={800} color="text.secondary" sx={{ textTransform: "uppercase", letterSpacing: "0.05em" }}>Vista previa</Typography>
-        <Box component="pre" sx={{ mt: 1.25, fontFamily: "monospace", fontSize: 12.5, whiteSpace: "pre-wrap", bgcolor: "#EFF7F1", borderRadius: 3, p: 2, m: 0, lineHeight: 1.7 }}>
+        <Box component="pre" sx={{ mt: 1.25, fontFamily: "monospace", fontSize: 12.5, whiteSpace: "pre-wrap", bgcolor: "#F3F1FC", borderRadius: 3, p: 2, m: 0, lineHeight: 1.7 }}>
           {buildText()}
         </Box>
       </Box>

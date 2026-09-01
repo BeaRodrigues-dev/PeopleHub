@@ -71,7 +71,7 @@ export function ClimateSurveyPage() {
                   return (
                     <Stack key={r.id} direction="row" alignItems="center" spacing={1.5}>
                       <Typography variant="body2" color="text.secondary" sx={{ width: 170, flexShrink: 0 }} noWrap>{r.name}</Typography>
-                      <Box sx={{ flex: 1, height: 18, bgcolor: "#E7F1EB", borderRadius: 2, overflow: "hidden" }}>
+                      <Box sx={{ flex: 1, height: 18, bgcolor: "#EFEDFB", borderRadius: 2, overflow: "hidden" }}>
                         {avg !== null && <Box sx={{ width: `${Math.min(100, (avg / CLIMATE_SCORE_MAX) * 100)}%`, height: "100%", bgcolor: "primary.main" }} />}
                       </Box>
                       <Typography variant="caption" fontWeight={700} sx={{ width: 60, textAlign: "right", flexShrink: 0 }}>{avg !== null ? avg.toFixed(1) : "—"}</Typography>
@@ -93,7 +93,7 @@ export function ClimateSurveyPage() {
                     sx={{
                       borderRadius: 4, p: 2, cursor: "pointer", border: "1px solid",
                       borderColor: selected?.id === round.id ? "primary.main" : "divider",
-                      bgcolor: selected?.id === round.id ? "#F1F7F2" : "background.paper",
+                      bgcolor: selected?.id === round.id ? "#F3F1FC" : "background.paper",
                     }}
                   >
                     <Stack direction="row" justifyContent="space-between" alignItems="flex-start">

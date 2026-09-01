@@ -30,7 +30,7 @@ export function OnboardingChecklistEditor({ checklist, onChange }: { checklist: 
   return (
     <Stack spacing={1.5}>
       {PHASES.map((phase) => (
-        <Box key={phase} sx={{ bgcolor: "#EFF7F1", borderRadius: 2.5, p: 1.5 }}>
+        <Box key={phase} sx={{ bgcolor: "#F3F1FC", borderRadius: 2.5, p: 1.5 }}>
           <Typography variant="caption" fontWeight={800} color="text.secondary" sx={{ textTransform: "uppercase" }}>
             {PHASE_LABEL[phase]}
           </Typography>

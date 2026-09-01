@@ -13,8 +13,8 @@ import { useToast } from "../../../components/common/ToastProvider";
 import type { CustomKpi } from "../types";
 
 const CATEGORY_COLOR: Record<string, { bg: string; fg: string }> = {
-  Empresa: { bg: "#E3F2E8", fg: "#5F9678" },
-  Personal: { bg: "#E7F3EC", fg: "#5F9678" },
+  Empresa: { bg: "#E7E2FB", fg: "#5646C4" },
+  Personal: { bg: "#E7E2FB", fg: "#5646C4" },
 };
 
 export function CustomKpiSection() {
@@ -92,7 +92,7 @@ export function CustomKpiSection() {
                 return (
                   <Stack key={kpi.id} direction="row" alignItems="center" spacing={1.5}>
                     <Typography variant="body2" color="text.secondary" sx={{ width: 160, flexShrink: 0 }} noWrap>{kpi.label}</Typography>
-                    <Box sx={{ flex: 1, height: 20, bgcolor: "#E7F1EB", borderRadius: 2, overflow: "hidden" }}>
+                    <Box sx={{ flex: 1, height: 20, bgcolor: "#EFEDFB", borderRadius: 2, overflow: "hidden" }}>
                       <Box sx={{ width: `${pct}%`, height: "100%", bgcolor: color.fg, display: "flex", alignItems: "center", px: 1 }}>
                         <Typography variant="caption" color="#fff" fontWeight={700}>{kpi.value}{kpi.unit}</Typography>
                       </Box>
@@ -106,7 +106,7 @@ export function CustomKpiSection() {
           <Box sx={{ bgcolor: "background.paper", border: "1px solid", borderColor: "divider", borderRadius: 4, overflow: "hidden" }}>
             <Table size="small">
               <TableHead>
-                <TableRow sx={{ bgcolor: "#EFF7F1" }}>
+                <TableRow sx={{ bgcolor: "#F3F1FC" }}>
                   {["KPI", "Categoría", "Valor", "Nota"].map((h) => (
                     <TableCell key={h} sx={{ fontWeight: 800, fontSize: 11, textTransform: "uppercase", letterSpacing: "0.04em", color: "text.secondary" }}>{h}</TableCell>
                   ))}

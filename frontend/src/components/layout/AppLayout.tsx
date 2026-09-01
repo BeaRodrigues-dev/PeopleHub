@@ -23,8 +23,8 @@ import { useUIStore } from "../../store/uiStore";
 import { useAuthStore } from "../../features/auth/authStore";
 
 const drawerWidth = 248;
-const SIDEBAR_BG = "#4F7A63";
-const SIDEBAR_BORDER = "#436A54";
+const SIDEBAR_BG = "#ffffff";
+const SIDEBAR_BORDER = "#E7E7F0";
 
 const navItems = [
   { to: "/", label: "Home", icon: <HomeRoundedIcon fontSize="small" />, end: true },
@@ -52,11 +52,11 @@ function Nav({ onNavigate }: { onNavigate?: () => void }) {
           end={item.end}
           onClick={onNavigate}
           sx={{
-            borderRadius: 2.5,
+            borderRadius: 999,
             py: 1,
-            color: "rgba(255,255,255,.65)",
-            "&.active": { bgcolor: "primary.main", color: "#fff", "& .MuiListItemIcon-root": { color: "#fff" } },
-            "&:not(.active):hover": { bgcolor: "rgba(255,255,255,.08)", color: "#fff" },
+            color: "text.secondary",
+            "&.active": { bgcolor: "secondary.main", color: "primary.dark", fontWeight: 800, "& .MuiListItemIcon-root": { color: "primary.dark" } },
+            "&:not(.active):hover": { bgcolor: "#F7F7FB", color: "text.primary" },
           }}
         >
           <ListItemIcon sx={{ minWidth: 34, color: "inherit" }}>{item.icon}</ListItemIcon>
@@ -80,7 +80,7 @@ export function AppLayout({ children }: { children: ReactNode }) {
           width: 28,
           height: 28,
           borderRadius: "8px",
-          background: "linear-gradient(135deg, #7FB396, #B7DCC0)",
+          background: "linear-gradient(135deg, #6C5CE0, #E4DFFB)",
           flexShrink: 0,
           display: "flex",
           alignItems: "center",
@@ -93,8 +93,8 @@ export function AppLayout({ children }: { children: ReactNode }) {
         P
       </Box>
       <Box sx={{ overflow: "hidden" }}>
-        <Typography fontWeight={800} fontSize={15.5} letterSpacing="-0.01em" color="#fff" noWrap>People Hub</Typography>
-        <Typography fontSize={11} color="rgba(255,255,255,.5)" noWrap>HR OS</Typography>
+        <Typography fontWeight={800} fontSize={15.5} letterSpacing="-0.01em" color="text.primary" noWrap>People Hub</Typography>
+        <Typography fontSize={11} color="text.secondary" noWrap>HR OS</Typography>
       </Box>
     </Box>
   );
@@ -105,7 +105,7 @@ export function AppLayout({ children }: { children: ReactNode }) {
         position="fixed"
         elevation={0}
         color="inherit"
-        sx={{ borderBottom: "1px solid", borderColor: "divider", zIndex: zIndex.header, bgcolor: "rgba(246,250,247,.86)", backdropFilter: "blur(10px)" }}
+        sx={{ borderBottom: "1px solid", borderColor: "divider", zIndex: zIndex.header, bgcolor: "rgba(255,255,255,.86)", backdropFilter: "blur(10px)" }}
       >
         <Toolbar sx={{ minHeight: "66px !important", gap: 1 }}>
           <IconButton onClick={() => setMobileOpen(true)} sx={{ display: { md: "none" } }}>
@@ -145,18 +145,18 @@ export function AppLayout({ children }: { children: ReactNode }) {
         <Box sx={{ borderTop: "1px solid", borderColor: SIDEBAR_BORDER, p: 2, display: "flex", alignItems: "center", gap: 1.25 }}>
           <Box
             onClick={() => navigate("/configuracoes")}
-            sx={{ display: "flex", alignItems: "center", gap: 1.25, flex: 1, minWidth: 0, cursor: "pointer", borderRadius: 2, p: 0.5, m: -0.5, "&:hover": { bgcolor: "rgba(255,255,255,.06)" } }}
+            sx={{ display: "flex", alignItems: "center", gap: 1.25, flex: 1, minWidth: 0, cursor: "pointer", borderRadius: 2, p: 0.5, m: -0.5, "&:hover": { bgcolor: "#F7F7FB" } }}
           >
             <Avatar sx={{ width: 30, height: 30, bgcolor: "secondary.light", color: "primary.dark", fontSize: 12.5, fontWeight: 700 }}>BR</Avatar>
             <Box sx={{ overflow: "hidden" }}>
-              <Typography fontSize={12.5} fontWeight={700} color="#fff" noWrap>Beatriz Rodrigues</Typography>
-              <Typography fontSize={11} color="rgba(255,255,255,.5)" noWrap>Gerente de RR. HH.</Typography>
+              <Typography fontSize={12.5} fontWeight={700} color="text.primary" noWrap>Beatriz Rodrigues</Typography>
+              <Typography fontSize={11} color="text.secondary" noWrap>Gerente de RR. HH.</Typography>
             </Box>
           </Box>
-          <IconButton onClick={() => navigate("/configuracoes")} size="small" title="Configuración" sx={{ color: "rgba(255,255,255,.55)", "&:hover": { color: "#fff", bgcolor: "rgba(255,255,255,.07)" } }}>
+          <IconButton onClick={() => navigate("/configuracoes")} size="small" title="Configuración" sx={{ color: "text.secondary", "&:hover": { color: "text.primary", bgcolor: "#F7F7FB" } }}>
             <SettingsRoundedIcon fontSize="small" />
           </IconButton>
-          <IconButton onClick={logout} size="small" title="Cerrar sesión" sx={{ color: "rgba(255,255,255,.55)", "&:hover": { color: "#fff", bgcolor: "rgba(255,255,255,.07)" } }}>
+          <IconButton onClick={logout} size="small" title="Cerrar sesión" sx={{ color: "text.secondary", "&:hover": { color: "text.primary", bgcolor: "#F7F7FB" } }}>
             <LogoutRoundedIcon fontSize="small" />
           </IconButton>
         </Box>

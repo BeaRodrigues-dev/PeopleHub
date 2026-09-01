@@ -6,8 +6,17 @@ import TrendingUpRoundedIcon from "@mui/icons-material/TrendingUpRounded";
 import LightbulbRoundedIcon from "@mui/icons-material/LightbulbRounded";
 import AutoAwesomeRoundedIcon from "@mui/icons-material/AutoAwesomeRounded";
 import EventRoundedIcon from "@mui/icons-material/EventRounded";
+import GroupsRoundedIcon from "@mui/icons-material/GroupsRounded";
+import WorkOutlineRoundedIcon from "@mui/icons-material/WorkOutlineRounded";
+import PersonSearchRoundedIcon from "@mui/icons-material/PersonSearchRounded";
+import HandshakeRoundedIcon from "@mui/icons-material/HandshakeRounded";
+import AddRoundedIcon from "@mui/icons-material/AddRounded";
+import PersonAddAltRoundedIcon from "@mui/icons-material/PersonAddAltRounded";
+import SummarizeRoundedIcon from "@mui/icons-material/SummarizeRounded";
+import InsightsRoundedIcon from "@mui/icons-material/InsightsRounded";
 import { useNavigate } from "react-router-dom";
 import { useAgendaEvents } from "../../agenda/queries";
+import { useClimateRounds, useClimateResults } from "../../climate/queries";
 import { useVacancies } from "../../vacancy/queries";
 import { useVacancyCandidateCounts } from "../../candidate/queries";
 import { useEmployees } from "../../people/queries";
@@ -15,13 +24,14 @@ import { useOnboardings } from "../../onboarding/queries";
 import { useConsultingLeads } from "../../consulting/queries";
 import { useInsights, useGenerateInsightsWithAi } from "../../insights/queries";
 import { useTalentPool } from "../../talent-bank/queries";
+import { useUIStore } from "../../../store/uiStore";
 import { useToast } from "../../../components/common/ToastProvider";
 import { errorMessage } from "../../../components/common/ErrorState";
 
 const INSIGHT_STYLE: Record<string, { bg: string; border: string; label: string; icon: string }> = {
-  problem: { bg: "#F5E6E9", border: "#E6D4D9", label: "Problema", icon: "🔴" },
-  opportunity: { bg: "#EEF7F1", border: "#D9EEDE", label: "Oportunidad", icon: "🟡" },
-  suggestion: { bg: "#E3F2E8", border: "#DDEEE3", label: "Sugerencia", icon: "🔵" },
+  problem: { bg: "#F5E3E8", border: "#E8D3D9", label: "Problema", icon: "🔴" },
+  opportunity: { bg: "#E7E2FB", border: "#F1EEFD", label: "Oportunidad", icon: "🟡" },
+  suggestion: { bg: "#E7E2FB", border: "#E7E2FB", label: "Sugerencia", icon: "🔵" },
 };
 
 interface LocalTask {
@@ -58,6 +68,7 @@ function formatEventDate(iso: string): string {
 export function HomePage() {
   const navigate = useNavigate();
   const toast = useToast();
+  const openAddCandidate = useUIStore((s) => s.openAddCandidate);
   const [tasks, setTasks] = useState<LocalTask[]>(INITIAL_TASKS);
   const [activeDay, setActiveDay] = useState<"today" | "week" | "pending">("today");
 
@@ -74,6 +85,8 @@ export function HomePage() {
   const insights = insightData?.items ?? [];
   const { data: poolData } = useTalentPool({ limit: 1 });
   const { data: agendaData } = useAgendaEvents();
+  const { data: climateRounds } = useClimateRounds();
+  const { data: climateResults } = useClimateResults();
   const generateInsights = useGenerateInsightsWithAi();
 
   const openVacancies = vacancies.filter((v) => v.status === "Abierta");
@@ -87,6 +100,10 @@ export function HomePage() {
   const toggleTask = (id: number) => setTasks((prev) => prev.map((t) => (t.id === id ? { ...t, done: !t.done } : t)));
 
   const recentInsights = useMemo(() => insights.slice(0, 4), [insights]);
+
+  const latestRound = climateRounds && climateRounds.length ? climateRounds[climateRounds.length - 1] : null;
+  const latestRoundResults = (climateResults ?? []).filter((r) => r.roundId === latestRound?.id);
+  const latestRoundAverage = latestRoundResults.length ? latestRoundResults.reduce((sum, r) => sum + r.score, 0) / latestRoundResults.length : null;
 
   const todayISO = new Date().toISOString().slice(0, 10);
   const upcomingEvents = useMemo(
@@ -115,10 +132,10 @@ export function HomePage() {
       </Box>
 
       <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr 1fr", lg: "repeat(4, 1fr)" }, gap: 2, mb: 3 }}>
-        <StatCard label="Colaboradores" value={isLoading ? undefined : activeEmployees.length} sub={`${offboardingEmployees.length} en offboarding`} color="#D9EEDE" />
-        <StatCard label="Vacantes abiertas" value={isLoading ? undefined : openVacancies.length} sub={`${vacancies.length} total`} neutral />
-        <StatCard label="Candidatos activos" value={isLoading ? undefined : activeCandidates} sub="en pipelines de vacantes" color="#3D6A52" light />
-        <StatCard label="Pipeline Consulting" value={isLoading ? undefined : leads.length} sub={`${clients.length} cliente(s)`} neutral />
+        <StatCard label="Colaboradores" value={isLoading ? undefined : activeEmployees.length} sub={`${offboardingEmployees.length} en offboarding`} icon={<GroupsRoundedIcon fontSize="small" />} iconBg="#F1EEFD" iconColor="#6C5CE0" />
+        <StatCard label="Vacantes abiertas" value={isLoading ? undefined : openVacancies.length} sub={`${vacancies.length} total`} icon={<WorkOutlineRoundedIcon fontSize="small" />} iconBg="#E1EAFE" iconColor="#4C7DE0" />
+        <StatCard label="Candidatos activos" value={isLoading ? undefined : activeCandidates} sub="en pipelines de vacantes" icon={<PersonSearchRoundedIcon fontSize="small" />} iconBg="#DFF3EA" iconColor="#2FA36B" />
+        <StatCard label="Pipeline Consulting" value={isLoading ? undefined : leads.length} sub={`${clients.length} cliente(s)`} icon={<HandshakeRoundedIcon fontSize="small" />} iconBg="#FDEBDD" iconColor="#E08A3C" />
       </Box>
 
       <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", lg: "1fr 1fr 1fr" }, gap: 2.5, mb: 3 }}>
@@ -127,9 +144,17 @@ export function HomePage() {
           <OverviewRow label="Talentos en el pool" value={String(poolData?.total ?? 0)} />
           <OverviewRow label="Empresas en pipeline" value={String(leads.length)} />
           <OverviewRow label="Insights registrados" value={String(insights.length)} />
+          <OverviewRow label="Rondas de clima" value={String(climateRounds?.length ?? 0)} />
+          <OverviewRow label="Eventos en agenda" value={String(agendaData?.length ?? 0)} />
           <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap sx={{ pt: 1.5, mt: 1, borderTop: "1px solid", borderColor: "divider" }}>
-            {[{ label: "Recruitment", to: "/vagas" }, { label: "People", to: "/pessoas" }, { label: "Onboarding", to: "/onboarding" }].map((s) => (
-              <Chip key={s.to} label={`→ ${s.label}`} size="small" onClick={() => navigate(s.to)} sx={{ bgcolor: "#ECF5EF", color: "primary.main", fontWeight: 700, "&:hover": { bgcolor: "secondary.light" } }} />
+            {[
+              { label: "Recruitment", to: "/vagas" },
+              { label: "People", to: "/pessoas" },
+              { label: "Onboarding", to: "/onboarding" },
+              { label: "Clima", to: "/clima" },
+              { label: "Agenda", to: "/agenda" },
+            ].map((s) => (
+              <Chip key={s.to} label={`→ ${s.label}`} size="small" onClick={() => navigate(s.to)} sx={{ bgcolor: "#F2F0FC", color: "primary.main", fontWeight: 700, "&:hover": { bgcolor: "secondary.light" } }} />
             ))}
           </Stack>
         </PanelCard>
@@ -144,7 +169,7 @@ export function HomePage() {
                 onClick={() => setActiveDay(d)}
                 sx={{
                   fontWeight: 700,
-                  bgcolor: activeDay === d ? "primary.main" : "#ECF5EF",
+                  bgcolor: activeDay === d ? "primary.main" : "#F2F0FC",
                   color: activeDay === d ? "#fff" : "text.secondary",
                   "&:hover": { bgcolor: activeDay === d ? "primary.dark" : "secondary.light" },
                 }}
@@ -186,8 +211,22 @@ export function HomePage() {
             { k: "Pipeline Consulting", v: `${leads.length} leads` },
             { k: "Clientes", v: String(clients.length) },
           ]} />
+          <KpiGroup label="Clima" items={[
+            { k: "Última ronda", v: latestRound ? latestRound.name : "—" },
+            { k: "Promedio", v: latestRoundAverage !== null ? `${latestRoundAverage.toFixed(1)} / 10` : "—" },
+          ]} />
         </PanelCard>
       </Box>
+
+      <PanelCard title="Accesos rápidos" icon={<AddRoundedIcon fontSize="small" />}>
+        <Stack direction="row" spacing={1.25} flexWrap="wrap" useFlexGap>
+          <Button variant="outlined" size="small" startIcon={<AddRoundedIcon fontSize="small" />} onClick={() => navigate("/criar-vaga")}>Nueva vacante</Button>
+          <Button variant="outlined" size="small" startIcon={<PersonAddAltRoundedIcon fontSize="small" />} onClick={() => openAddCandidate(null)}>Agregar candidato</Button>
+          <Button variant="outlined" size="small" startIcon={<EventRoundedIcon fontSize="small" />} onClick={() => navigate("/agenda")}>Nuevo evento</Button>
+          <Button variant="outlined" size="small" startIcon={<SummarizeRoundedIcon fontSize="small" />} onClick={() => navigate("/relatorio-semanal")}>Reporte semanal</Button>
+          <Button variant="outlined" size="small" startIcon={<InsightsRoundedIcon fontSize="small" />} onClick={() => navigate("/analytics")}>Dashboard analytics</Button>
+        </Stack>
+      </PanelCard>
 
       <PanelCard
         title="Recordatorios"
@@ -200,7 +239,7 @@ export function HomePage() {
           <Stack spacing={1}>
             {upcomingEvents.map((e) => (
               <Stack key={e.id} direction="row" alignItems="center" spacing={1.25}>
-                <Box sx={{ width: 8, height: 8, borderRadius: "50%", bgcolor: e.category === "Empresa" ? "#8B7FBF" : "#5F9678", flexShrink: 0 }} />
+                <Box sx={{ width: 8, height: 8, borderRadius: "50%", bgcolor: e.category === "Empresa" ? "#6C5CE0" : "#5646C4", flexShrink: 0 }} />
                 <Typography variant="caption" fontWeight={700} color="text.secondary" sx={{ width: 78, flexShrink: 0 }}>
                   {formatEventDate(e.eventDate)}
                 </Typography>
@@ -250,25 +289,47 @@ export function HomePage() {
   );
 }
 
-function StatCard({ label, value, sub, color, light, neutral }: { label: string; value?: number; sub: string; color?: string; light?: boolean; neutral?: boolean }) {
+function StatCard({ label, value, sub, icon, iconBg, iconColor }: { label: string; value?: number; sub: string; icon: React.ReactNode; iconBg: string; iconColor: string }) {
   return (
-    <Box
-      sx={{
-        borderRadius: 4, p: 2.25,
-        bgcolor: neutral ? "background.paper" : color,
-        border: neutral ? "1px solid" : "none",
-        borderColor: "divider",
-      }}
-    >
-      <Typography variant="caption" fontWeight={700} sx={{ textTransform: "uppercase", letterSpacing: "0.06em", color: light ? "rgba(255,255,255,.8)" : "text.secondary" }}>
-        {label}
-      </Typography>
+    <Box sx={{ borderRadius: 4, p: 2.25, bgcolor: "background.paper", border: "1px solid", borderColor: "divider" }}>
+      <Stack direction="row" alignItems="center" spacing={1.25} sx={{ mb: 1.25 }}>
+        <Box sx={{ width: 34, height: 34, borderRadius: 2.5, bgcolor: iconBg, color: iconColor, display: "grid", placeItems: "center", flexShrink: 0 }}>
+          {icon}
+        </Box>
+        <Typography variant="caption" fontWeight={700} color="text.secondary" sx={{ textTransform: "uppercase", letterSpacing: "0.06em" }}>
+          {label}
+        </Typography>
+      </Stack>
       {value === undefined ? (
-        <Skeleton width={40} height={40} sx={{ bgcolor: alpha("#000", 0.08) }} />
+        <Skeleton width={40} height={34} sx={{ bgcolor: alpha("#000", 0.06) }} />
       ) : (
-        <Typography sx={{ fontSize: 30, fontWeight: 800, color: light ? "#fff" : "text.primary", lineHeight: 1.2, mt: 0.25 }}>{value}</Typography>
+        <Typography sx={{ fontSize: 28, fontWeight: 800, color: "text.primary", lineHeight: 1.2 }}>{value}</Typography>
       )}
-      <Typography variant="caption" sx={{ color: light ? "rgba(255,255,255,.75)" : "text.secondary" }}>{sub}</Typography>
+      <Typography variant="caption" color="text.secondary" sx={{ display: "block", mb: 1 }}>{sub}</Typography>
+      <Sparkline color={iconColor} seed={(value ?? 0) + label.length} />
+    </Box>
+  );
+}
+
+/** Mini-gráfico decorativo (tendencia ilustrativa, no histórico real) para dar contexto visual rápido a cada stat card. */
+function Sparkline({ color, seed }: { color: string; seed: number }) {
+  const points = useMemo(() => {
+    const arr: number[] = [];
+    let v = 35 + (seed % 5) * 6;
+    for (let i = 0; i < 10; i++) {
+      v += Math.sin(i * 0.85 + seed * 0.4) * 9 + ((seed + i) % 3) - 1;
+      arr.push(Math.max(8, Math.min(92, v)));
+    }
+    return arr;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [seed]);
+  const w = 100;
+  const h = 28;
+  const stepX = w / (points.length - 1);
+  const path = points.map((p, i) => `${i === 0 ? "M" : "L"} ${(i * stepX).toFixed(1)} ${(h - (p / 100) * h).toFixed(1)}`).join(" ");
+  return (
+    <Box component="svg" viewBox={`0 0 ${w} ${h}`} width="100%" height={h} preserveAspectRatio="none" sx={{ display: "block" }}>
+      <path d={path} fill="none" stroke={color} strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" opacity={0.75} />
     </Box>
   );
 }

@@ -15,8 +15,8 @@ import type { AgendaEvent } from "../types";
 
 const WEEKDAYS = ["Lun", "Mar", "Mié", "Jue", "Vie", "Sáb", "Dom"];
 const CATEGORY_COLOR: Record<string, { bg: string; fg: string }> = {
-  Personal: { bg: "#E3F2E8", fg: "#5F9678" },
-  Empresa: { bg: "#E7E3F5", fg: "#8B7FBF" },
+  Personal: { bg: "#E7E2FB", fg: "#5646C4" },
+  Empresa: { bg: "#F1EEFD", fg: "#6C5CE0" },
 };
 
 function toISODate(date: Date): string {
@@ -115,7 +115,7 @@ export function AgendaPage() {
                     sx={{
                       minHeight: 74, borderRadius: 2.5, p: 0.75, cursor: "pointer",
                       border: "1px solid", borderColor: isSelected ? "primary.main" : "divider",
-                      bgcolor: isSelected ? "#F1F7F2" : "background.paper",
+                      bgcolor: isSelected ? "#F3F1FC" : "background.paper",
                       opacity: inMonth ? 1 : 0.4,
                     }}
                   >

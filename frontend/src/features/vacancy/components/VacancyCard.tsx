@@ -8,10 +8,10 @@ import { useNavigate } from "react-router-dom";
 import type { Vacancy, VacancyStatus } from "../types";
 
 const statusStyle: Record<VacancyStatus, { bg: string; color: string }> = {
-  Abierta: { bg: "#EAF5EE", color: "#5F9678" },
-  Pausada: { bg: "#F6EFDD", color: "#C29A55" },
-  Cerrada: { bg: "#E7F1EB", color: "#6C8177" },
-  Borrador: { bg: "#E7E3F5", color: "#8B7FBF" },
+  Abierta: { bg: "#E7E2FB", color: "#5646C4" },
+  Pausada: { bg: "#F7EFE0", color: "#D6A65D" },
+  Cerrada: { bg: "#EFEDFB", color: "#6B7086" },
+  Borrador: { bg: "#F1EEFD", color: "#6C5CE0" },
 };
 
 function daysBetween(from: string, to: string): number {

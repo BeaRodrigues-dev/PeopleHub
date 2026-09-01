@@ -8,13 +8,13 @@ import { CustomKpiSection } from "../../workspace/components/CustomKpiSection";
 import { CustomTasksSection } from "../../workspace/components/CustomTasksSection";
 import { CustomNotesSection } from "../../workspace/components/CustomNotesSection";
 
-const AREA_PALETTE = ["#7FB396", "#B7DCC0", "#D9EEDE", "#C29A55", "#5F9678", "#8B7FBF"];
+const AREA_PALETTE = ["#6C5CE0", "#E4DFFB", "#F1EEFD", "#D6A65D", "#5646C4", "#6C5CE0"];
 const LIFECYCLE_COLOR: Record<string, string> = {
-  Reclutamiento: "#5F9678",
-  Onboarding: "#B7DCC0",
-  Desarrollo: "#6FA985",
-  Desempeño: "#8B7FBF",
-  Offboarding: "#6C8177",
+  Reclutamiento: "#5646C4",
+  Onboarding: "#E4DFFB",
+  Desarrollo: "#9B8FEA",
+  Desempeño: "#6C5CE0",
+  Offboarding: "#6B7086",
 };
 
 export function AnalyticsPage() {
@@ -86,7 +86,7 @@ export function AnalyticsPage() {
                   {funnel.map((f) => (
                     <Stack key={f.stage} direction="row" alignItems="center" spacing={1.5}>
                       <Typography variant="body2" color="text.secondary" sx={{ width: 160, flexShrink: 0 }}>{f.stage}</Typography>
-                      <Box sx={{ flex: 1, height: 22, bgcolor: "#E7F1EB", borderRadius: 2, overflow: "hidden" }}>
+                      <Box sx={{ flex: 1, height: 22, bgcolor: "#EFEDFB", borderRadius: 2, overflow: "hidden" }}>
                         <Box sx={{ width: `${Math.max(6, (f.count / funnelMax) * 100)}%`, height: "100%", bgcolor: "primary.main", display: "flex", alignItems: "center", px: 1 }}>
                           <Typography variant="caption" color="#fff" fontWeight={700}>{f.count}</Typography>
                         </Box>
@@ -113,7 +113,7 @@ export function AnalyticsPage() {
                     <Stack key={area} direction="row" alignItems="center" spacing={1.5}>
                       <Box sx={{ width: 8, height: 8, borderRadius: "50%", bgcolor: AREA_PALETTE[i % AREA_PALETTE.length], flexShrink: 0 }} />
                       <Typography variant="body2" color="text.secondary" sx={{ width: 100, flexShrink: 0 }}>{area}</Typography>
-                      <Box sx={{ flex: 1, height: 8, bgcolor: "#E7F1EB", borderRadius: 4, overflow: "hidden" }}>
+                      <Box sx={{ flex: 1, height: 8, bgcolor: "#EFEDFB", borderRadius: 4, overflow: "hidden" }}>
                         <Box sx={{ width: `${(count / activeEmployees.length) * 100}%`, height: "100%", bgcolor: AREA_PALETTE[i % AREA_PALETTE.length] }} />
                       </Box>
                       <Typography variant="caption" fontWeight={700}>{count}</Typography>
@@ -131,7 +131,7 @@ export function AnalyticsPage() {
                       <Stack key={stage} direction="row" alignItems="center" spacing={1.5}>
                         <Box sx={{ width: 8, height: 8, borderRadius: "50%", bgcolor: LIFECYCLE_COLOR[stage], flexShrink: 0 }} />
                         <Typography variant="body2" color="text.secondary" sx={{ width: 100, flexShrink: 0 }}>{stage}</Typography>
-                        <Box sx={{ flex: 1, height: 8, bgcolor: "#E7F1EB", borderRadius: 4, overflow: "hidden" }}>
+                        <Box sx={{ flex: 1, height: 8, bgcolor: "#EFEDFB", borderRadius: 4, overflow: "hidden" }}>
                           <Box sx={{ width: `${employees.length ? (count / employees.length) * 100 : 0}%`, height: "100%", bgcolor: LIFECYCLE_COLOR[stage] }} />
                         </Box>
                         <Typography variant="caption" fontWeight={700}>{count}</Typography>
@@ -192,7 +192,7 @@ function KpiCard({ label, value, sub }: { label: string; value: string; sub: str
 
 function ImpactCard({ icon, label, value }: { icon: string; label: string; value: string }) {
   return (
-    <Box sx={{ bgcolor: "#EFF7F1", border: "1px solid", borderColor: "divider", borderRadius: 4, p: 2.25, textAlign: "center" }}>
+    <Box sx={{ bgcolor: "#F3F1FC", border: "1px solid", borderColor: "divider", borderRadius: 4, p: 2.25, textAlign: "center" }}>
       <Typography fontSize={22}>{icon}</Typography>
       <Typography sx={{ fontSize: 26, fontWeight: 800, color: "primary.main", mt: 0.5 }}>{value}</Typography>
       <Typography variant="caption" color="text.secondary" fontWeight={700}>{label}</Typography>

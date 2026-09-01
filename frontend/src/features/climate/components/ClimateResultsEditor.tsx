@@ -7,7 +7,7 @@ import { useToast } from "../../../components/common/ToastProvider";
 import { errorMessage } from "../../../components/common/ErrorState";
 import { CLIMATE_SCORE_MAX, type ClimateSurveyResult } from "../types";
 
-const BAR_COLORS = ["#7FB396", "#B7DCC0", "#93C2A2", "#6FA985", "#5F9678", "#8B7FBF", "#C29A55"];
+const BAR_COLORS = ["#6C5CE0", "#E4DFFB", "#C7BBF5", "#9B8FEA", "#5646C4", "#6C5CE0", "#D6A65D"];
 
 /** Editor de los puntajes por categoría de una ronda: agregar, editar y eliminar filas, más un gráfico de barras generado a partir de los datos. */
 export function ClimateResultsEditor({ roundId, results }: { roundId: string; results: ClimateSurveyResult[] }) {
@@ -54,7 +54,7 @@ export function ClimateResultsEditor({ roundId, results }: { roundId: string; re
             {results.map((r, i) => (
               <Stack key={r.id} direction="row" alignItems="center" spacing={1.5}>
                 <Typography variant="body2" color="text.secondary" sx={{ width: 150, flexShrink: 0 }} noWrap>{r.category}</Typography>
-                <Box sx={{ flex: 1, height: 18, bgcolor: "#E7F1EB", borderRadius: 2, overflow: "hidden" }}>
+                <Box sx={{ flex: 1, height: 18, bgcolor: "#EFEDFB", borderRadius: 2, overflow: "hidden" }}>
                   <Box sx={{ width: `${Math.min(100, (r.score / CLIMATE_SCORE_MAX) * 100)}%`, height: "100%", bgcolor: BAR_COLORS[i % BAR_COLORS.length] }} />
                 </Box>
                 <Typography variant="caption" fontWeight={700} sx={{ width: 30, textAlign: "right", flexShrink: 0 }}>{r.score}</Typography>
@@ -67,7 +67,7 @@ export function ClimateResultsEditor({ roundId, results }: { roundId: string; re
       <Box sx={{ bgcolor: "background.paper", border: "1px solid", borderColor: "divider", borderRadius: 3, overflow: "hidden" }}>
         <Table size="small">
           <TableHead>
-            <TableRow sx={{ bgcolor: "#EFF7F1" }}>
+            <TableRow sx={{ bgcolor: "#F3F1FC" }}>
               {["Categoría", `Puntaje (0–${CLIMATE_SCORE_MAX})`, "Comentario", ""].map((h) => (
                 <TableCell key={h} sx={{ fontWeight: 800, fontSize: 11, textTransform: "uppercase", letterSpacing: "0.04em", color: "text.secondary" }}>{h}</TableCell>
               ))}

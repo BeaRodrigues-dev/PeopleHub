@@ -22,7 +22,7 @@ export function ResumeProcessingStatus({ step, fileName }: { step: ResumeProcess
           const active = i === activeIndex && step !== "done";
           return (
             <Stack key={s.key} direction="row" spacing={1.5} alignItems="center" sx={{ opacity: i > activeIndex && step !== "done" ? 0.4 : 1 }}>
-              <Box sx={{ width: 28, height: 28, display: "grid", placeItems: "center", borderRadius: "50%", bgcolor: done ? "#EAF5EE" : active ? "action.hover" : "transparent", color: done ? "#5F9678" : "text.secondary" }}>
+              <Box sx={{ width: 28, height: 28, display: "grid", placeItems: "center", borderRadius: "50%", bgcolor: done ? "#E7E2FB" : active ? "action.hover" : "transparent", color: done ? "#5646C4" : "text.secondary" }}>
                 {done ? <CheckCircleRoundedIcon fontSize="small" /> : active ? <CircularProgress size={16} /> : s.icon}
               </Box>
               <Typography variant="body2" fontWeight={active ? 700 : 500}>{s.label}</Typography>

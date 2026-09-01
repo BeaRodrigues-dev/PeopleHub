@@ -14,11 +14,11 @@ import { useToast } from "../../../components/common/ToastProvider";
 import { LIFECYCLE_STAGES, type Employee, type LifecycleStage } from "../types";
 
 const LIFECYCLE_COLOR: Record<LifecycleStage, { bg: string; fg: string }> = {
-  Reclutamiento: { bg: "#E3F2E8", fg: "#5F9678" },
-  Onboarding: { bg: "#F6EFDD", fg: "#C29A55" },
-  Desarrollo: { bg: "#E7F3EC", fg: "#5F9678" },
-  Desempeño: { bg: "#E5E1F0", fg: "#8B7FBF" },
-  Offboarding: { bg: "#E7F1EB", fg: "#6C8177" },
+  Reclutamiento: { bg: "#E7E2FB", fg: "#5646C4" },
+  Onboarding: { bg: "#F7EFE0", fg: "#D6A65D" },
+  Desarrollo: { bg: "#E7E2FB", fg: "#5646C4" },
+  Desempeño: { bg: "#F1EEFD", fg: "#6C5CE0" },
+  Offboarding: { bg: "#EFEDFB", fg: "#6B7086" },
 };
 
 function initials(name: string): string {
@@ -81,7 +81,7 @@ export function PeoplePage() {
         <Box sx={{ bgcolor: "background.paper", border: "1px solid", borderColor: "divider", borderRadius: 4, overflow: "hidden" }}>
           <Table size="small">
             <TableHead>
-              <TableRow sx={{ bgcolor: "#EFF7F1" }}>
+              <TableRow sx={{ bgcolor: "#F3F1FC" }}>
                 {["Colaborador", "Cargo", "Área", "País", "Ingreso", "Manager", "Contrato", "Fase", "Status", ""].map((h) => (
                   <TableCell key={h} sx={{ fontWeight: 800, fontSize: 11, textTransform: "uppercase", letterSpacing: "0.04em", color: "text.secondary" }}>{h}</TableCell>
                 ))}
@@ -106,7 +106,7 @@ export function PeoplePage() {
                     <Chip label={e.lifecycle} size="small" sx={{ bgcolor: LIFECYCLE_COLOR[e.lifecycle].bg, color: LIFECYCLE_COLOR[e.lifecycle].fg, fontWeight: 700 }} />
                   </TableCell>
                   <TableCell>
-                    <Chip label={e.status} size="small" sx={{ bgcolor: e.status === "Activo" ? "#E7F3EC" : "#E7F1EB", color: e.status === "Activo" ? "#5F9678" : "#6C8177", fontWeight: 700 }} />
+                    <Chip label={e.status} size="small" sx={{ bgcolor: e.status === "Activo" ? "#E7E2FB" : "#EFEDFB", color: e.status === "Activo" ? "#5646C4" : "#6B7086", fontWeight: 700 }} />
                   </TableCell>
                   <TableCell align="right">
                     <IconButton size="small" onClick={() => setEditing(e)}><EditRoundedIcon fontSize="small" /></IconButton>
