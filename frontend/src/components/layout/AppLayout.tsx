@@ -23,8 +23,8 @@ import { useUIStore } from "../../store/uiStore";
 import { useAuthStore } from "../../features/auth/authStore";
 
 const drawerWidth = 248;
-const SIDEBAR_BG = "#20342B";
-const SIDEBAR_BORDER = "#2E4A3B";
+const SIDEBAR_BG = "#4F7A63";
+const SIDEBAR_BORDER = "#436A54";
 
 const navItems = [
   { to: "/", label: "Home", icon: <HomeRoundedIcon fontSize="small" />, end: true },
