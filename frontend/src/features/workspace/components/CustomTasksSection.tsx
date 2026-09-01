@@ -19,6 +19,7 @@ export function CustomTasksSection() {
   const deleteTask = useDeleteCustomTask();
   const toast = useToast();
   const [text, setText] = useState("");
+  const [dueDate, setDueDate] = useState("");
   const [category, setCategory] = useState<WorkspaceCategory>("Personal");
   const [filter, setFilter] = useState<"all" | WorkspaceCategory>("all");
 
@@ -28,9 +29,9 @@ export function CustomTasksSection() {
     const value = text.trim();
     if (!value) return;
     createTask.mutate(
-      { text: value, category, day: "pending" },
+      { text: value, category, dueDate: dueDate || null },
       {
-        onSuccess: () => setText(""),
+        onSuccess: () => { setText(""); setDueDate(""); },
         onError: (err) => toast.error(errorMessage(err, "No fue posible agregar la tarea.")),
       },
     );
@@ -73,6 +74,15 @@ export function CustomTasksSection() {
             },
           }}
         />
+        <TextField
+          type="date"
+          size="small"
+          value={dueDate}
+          onChange={(e) => setDueDate(e.target.value)}
+          sx={{ width: 168, flexShrink: 0 }}
+          slotProps={{ inputLabel: { shrink: true } }}
+          label="Fecha (opcional)"
+        />
         <IconButton onClick={handleAdd} disabled={!text.trim() || createTask.isPending} sx={{ bgcolor: "primary.main", color: "#fff", "&:hover": { bgcolor: "primary.dark" } }}>
           <AddRoundedIcon fontSize="small" />
         </IconButton>
@@ -102,6 +112,9 @@ export function CustomTasksSection() {
               <Typography variant="body2" sx={{ flex: 1, textDecoration: task.done ? "line-through" : "none", color: task.done ? "text.secondary" : "text.primary" }}>
                 {task.text}
               </Typography>
+              {task.dueDate && (
+                <Typography variant="caption" color="text.secondary" sx={{ flexShrink: 0 }}>{task.dueDate}</Typography>
+              )}
               <Chip label={task.category} size="small" sx={{ bgcolor: (CATEGORY_COLOR[task.category] ?? CATEGORY_COLOR.Personal).bg, color: (CATEGORY_COLOR[task.category] ?? CATEGORY_COLOR.Personal).fg, fontWeight: 700, height: 20 }} />
               <IconButton size="small" onClick={() => deleteTask.mutate(task.id)}>
                 <DeleteOutlineRoundedIcon sx={{ fontSize: 16 }} />

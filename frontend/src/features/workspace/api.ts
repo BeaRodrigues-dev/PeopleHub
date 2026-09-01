@@ -6,7 +6,6 @@ import type {
   CustomKpi,
   CustomNote,
   CustomTask,
-  TaskDay,
   WorkspaceCategory,
 } from "./types";
 
@@ -26,7 +25,7 @@ interface CustomTaskRow {
   text: string;
   done: boolean;
   category: string;
-  day: string;
+  due_date: string | null;
   created_at: string;
 }
 
@@ -58,7 +57,7 @@ function taskFromRow(row: CustomTaskRow): CustomTask {
     text: row.text,
     done: row.done,
     category: row.category as WorkspaceCategory,
-    day: (row.day as TaskDay) ?? "today",
+    dueDate: row.due_date ?? null,
     createdAt: row.created_at,
   };
 }
@@ -115,7 +114,7 @@ export const customTaskApi = {
   create: async (input: CreateCustomTaskInput): Promise<CustomTask> => {
     const { data, error } = await supabase
       .from("custom_tasks")
-      .insert({ text: input.text, category: input.category, day: input.day ?? "today", done: false })
+      .insert({ text: input.text, category: input.category, due_date: input.dueDate || null, done: false })
       .select("*")
       .single();
     throwIfError(error);
@@ -123,6 +122,11 @@ export const customTaskApi = {
   },
   toggle: async (id: string, done: boolean): Promise<CustomTask> => {
     const { data, error } = await supabase.from("custom_tasks").update({ done }).eq("id", id).select("*").single();
+    throwIfError(error);
+    return taskFromRow(data as CustomTaskRow);
+  },
+  updateDueDate: async (id: string, dueDate: string | null): Promise<CustomTask> => {
+    const { data, error } = await supabase.from("custom_tasks").update({ due_date: dueDate }).eq("id", id).select("*").single();
     throwIfError(error);
     return taskFromRow(data as CustomTaskRow);
   },

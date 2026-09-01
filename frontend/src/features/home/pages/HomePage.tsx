@@ -26,7 +26,6 @@ import { useConsultingLeads } from "../../consulting/queries";
 import { useInsights, useGenerateInsightsWithAi } from "../../insights/queries";
 import { useTalentPool } from "../../talent-bank/queries";
 import { useCustomTasks, useCreateCustomTask, useToggleCustomTask, useDeleteCustomTask } from "../../workspace/queries";
-import type { TaskDay } from "../../workspace/types";
 import { useUIStore } from "../../../store/uiStore";
 import { useToast } from "../../../components/common/ToastProvider";
 import { errorMessage } from "../../../components/common/ErrorState";
@@ -36,6 +35,26 @@ const INSIGHT_STYLE: Record<string, { bg: string; border: string; label: string;
   opportunity: { bg: "#E7E2FB", border: "#F1EEFD", label: "Oportunidad", icon: "🟡" },
   suggestion: { bg: "#E7E2FB", border: "#E7E2FB", label: "Sugerencia", icon: "🔵" },
 };
+
+type WeekBucket = "today" | "week" | "pending";
+
+interface WeekItem {
+  id: string;
+  rawId: string;
+  text: string;
+  detail?: string;
+  done: boolean;
+  kind: "task" | "event";
+  dueDate: string | null;
+}
+
+/** Ubica un ítem en Hoy / Semana / Pendientes comparando su fecha con hoy — sin bucket manual: vencidas y de hoy caen en "Hoy", hasta 7 días en "Semana", el resto (o sin fecha) en "Pendientes". */
+function bucketFor(dueDate: string | null, todayISO: string, weekLimitISO: string): WeekBucket {
+  if (!dueDate) return "pending";
+  if (dueDate <= todayISO) return "today";
+  if (dueDate <= weekLimitISO) return "week";
+  return "pending";
+}
 
 function formatToday(): string {
   const text = new Date().toLocaleDateString("es-ES", { weekday: "long", day: "numeric", month: "long", year: "numeric" });
@@ -55,8 +74,9 @@ export function HomePage() {
   const navigate = useNavigate();
   const toast = useToast();
   const openAddCandidate = useUIStore((s) => s.openAddCandidate);
-  const [activeDay, setActiveDay] = useState<TaskDay>("today");
+  const [activeDay, setActiveDay] = useState<WeekBucket>("today");
   const [newTaskText, setNewTaskText] = useState("");
+  const [newTaskDate, setNewTaskDate] = useState("");
   const { data: tasks } = useCustomTasks();
   const createTask = useCreateCustomTask();
   const toggleTask = useToggleCustomTask();
@@ -86,15 +106,34 @@ export function HomePage() {
   const activeOnboardings = onboardings.filter((o) => o.status !== "Completado");
   const clients = leads.filter((l) => l.status === "Cliente");
 
-  const filteredTasks = (tasks ?? []).filter((t) => t.day === activeDay);
+  const todayISO = new Date().toISOString().slice(0, 10);
+  const weekLimitISO = new Date(Date.now() + 7 * 86400000).toISOString().slice(0, 10);
+
+  // "My Week" combina las tareas (custom_tasks, con fecha real y opcional) y
+  // los eventos próximos de la Agenda, así lo que ya agendaste no hay que
+  // volver a anotarlo como tarea — todo se ubica solo en Hoy/Semana/Pendientes
+  // comparando la fecha contra hoy.
+  const weekItems: WeekItem[] = useMemo(() => {
+    const taskItems: WeekItem[] = (tasks ?? []).map((t) => ({ id: `task-${t.id}`, rawId: t.id, text: t.text, done: t.done, kind: "task", dueDate: t.dueDate }));
+    const eventItems: WeekItem[] = (agendaData ?? [])
+      .filter((e) => e.eventDate >= todayISO)
+      .map((e) => ({ id: `event-${e.id}`, rawId: e.id, text: e.title, detail: e.eventTime ?? undefined, done: false, kind: "event", dueDate: e.eventDate }));
+    return [...taskItems, ...eventItems];
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [tasks, agendaData]);
+
+  const filteredWeekItems = weekItems
+    .filter((i) => bucketFor(i.dueDate, todayISO, weekLimitISO) === activeDay)
+    .sort((a, b) => (a.dueDate ?? "9999").localeCompare(b.dueDate ?? "9999"));
 
   const handleAddTask = () => {
     const value = newTaskText.trim();
     if (!value) return;
+    const dueDate = newTaskDate || (activeDay === "today" ? todayISO : null);
     createTask.mutate(
-      { text: value, category: "Personal", day: activeDay },
+      { text: value, category: "Personal", dueDate },
       {
-        onSuccess: () => setNewTaskText(""),
+        onSuccess: () => { setNewTaskText(""); setNewTaskDate(""); },
         onError: (err) => toast.error(errorMessage(err, "No fue posible agregar la tarea.")),
       },
     );
@@ -106,7 +145,6 @@ export function HomePage() {
   const latestRoundResults = (climateResults ?? []).filter((r) => r.roundId === latestRound?.id);
   const latestRoundAverage = latestRoundResults.length ? latestRoundResults.reduce((sum, r) => sum + r.score, 0) / latestRoundResults.length : null;
 
-  const todayISO = new Date().toISOString().slice(0, 10);
   const upcomingEvents = useMemo(
     () => (agendaData ?? []).filter((e) => e.eventDate >= todayISO).sort((a, b) => a.eventDate.localeCompare(b.eventDate) || (a.eventTime ?? "").localeCompare(b.eventTime ?? "")).slice(0, 5),
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -181,42 +219,64 @@ export function HomePage() {
             <TextField
               fullWidth
               size="small"
-              placeholder="Agregar tarea a esta pestaña…"
+              placeholder="Agregar tarea…"
               value={newTaskText}
               onChange={(e) => setNewTaskText(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && handleAddTask()}
+            />
+            <TextField
+              type="date"
+              size="small"
+              value={newTaskDate}
+              onChange={(e) => setNewTaskDate(e.target.value)}
+              sx={{ width: 148, flexShrink: 0 }}
+              slotProps={{ inputLabel: { shrink: true } }}
             />
             <IconButton onClick={handleAddTask} disabled={!newTaskText.trim() || createTask.isPending} sx={{ bgcolor: "primary.main", color: "#fff", "&:hover": { bgcolor: "primary.dark" } }}>
               <AddRoundedIcon fontSize="small" />
             </IconButton>
           </Stack>
           <Stack spacing={1}>
-            {filteredTasks.map((t) => (
-              <Stack key={t.id} direction="row" spacing={1.25} alignItems="flex-start">
-                <Box
-                  onClick={() => toggleTask.mutate({ id: t.id, done: !t.done })}
-                  sx={{
-                    width: 16, height: 16, borderRadius: "5px", mt: 0.3, flexShrink: 0, cursor: "pointer",
-                    border: "2px solid", borderColor: t.done ? "primary.main" : "divider",
-                    bgcolor: t.done ? "primary.main" : "transparent",
-                    display: "grid", placeItems: "center", color: "#fff", fontSize: 11,
-                  }}
-                >
-                  {t.done ? "✓" : ""}
-                </Box>
-                <Typography
-                  variant="body2"
-                  onClick={() => toggleTask.mutate({ id: t.id, done: !t.done })}
-                  sx={{ flex: 1, cursor: "pointer", textDecoration: t.done ? "line-through" : "none", color: t.done ? "text.secondary" : "text.primary" }}
-                >
-                  {t.text}
-                </Typography>
-                <IconButton size="small" onClick={() => deleteTask.mutate(t.id)}>
-                  <DeleteOutlineRoundedIcon sx={{ fontSize: 15 }} />
-                </IconButton>
-              </Stack>
-            ))}
-            {filteredTasks.length === 0 && <Typography variant="body2" color="text.secondary" fontStyle="italic">¡Todo listo! 🎉</Typography>}
+            {filteredWeekItems.map((item) => {
+              const isEvent = item.kind === "event";
+              return (
+                <Stack key={item.id} direction="row" spacing={1.25} alignItems="flex-start">
+                  {isEvent ? (
+                    <Box sx={{ width: 16, height: 16, mt: 0.3, flexShrink: 0, display: "grid", placeItems: "center", color: "primary.main" }}>
+                      <EventRoundedIcon sx={{ fontSize: 15 }} />
+                    </Box>
+                  ) : (
+                    <Box
+                      onClick={() => toggleTask.mutate({ id: item.rawId, done: !item.done })}
+                      sx={{
+                        width: 16, height: 16, borderRadius: "5px", mt: 0.3, flexShrink: 0, cursor: "pointer",
+                        border: "2px solid", borderColor: item.done ? "primary.main" : "divider",
+                        bgcolor: item.done ? "primary.main" : "transparent",
+                        display: "grid", placeItems: "center", color: "#fff", fontSize: 11,
+                      }}
+                    >
+                      {item.done ? "✓" : ""}
+                    </Box>
+                  )}
+                  <Typography
+                    variant="body2"
+                    onClick={isEvent ? () => navigate("/agenda") : () => toggleTask.mutate({ id: item.rawId, done: !item.done })}
+                    sx={{ flex: 1, cursor: "pointer", textDecoration: item.done ? "line-through" : "none", color: item.done ? "text.secondary" : "text.primary" }}
+                  >
+                    {item.text}{isEvent && item.detail ? ` · ${item.detail}` : ""}
+                  </Typography>
+                  {item.dueDate && (
+                    <Typography variant="caption" color="text.secondary" sx={{ flexShrink: 0, mt: 0.15 }}>{formatEventDate(item.dueDate)}</Typography>
+                  )}
+                  {!isEvent && (
+                    <IconButton size="small" onClick={() => deleteTask.mutate(item.rawId)}>
+                      <DeleteOutlineRoundedIcon sx={{ fontSize: 15 }} />
+                    </IconButton>
+                  )}
+                </Stack>
+              );
+            })}
+            {filteredWeekItems.length === 0 && <Typography variant="body2" color="text.secondary" fontStyle="italic">¡Todo listo! 🎉</Typography>}
           </Stack>
         </PanelCard>
 

@@ -56,6 +56,14 @@ export function useToggleCustomTask() {
   });
 }
 
+export function useUpdateTaskDueDate() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ id, dueDate }: { id: string; dueDate: string | null }) => customTaskApi.updateDueDate(id, dueDate),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: workspaceKeys.tasks }),
+  });
+}
+
 export function useDeleteCustomTask() {
   const queryClient = useQueryClient();
   return useMutation({

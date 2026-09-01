@@ -169,6 +169,12 @@ create table if not exists custom_tasks (
 -- organizar también por día en el Home sin duplicar la lista.
 alter table custom_tasks add column if not exists day text not null default 'today';
 
+-- Fecha de vencimiento real y opcional de la tarea (reemplaza al bucket fijo
+-- "day" de arriba como forma principal de ubicar la tarea en "My Week": si
+-- tiene fecha, se ubica sola en Hoy/Semana/Pendientes comparando contra hoy;
+-- si no tiene fecha, cae en Pendientes).
+alter table custom_tasks add column if not exists due_date date;
+
 create table if not exists custom_notes (
   id uuid primary key default gen_random_uuid(),
   title text not null default '',
