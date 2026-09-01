@@ -10,6 +10,8 @@ import BusinessCenterRoundedIcon from "@mui/icons-material/BusinessCenterRounded
 import LightbulbRoundedIcon from "@mui/icons-material/LightbulbRounded";
 import SummarizeRoundedIcon from "@mui/icons-material/SummarizeRounded";
 import LibraryBooksRoundedIcon from "@mui/icons-material/LibraryBooksRounded";
+import PollRoundedIcon from "@mui/icons-material/PollRounded";
+import EventRoundedIcon from "@mui/icons-material/EventRounded";
 import MenuRoundedIcon from "@mui/icons-material/MenuRounded";
 import AddRoundedIcon from "@mui/icons-material/AddRounded";
 import PersonAddAltRoundedIcon from "@mui/icons-material/PersonAddAltRounded";
@@ -34,6 +36,8 @@ const navItems = [
   { to: "/consultoria", label: "Consulting", icon: <BusinessCenterRoundedIcon fontSize="small" /> },
   { to: "/insights", label: "Insights", icon: <LightbulbRoundedIcon fontSize="small" /> },
   { to: "/relatorio-semanal", label: "Weekly Report", icon: <SummarizeRoundedIcon fontSize="small" /> },
+  { to: "/clima", label: "Encuestas de Clima", icon: <PollRoundedIcon fontSize="small" /> },
+  { to: "/agenda", label: "Agenda", icon: <EventRoundedIcon fontSize="small" /> },
   { to: "/documentos", label: "Documentos", icon: <LibraryBooksRoundedIcon fontSize="small" /> },
 ];
 

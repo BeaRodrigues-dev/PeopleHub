@@ -166,6 +166,41 @@ create table if not exists custom_notes (
   updated_at timestamptz not null default now()
 );
 
+-- Encuestas de clima organizacional: rondas + resultados por categoría,
+-- 100% editables por el usuario, sin datos precargados.
+create table if not exists climate_survey_rounds (
+  id uuid primary key default gen_random_uuid(),
+  name text not null,
+  round_date date not null default current_date,
+  respondents integer not null default 0,
+  notes text default '',
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+);
+
+create table if not exists climate_survey_results (
+  id uuid primary key default gen_random_uuid(),
+  round_id uuid not null references climate_survey_rounds(id) on delete cascade,
+  category text not null,
+  score numeric not null default 0,
+  comment text default '',
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+);
+
+-- Agenda personal / "segunda agenda de People": eventos con fecha, 100%
+-- editables, usados también para los recordatorios de la página de inicio.
+create table if not exists agenda_events (
+  id uuid primary key default gen_random_uuid(),
+  title text not null,
+  event_date date not null default current_date,
+  event_time time,
+  notes text default '',
+  category text not null default 'Personal',
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+);
+
 -- ─────────────────────────────────────────────────────────────────────────
 -- updated_at automático
 -- ─────────────────────────────────────────────────────────────────────────
@@ -204,6 +239,15 @@ create trigger trg_custom_tasks_updated_at before update on custom_tasks for eac
 drop trigger if exists trg_custom_notes_updated_at on custom_notes;
 create trigger trg_custom_notes_updated_at before update on custom_notes for each row execute function set_updated_at();
 
+drop trigger if exists trg_climate_survey_rounds_updated_at on climate_survey_rounds;
+create trigger trg_climate_survey_rounds_updated_at before update on climate_survey_rounds for each row execute function set_updated_at();
+
+drop trigger if exists trg_climate_survey_results_updated_at on climate_survey_results;
+create trigger trg_climate_survey_results_updated_at before update on climate_survey_results for each row execute function set_updated_at();
+
+drop trigger if exists trg_agenda_events_updated_at on agenda_events;
+create trigger trg_agenda_events_updated_at before update on agenda_events for each row execute function set_updated_at();
+
 -- ─────────────────────────────────────────────────────────────────────────
 -- RLS — qualquer usuário autenticado tem acesso total (app single-tenant)
 -- ─────────────────────────────────────────────────────────────────────────
@@ -219,6 +263,9 @@ alter table documents enable row level security;
 alter table custom_kpis enable row level security;
 alter table custom_tasks enable row level security;
 alter table custom_notes enable row level security;
+alter table climate_survey_rounds enable row level security;
+alter table climate_survey_results enable row level security;
+alter table agenda_events enable row level security;
 
 drop policy if exists "authenticated_full_access" on vacancies;
 create policy "authenticated_full_access" on vacancies for all using (auth.role() = 'authenticated') with check (auth.role() = 'authenticated');
@@ -252,6 +299,15 @@ create policy "authenticated_full_access" on custom_tasks for all using (auth.ro
 
 drop policy if exists "authenticated_full_access" on custom_notes;
 create policy "authenticated_full_access" on custom_notes for all using (auth.role() = 'authenticated') with check (auth.role() = 'authenticated');
+
+drop policy if exists "authenticated_full_access" on climate_survey_rounds;
+create policy "authenticated_full_access" on climate_survey_rounds for all using (auth.role() = 'authenticated') with check (auth.role() = 'authenticated');
+
+drop policy if exists "authenticated_full_access" on climate_survey_results;
+create policy "authenticated_full_access" on climate_survey_results for all using (auth.role() = 'authenticated') with check (auth.role() = 'authenticated');
+
+drop policy if exists "authenticated_full_access" on agenda_events;
+create policy "authenticated_full_access" on agenda_events for all using (auth.role() = 'authenticated') with check (auth.role() = 'authenticated');
 
 -- ─────────────────────────────────────────────────────────────────────────
 -- Storage — buckets públicos para currículos e documentos

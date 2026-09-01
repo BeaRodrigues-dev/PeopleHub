@@ -15,6 +15,8 @@ import { ConsultingPage } from "./features/consulting/pages/ConsultingPage";
 import { InsightsPage } from "./features/insights/pages/InsightsPage";
 import { WeeklyReportPage } from "./features/weekly-report/pages/WeeklyReportPage";
 import { DocsPage } from "./features/docs/pages/DocsPage";
+import { ClimateSurveyPage } from "./features/climate/pages/ClimateSurveyPage";
+import { AgendaPage } from "./features/agenda/pages/AgendaPage";
 import { SettingsPage } from "./features/auth/pages/SettingsPage";
 import { CandidateDetailDrawer } from "./features/candidate/components/CandidateDetailDrawer";
 import { CandidateEditModal } from "./features/candidate/components/CandidateEditModal";
@@ -49,6 +51,8 @@ export default function App() {
         <Route path="/consultoria" element={<ConsultingPage />} />
         <Route path="/insights" element={<InsightsPage />} />
         <Route path="/relatorio-semanal" element={<WeeklyReportPage />} />
+        <Route path="/clima" element={<ClimateSurveyPage />} />
+        <Route path="/agenda" element={<AgendaPage />} />
         <Route path="/documentos" element={<DocsPage />} />
         <Route path="/configuracoes" element={<SettingsPage />} />
         <Route path="*" element={<Navigate to="/" replace />} />

@@ -5,7 +5,9 @@ import CalendarMonthRoundedIcon from "@mui/icons-material/CalendarMonthRounded";
 import TrendingUpRoundedIcon from "@mui/icons-material/TrendingUpRounded";
 import LightbulbRoundedIcon from "@mui/icons-material/LightbulbRounded";
 import AutoAwesomeRoundedIcon from "@mui/icons-material/AutoAwesomeRounded";
+import EventRoundedIcon from "@mui/icons-material/EventRounded";
 import { useNavigate } from "react-router-dom";
+import { useAgendaEvents } from "../../agenda/queries";
 import { useVacancies } from "../../vacancy/queries";
 import { useVacancyCandidateCounts } from "../../candidate/queries";
 import { useEmployees } from "../../people/queries";
@@ -44,6 +46,15 @@ function formatToday(): string {
   return text.charAt(0).toUpperCase() + text.slice(1);
 }
 
+function formatEventDate(iso: string): string {
+  const today = new Date().toISOString().slice(0, 10);
+  const tomorrow = new Date(Date.now() + 86400000).toISOString().slice(0, 10);
+  if (iso === today) return "Hoy";
+  if (iso === tomorrow) return "Mañana";
+  const text = new Date(`${iso}T00:00:00`).toLocaleDateString("es-ES", { day: "numeric", month: "short" });
+  return text.charAt(0).toUpperCase() + text.slice(1);
+}
+
 export function HomePage() {
   const navigate = useNavigate();
   const toast = useToast();
@@ -62,6 +73,7 @@ export function HomePage() {
   const { data: insightData } = useInsights();
   const insights = insightData?.items ?? [];
   const { data: poolData } = useTalentPool({ limit: 1 });
+  const { data: agendaData } = useAgendaEvents();
   const generateInsights = useGenerateInsightsWithAi();
 
   const openVacancies = vacancies.filter((v) => v.status === "Abierta");
@@ -75,6 +87,13 @@ export function HomePage() {
   const toggleTask = (id: number) => setTasks((prev) => prev.map((t) => (t.id === id ? { ...t, done: !t.done } : t)));
 
   const recentInsights = useMemo(() => insights.slice(0, 4), [insights]);
+
+  const todayISO = new Date().toISOString().slice(0, 10);
+  const upcomingEvents = useMemo(
+    () => (agendaData ?? []).filter((e) => e.eventDate >= todayISO).sort((a, b) => a.eventDate.localeCompare(b.eventDate) || (a.eventTime ?? "").localeCompare(b.eventTime ?? "")).slice(0, 5),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [agendaData],
+  );
 
   const isLoading = vacanciesLoading || employeesLoading || onboardingsLoading;
 
@@ -169,6 +188,29 @@ export function HomePage() {
           ]} />
         </PanelCard>
       </Box>
+
+      <PanelCard
+        title="Recordatorios"
+        icon={<EventRoundedIcon fontSize="small" />}
+        action={<Button size="small" variant="text" onClick={() => navigate("/agenda")}>Ver agenda →</Button>}
+      >
+        {upcomingEvents.length === 0 ? (
+          <Typography variant="body2" color="text.secondary" fontStyle="italic">Ningún evento próximo. Agrega uno en la Agenda.</Typography>
+        ) : (
+          <Stack spacing={1}>
+            {upcomingEvents.map((e) => (
+              <Stack key={e.id} direction="row" alignItems="center" spacing={1.25}>
+                <Box sx={{ width: 8, height: 8, borderRadius: "50%", bgcolor: e.category === "Empresa" ? "#8B7FBF" : "#5F9678", flexShrink: 0 }} />
+                <Typography variant="caption" fontWeight={700} color="text.secondary" sx={{ width: 78, flexShrink: 0 }}>
+                  {formatEventDate(e.eventDate)}
+                </Typography>
+                <Typography variant="body2" noWrap sx={{ flex: 1 }}>{e.title}</Typography>
+                {e.eventTime && <Typography variant="caption" color="text.secondary">{e.eventTime}</Typography>}
+              </Stack>
+            ))}
+          </Stack>
+        )}
+      </PanelCard>
 
       <PanelCard
         title="HR Insights"
