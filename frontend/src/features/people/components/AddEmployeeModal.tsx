@@ -4,7 +4,7 @@ import { Modal } from "../../../components/common/Modal";
 import { useToast } from "../../../components/common/ToastProvider";
 import { errorMessage } from "../../../components/common/ErrorState";
 import { useCreateEmployee, useUpdateEmployee } from "../queries";
-import { CONTRACT_TYPES, EMPLOYEE_STATUSES, LIFECYCLE_STAGES, type CreateEmployeeInput, type Employee } from "../types";
+import { CONTRACT_TYPES, EMPLOYEE_STATUSES, LIFECYCLE_STAGES, type CreateEmployeeInput, type Employee, type EmployeeStatus } from "../types";
 
 const empty: CreateEmployeeInput = {
   name: "",
@@ -16,6 +16,7 @@ const empty: CreateEmployeeInput = {
   contract: "Tiempo completo",
   status: "Activo",
   lifecycle: "Onboarding",
+  exitDate: "",
   exitReason: "",
 };
 
@@ -30,7 +31,7 @@ export function AddEmployeeModal({ open, onClose, employee }: { open: boolean; o
     if (open) {
       setForm(
         employee
-          ? { name: employee.name, role: employee.role, area: employee.area, country: employee.country, startDate: employee.startDate, manager: employee.manager ?? "", contract: employee.contract, status: employee.status, lifecycle: employee.lifecycle, exitReason: employee.exitReason ?? "" }
+          ? { name: employee.name, role: employee.role, area: employee.area, country: employee.country, startDate: employee.startDate, manager: employee.manager ?? "", contract: employee.contract, status: employee.status, lifecycle: employee.lifecycle, exitDate: employee.exitDate ?? "", exitReason: employee.exitReason ?? "" }
           : empty,
       );
     }
@@ -38,6 +39,17 @@ export function AddEmployeeModal({ open, onClose, employee }: { open: boolean; o
 
   const isSaving = createEmployee.isPending || updateEmployee.isPending;
   const set = <K extends keyof CreateEmployeeInput>(key: K, value: CreateEmployeeInput[K]) => setForm((f) => ({ ...f, [key]: value }));
+
+  // Al cambiar el status sugerimos la fecha de hoy como salida (si todavía
+  // no hay una cargada), pero la fecha queda 100% editable a mano después:
+  // no la volvemos a pisar en cada guardado. Si vuelve a "Activo" limpiamos
+  // fecha y motivo.
+  const handleStatusChange = (value: EmployeeStatus) => {
+    setForm((f) => {
+      if (value === "Activo") return { ...f, status: value, exitDate: "", exitReason: "" };
+      return { ...f, status: value, exitDate: f.exitDate || new Date().toISOString().slice(0, 10) };
+    });
+  };
 
   const handleClose = () => {
     setForm(empty);
@@ -108,7 +120,7 @@ export function AddEmployeeModal({ open, onClose, employee }: { open: boolean; o
           </TextField>
         </Grid>
         <Grid size={6}>
-          <TextField select label="Status" fullWidth size="small" value={form.status} onChange={(e) => set("status", e.target.value as CreateEmployeeInput["status"])}>
+          <TextField select label="Status" fullWidth size="small" value={form.status} onChange={(e) => handleStatusChange(e.target.value as EmployeeStatus)}>
             {EMPLOYEE_STATUSES.map((s) => <MenuItem key={s} value={s}>{s}</MenuItem>)}
           </TextField>
         </Grid>
@@ -118,16 +130,29 @@ export function AddEmployeeModal({ open, onClose, employee }: { open: boolean; o
           </TextField>
         </Grid>
         {form.status !== "Activo" && (
-          <Grid size={12}>
-            <TextField
-              label="Motivo de salida"
-              placeholder="Ej. Renuncia, fin de contrato, despido…"
-              fullWidth
-              size="small"
-              value={form.exitReason ?? ""}
-              onChange={(e) => set("exitReason", e.target.value)}
-            />
-          </Grid>
+          <>
+            <Grid size={6}>
+              <TextField
+                label="Fecha de salida"
+                type="date"
+                fullWidth
+                size="small"
+                value={form.exitDate ?? ""}
+                onChange={(e) => set("exitDate", e.target.value)}
+                slotProps={{ inputLabel: { shrink: true } }}
+              />
+            </Grid>
+            <Grid size={6}>
+              <TextField
+                label="Motivo de salida"
+                placeholder="Ej. Renuncia, fin de contrato, despido…"
+                fullWidth
+                size="small"
+                value={form.exitReason ?? ""}
+                onChange={(e) => set("exitReason", e.target.value)}
+              />
+            </Grid>
+          </>
         )}
       </Grid>
       <Box sx={{ height: 4 }} />

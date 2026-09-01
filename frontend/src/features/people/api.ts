@@ -55,15 +55,12 @@ function toRow(input: Partial<CreateEmployeeInput>): Record<string, unknown> {
   if (input.startDate !== undefined) row.start_date = input.startDate;
   if (input.manager !== undefined) row.manager = input.manager;
   if (input.contract !== undefined) row.contract = input.contract;
-  if (input.status !== undefined) {
-    row.status = input.status;
-    // Registra la fecha real de salida cuando el colaborador pasa a
-    // "Offboarding" o "Inactivo" (para distinguir quién sigue activo de
-    // quién ya salió) y la limpia si vuelve a estar "Activo".
-    row.exit_date = input.status !== "Activo" ? new Date().toISOString().slice(0, 10) : null;
-    if (input.status === "Activo") row.exit_reason = null;
-  }
+  if (input.status !== undefined) row.status = input.status;
   if (input.lifecycle !== undefined) row.lifecycle = input.lifecycle;
+  // La fecha y el motivo de salida son editables a mano (el formulario ya
+  // propone la fecha de hoy como valor inicial al pasar a un status que no
+  // es "Activo", pero quien usa la app puede corregirla libremente).
+  if (input.exitDate !== undefined) row.exit_date = input.exitDate || null;
   if (input.exitReason !== undefined) row.exit_reason = input.exitReason || null;
   return row;
 }

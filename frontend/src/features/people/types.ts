@@ -22,5 +22,5 @@ export interface Employee {
   updatedAt: string;
 }
 
-export type CreateEmployeeInput = Omit<Employee, "id" | "createdAt" | "updatedAt" | "exitDate">;
+export type CreateEmployeeInput = Omit<Employee, "id" | "createdAt" | "updatedAt">;
 export type UpdateEmployeeInput = Partial<CreateEmployeeInput>;
