@@ -26,8 +26,8 @@ export default function App() {
 
   if (!initialized) {
     return (
-      <Box sx={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", bgcolor: "#2A2E52" }}>
-        <CircularProgress sx={{ color: "#B8A9E3" }} />
+      <Box sx={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", bgcolor: "#E7F4EC" }}>
+        <CircularProgress sx={{ color: "#B7DCC0" }} />
       </Box>
     );
   }

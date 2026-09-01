@@ -1,18 +1,18 @@
 import { createTheme } from "@mui/material/styles";
 
-// Identidade visual "People Hub" — paleta pastel azul/lavanda sobre fundo
-// claro. Sidebar en tono azul marino oscuro, acentos en lavanda suave,
-// tipografía con toque serifado en los títulos para un aire "HR OS" premium.
+// Identidade visual "People Hub" — paleta pastel verde-salvia, toda clara y
+// "calma": sin bloques oscuros, sidebar en verde pastel muy suave, acentos
+// en menta claro, tipografía con toque serifado en los títulos.
 export const theme = createTheme({
   palette: {
-    primary: { main: "#7C93D6", light: "#A9BBE8", dark: "#5C74B8", contrastText: "#fff" },
-    secondary: { main: "#B8A9E3", light: "#D6D3F0", dark: "#9285C4", contrastText: "#4E5FA6" },
-    background: { default: "#F6F7FC", paper: "#ffffff" },
-    text: { primary: "#2E3148", secondary: "#6B6F8C" },
-    divider: "#E2E4F1",
-    error: { main: "#C4677E" },
-    success: { main: "#4C9B7C" },
-    warning: { main: "#C99A52" },
+    primary: { main: "#7FB396", light: "#ADD1BB", dark: "#5F9678", contrastText: "#fff" },
+    secondary: { main: "#B7DCC0", light: "#D9EEDE", dark: "#93C2A2", contrastText: "#3D6A52" },
+    background: { default: "#F6FAF7", paper: "#ffffff" },
+    text: { primary: "#33423A", secondary: "#6C8177" },
+    divider: "#DCEBE1",
+    error: { main: "#C48A94" },
+    success: { main: "#5F9678" },
+    warning: { main: "#C29A55" },
   },
   shape: { borderRadius: 14 },
   // Los menús/selects/tooltips nativos de MUI (Popover) usan zIndex.modal por
@@ -31,35 +31,35 @@ export const theme = createTheme({
   },
   shadows: [
     "none",
-    "0 1px 2px rgba(45,50,110,.06)",
-    "0 2px 6px rgba(45,50,110,.07)",
-    "0 4px 10px rgba(45,50,110,.08)",
-    "0 6px 16px rgba(45,50,110,.09)",
-    "0 8px 20px rgba(45,50,110,.1)",
-    "0 10px 24px rgba(45,50,110,.11)",
-    ...Array(18).fill("0 20px 44px rgba(45,50,110,.16)"),
+    "0 1px 2px rgba(50,90,70,.06)",
+    "0 2px 6px rgba(50,90,70,.07)",
+    "0 4px 10px rgba(50,90,70,.08)",
+    "0 6px 16px rgba(50,90,70,.09)",
+    "0 8px 20px rgba(50,90,70,.1)",
+    "0 10px 24px rgba(50,90,70,.11)",
+    ...Array(18).fill("0 20px 44px rgba(50,90,70,.16)"),
   ] as unknown as import("@mui/material/styles").Shadows,
   components: {
     MuiCssBaseline: {
-      styleOverrides: { body: { scrollbarColor: "#E2E4F1 transparent" } },
+      styleOverrides: { body: { scrollbarColor: "#DCEBE1 transparent" } },
     },
     MuiCard: {
       defaultProps: { elevation: 0 },
       styleOverrides: {
-        root: { border: "1px solid #E2E4F1", boxShadow: "0 1px 2px rgba(45,50,110,.05)", borderRadius: 16 },
+        root: { border: "1px solid #DCEBE1", boxShadow: "0 1px 2px rgba(50,90,70,.05)", borderRadius: 16 },
       },
     },
     MuiButton: {
       styleOverrides: {
         root: { textTransform: "none", fontWeight: 650, borderRadius: 10, paddingInline: 16 },
         contained: { boxShadow: "none", "&:hover": { boxShadow: "none" } },
-        outlined: { borderColor: "#E2E4F1" },
+        outlined: { borderColor: "#DCEBE1" },
       },
     },
     MuiChip: { styleOverrides: { root: { borderRadius: 8 } } },
     MuiTextField: { defaultProps: { variant: "outlined" } },
     MuiOutlinedInput: { styleOverrides: { root: { borderRadius: 10, backgroundColor: "#fff" } } },
     MuiPaper: { styleOverrides: { root: { backgroundImage: "none" } } },
-    MuiTableCell: { styleOverrides: { root: { borderColor: "#ECECF5" } } },
+    MuiTableCell: { styleOverrides: { root: { borderColor: "#E4EFE8" } } },
   },
 });

@@ -11,9 +11,9 @@ import { useToast } from "../../../components/common/ToastProvider";
 import { INSIGHT_TYPES, type InsightType } from "../types";
 
 const TYPE_CONFIG: Record<InsightType, { label: string; icon: string; bg: string; border: string; badge: string; badgeFg: string }> = {
-  problem: { label: "Problema", icon: "🔴", bg: "#F7E3E8", border: "#E3C3D0", badge: "#F2D3DA", badgeFg: "#B5677E" },
-  opportunity: { label: "Oportunidad", icon: "🟡", bg: "#EAF3EE", border: "#D6D3F0", badge: "#E1F0E8", badgeFg: "#7C93D6" },
-  suggestion: { label: "Sugerencia", icon: "🔵", bg: "#EAF0FA", border: "#DCE3F7", badge: "#E1E7FA", badgeFg: "#4F6FBF" },
+  problem: { label: "Problema", icon: "🔴", bg: "#F5E6E9", border: "#E6D4D9", badge: "#F0DEE2", badgeFg: "#C17E8B" },
+  opportunity: { label: "Oportunidad", icon: "🟡", bg: "#EEF7F1", border: "#D9EEDE", badge: "#E7F3EC", badgeFg: "#7FB396" },
+  suggestion: { label: "Sugerencia", icon: "🔵", bg: "#E3F2E8", border: "#DDEEE3", badge: "#E3F2E8", badgeFg: "#5F9678" },
 };
 
 export function InsightsPage() {
@@ -74,7 +74,7 @@ export function InsightsPage() {
                 onClick={() => setNewType(t)}
                 sx={{
                   fontWeight: 700,
-                  bgcolor: newType === t ? TYPE_CONFIG[t].badge : "#E9E9F6",
+                  bgcolor: newType === t ? TYPE_CONFIG[t].badge : "#ECF5EF",
                   color: newType === t ? TYPE_CONFIG[t].badgeFg : "text.secondary",
                 }}
               />
@@ -89,9 +89,9 @@ export function InsightsPage() {
       )}
 
       <Stack direction="row" spacing={1} sx={{ mb: 2.5 }} flexWrap="wrap" useFlexGap>
-        <Chip label="Todos" onClick={() => setFilter("all")} sx={{ fontWeight: 700, bgcolor: filter === "all" ? "primary.main" : "#E9E9F6", color: filter === "all" ? "#fff" : "text.secondary" }} />
+        <Chip label="Todos" onClick={() => setFilter("all")} sx={{ fontWeight: 700, bgcolor: filter === "all" ? "primary.main" : "#ECF5EF", color: filter === "all" ? "#fff" : "text.secondary" }} />
         {INSIGHT_TYPES.map((t) => (
-          <Chip key={t} label={`${TYPE_CONFIG[t].icon} ${TYPE_CONFIG[t].label}`} onClick={() => setFilter(t)} sx={{ fontWeight: 700, bgcolor: filter === t ? "primary.main" : "#E9E9F6", color: filter === t ? "#fff" : "text.secondary" }} />
+          <Chip key={t} label={`${TYPE_CONFIG[t].icon} ${TYPE_CONFIG[t].label}`} onClick={() => setFilter(t)} sx={{ fontWeight: 700, bgcolor: filter === t ? "primary.main" : "#ECF5EF", color: filter === t ? "#fff" : "text.secondary" }} />
         ))}
       </Stack>
 

@@ -97,7 +97,7 @@ export function VacancyDetailPage() {
                 : `${daysBetween(vacancy.openingDate, new Date().toISOString().slice(0, 10))} días abierta`
             }
             size="small"
-            sx={{ fontWeight: 700, bgcolor: "#E7E4F8", color: "#6C5CB5", ml: 0.5 }}
+            sx={{ fontWeight: 700, bgcolor: "#E7E3F5", color: "#8B7FBF", ml: 0.5 }}
           />
         </Tooltip>
         {timeToFill && (
@@ -106,7 +106,7 @@ export function VacancyDetailPage() {
               icon={<AutoAwesomeRoundedIcon sx={{ fontSize: 15 }} />}
               label={`IA: ~${timeToFill.estimatedDays}d para completar (confianza ${timeToFill.confidence.toLowerCase()})`}
               size="small"
-              sx={{ fontWeight: 700, bgcolor: "#E9E9F6", color: "primary.main", ml: 0.5 }}
+              sx={{ fontWeight: 700, bgcolor: "#ECF5EF", color: "primary.main", ml: 0.5 }}
             />
           </Tooltip>
         )}

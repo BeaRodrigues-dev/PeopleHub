@@ -32,8 +32,8 @@ export function LoginPage() {
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
-        bgcolor: "#2A2E52",
-        backgroundImage: "linear-gradient(160deg, #2A2E52 0%, #33366B 60%, #2A2E52 100%)",
+        bgcolor: "#E7F4EC",
+        backgroundImage: "linear-gradient(160deg, #E7F4EC 0%, #D2E8DC 60%, #E7F4EC 100%)",
         p: 2,
       }}
     >
@@ -44,7 +44,7 @@ export function LoginPage() {
               width: 44,
               height: 44,
               borderRadius: "12px",
-              background: "linear-gradient(135deg, #7C93D6, #B8A9E3)",
+              background: "linear-gradient(135deg, #7FB396, #B7DCC0)",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
