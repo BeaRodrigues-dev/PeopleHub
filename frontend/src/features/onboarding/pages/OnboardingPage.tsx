@@ -64,7 +64,7 @@ export function OnboardingPage() {
                 sx={{
                   borderRadius: 4, p: 2, cursor: "pointer", border: "1px solid",
                   borderColor: selected?.id === entry.id ? "primary.main" : "divider",
-                  bgcolor: selected?.id === entry.id ? "#F1F7F2" : "background.paper",
+                  bgcolor: selected?.id === entry.id ? "#F2F1FA" : "background.paper",
                 }}
               >
                 <Stack direction="row" justifyContent="space-between" alignItems="flex-start">
@@ -76,7 +76,7 @@ export function OnboardingPage() {
                     <Chip
                       label={entry.status}
                       size="small"
-                      sx={{ fontWeight: 700, bgcolor: entry.status === "En progreso" ? "secondary.light" : entry.status === "Completado" ? "#DCEFE1" : "#E7F2EA", color: entry.status === "En progreso" ? "primary.dark" : entry.status === "Completado" ? "#2E7D4F" : "text.secondary" }}
+                      sx={{ fontWeight: 700, bgcolor: entry.status === "En progreso" ? "secondary.light" : entry.status === "Completado" ? "#E1F0E8" : "#E9E9F6", color: entry.status === "En progreso" ? "primary.dark" : entry.status === "Completado" ? "#4C9B7C" : "text.secondary" }}
                     />
                     <IconButton size="small" onClick={(e) => { e.stopPropagation(); setToDelete(entry); }}>
                       <DeleteOutlineRoundedIcon fontSize="small" />
@@ -87,7 +87,7 @@ export function OnboardingPage() {
                   <Typography variant="caption" color="text.secondary">Progreso</Typography>
                   <Typography variant="caption" fontWeight={700} color="primary.main">{entry.progress}%</Typography>
                 </Stack>
-                <LinearProgress variant="determinate" value={entry.progress} sx={{ height: 6, borderRadius: 3, bgcolor: "#E4EDE6" }} />
+                <LinearProgress variant="determinate" value={entry.progress} sx={{ height: 6, borderRadius: 3, bgcolor: "#EBEBF4" }} />
                 <Typography variant="caption" color="text.secondary" sx={{ mt: 1, display: "block" }}>📅 Ingreso: {entry.startDate}</Typography>
               </Box>
             ))}
@@ -138,7 +138,7 @@ function ChecklistDetail({ entry, onToggle, onEdit }: { entry: OnboardingEntry; 
           const items = entry.checklist[phase];
           const done = items.filter((i) => i.done).length;
           return (
-            <Box key={phase} sx={{ border: "1px solid", borderColor: "#E4EDE6", borderRadius: 3, p: 2 }}>
+            <Box key={phase} sx={{ border: "1px solid", borderColor: "#EBEBF4", borderRadius: 3, p: 2 }}>
               <Stack direction="row" justifyContent="space-between" sx={{ mb: 1 }}>
                 <Typography variant="body2" fontWeight={700}>{PHASE_LABEL[phase]}</Typography>
                 <Typography variant="caption" color="text.secondary">{done}/{items.length}</Typography>

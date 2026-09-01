@@ -59,7 +59,7 @@ export function SettingsPage() {
 
       <Card sx={{ p: { xs: 2.5, md: 3 }, borderRadius: 4 }}>
         <Stack direction="row" spacing={1.25} alignItems="center" sx={{ mb: 2.5 }}>
-          <Box sx={{ width: 36, height: 36, borderRadius: "10px", bgcolor: "#E7F2EA", display: "grid", placeItems: "center", color: "primary.main" }}>
+          <Box sx={{ width: 36, height: 36, borderRadius: "10px", bgcolor: "#E9E9F6", display: "grid", placeItems: "center", color: "primary.main" }}>
             <LockRoundedIcon fontSize="small" />
           </Box>
           <Box>

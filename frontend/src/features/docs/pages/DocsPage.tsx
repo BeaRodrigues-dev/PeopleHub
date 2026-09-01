@@ -30,9 +30,9 @@ export function DocsPage() {
       </Stack>
 
       <Stack direction="row" spacing={1} sx={{ mb: 2.5 }} flexWrap="wrap" useFlexGap>
-        <Chip label="Todas" onClick={() => setCategory(null)} sx={{ fontWeight: 700, bgcolor: !category ? "primary.main" : "#E7F2EA", color: !category ? "#fff" : "text.secondary" }} />
+        <Chip label="Todas" onClick={() => setCategory(null)} sx={{ fontWeight: 700, bgcolor: !category ? "primary.main" : "#E9E9F6", color: !category ? "#fff" : "text.secondary" }} />
         {DOCUMENT_CATEGORIES.map((c) => (
-          <Chip key={c} label={c} onClick={() => setCategory(c)} sx={{ fontWeight: 700, bgcolor: category === c ? "primary.main" : "#E7F2EA", color: category === c ? "#fff" : "text.secondary" }} />
+          <Chip key={c} label={c} onClick={() => setCategory(c)} sx={{ fontWeight: 700, bgcolor: category === c ? "primary.main" : "#E9E9F6", color: category === c ? "#fff" : "text.secondary" }} />
         ))}
       </Stack>
 
@@ -47,7 +47,7 @@ export function DocsPage() {
           {filtered.map((doc) => (
             <Box key={doc.id} sx={{ bgcolor: "background.paper", border: "1px solid", borderColor: "divider", borderRadius: 4, p: 2.25 }}>
               <Stack direction="row" justifyContent="space-between" alignItems="flex-start">
-                <Box sx={{ width: 40, height: 40, borderRadius: 2.5, bgcolor: "#E7F2EA", display: "grid", placeItems: "center", color: "primary.main" }}>
+                <Box sx={{ width: 40, height: 40, borderRadius: 2.5, bgcolor: "#E9E9F6", display: "grid", placeItems: "center", color: "primary.main" }}>
                   <DescriptionRoundedIcon fontSize="small" />
                 </Box>
                 <IconButton size="small" onClick={() => deleteDocument.mutate(doc.id)}><DeleteOutlineRoundedIcon fontSize="small" /></IconButton>
@@ -55,7 +55,7 @@ export function DocsPage() {
               <Typography fontWeight={700} sx={{ mt: 1.25 }}>{doc.title}</Typography>
               {doc.description && <Typography variant="body2" color="text.secondary" sx={{ mt: 0.4 }}>{doc.description}</Typography>}
               <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mt: 1.5 }}>
-                <Chip label={doc.category} size="small" sx={{ bgcolor: "#E7F2EA", color: "primary.main", fontWeight: 700 }} />
+                <Chip label={doc.category} size="small" sx={{ bgcolor: "#E9E9F6", color: "primary.main", fontWeight: 700 }} />
                 <Typography
                   component="a"
                   href={doc.fileUrl}

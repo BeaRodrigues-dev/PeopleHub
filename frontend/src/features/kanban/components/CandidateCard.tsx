@@ -90,7 +90,7 @@ export const CandidateCard = memo(function CandidateCard({ applicationId, candid
           <Chip
             label={`${matchScore}% match`}
             size="small"
-            sx={{ height: 20, fontSize: 10.5, fontWeight: 750, bgcolor: matchScore >= 70 ? "#e7f7ee" : matchScore >= 40 ? "#fff4e0" : "#fbe9ec", color: matchScore >= 70 ? "#1c8a54" : matchScore >= 40 ? "#a8681a" : "#b3455a" }}
+            sx={{ height: 20, fontSize: 10.5, fontWeight: 750, bgcolor: matchScore >= 70 ? "#E7F3ED" : matchScore >= 40 ? "#F7ECDC" : "#F7E3E8", color: matchScore >= 70 ? "#4C9B7C" : matchScore >= 40 ? "#BF8A46" : "#C4677E" }}
           />
         ) : (
           <span />

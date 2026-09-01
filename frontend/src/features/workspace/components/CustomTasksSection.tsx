@@ -8,8 +8,8 @@ import { useToast } from "../../../components/common/ToastProvider";
 import { WORKSPACE_CATEGORIES, type WorkspaceCategory } from "../types";
 
 const CATEGORY_COLOR: Record<string, { bg: string; fg: string }> = {
-  Empresa: { bg: "#E3ECFA", fg: "#2E5AA8" },
-  Personal: { bg: "#DCEFE1", fg: "#2E7D4F" },
+  Empresa: { bg: "#E1E7FA", fg: "#4F6FBF" },
+  Personal: { bg: "#E1F0E8", fg: "#4C9B7C" },
 };
 
 export function CustomTasksSection() {

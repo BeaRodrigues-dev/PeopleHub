@@ -44,7 +44,7 @@ export function DocumentDropzone({ onFile, disabled, fileName }: { onFile: (file
           border: "2px dashed",
           borderColor: isDragging ? "primary.main" : "divider",
           borderRadius: 4,
-          bgcolor: isDragging ? "action.hover" : "#F1F7F2",
+          bgcolor: isDragging ? "action.hover" : "#F2F1FA",
           p: 4,
           textAlign: "center",
           cursor: disabled ? "default" : "pointer",

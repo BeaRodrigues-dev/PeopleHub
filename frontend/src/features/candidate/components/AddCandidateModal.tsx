@@ -176,9 +176,9 @@ export function AddCandidateModal() {
 
       {step === "confirm" && (
         <>
-          <Stack direction="row" spacing={1} alignItems="center" sx={{ mb: 2.5, p: 1.25, borderRadius: 2.5, bgcolor: "#e7f7ee" }}>
-            <CheckCircleRoundedIcon sx={{ color: "#1c8a54" }} fontSize="small" />
-            <Typography variant="body2" sx={{ color: "#1c8a54", fontWeight: 650 }}>
+          <Stack direction="row" spacing={1} alignItems="center" sx={{ mb: 2.5, p: 1.25, borderRadius: 2.5, bgcolor: "#E7F3ED" }}>
+            <CheckCircleRoundedIcon sx={{ color: "#4C9B7C" }} fontSize="small" />
+            <Typography variant="body2" sx={{ color: "#4C9B7C", fontWeight: 650 }}>
               Datos extraídos del currículum — revísalos y ajústalos antes de guardar.
             </Typography>
           </Stack>

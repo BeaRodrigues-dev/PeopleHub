@@ -39,7 +39,7 @@ export const KanbanColumn = memo(function KanbanColumn({ stage, applications, on
         minHeight: 480,
         bgcolor: isActiveDrop ? "action.hover" : "#f4f5f9",
         border: "1px solid",
-        borderColor: isActiveDrop ? "primary.light" : "#e8e9f0",
+        borderColor: isActiveDrop ? "primary.light" : "#E9E9F3",
         borderRadius: 3,
         display: "flex",
         flexDirection: "column",

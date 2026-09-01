@@ -21,8 +21,8 @@ import { useUIStore } from "../../store/uiStore";
 import { useAuthStore } from "../../features/auth/authStore";
 
 const drawerWidth = 248;
-const SIDEBAR_BG = "#0F241A";
-const SIDEBAR_BORDER = "#1E3A2B";
+const SIDEBAR_BG = "#2A2E52";
+const SIDEBAR_BORDER = "#33366B";
 
 const navItems = [
   { to: "/", label: "Home", icon: <HomeRoundedIcon fontSize="small" />, end: true },
@@ -76,7 +76,7 @@ export function AppLayout({ children }: { children: ReactNode }) {
           width: 28,
           height: 28,
           borderRadius: "8px",
-          background: "linear-gradient(135deg, #4C9773, #9BCBAE)",
+          background: "linear-gradient(135deg, #7C93D6, #B8A9E3)",
           flexShrink: 0,
           display: "flex",
           alignItems: "center",
@@ -101,7 +101,7 @@ export function AppLayout({ children }: { children: ReactNode }) {
         position="fixed"
         elevation={0}
         color="inherit"
-        sx={{ borderBottom: "1px solid", borderColor: "divider", zIndex: zIndex.header, bgcolor: "rgba(250,248,245,.86)", backdropFilter: "blur(10px)" }}
+        sx={{ borderBottom: "1px solid", borderColor: "divider", zIndex: zIndex.header, bgcolor: "rgba(247,247,252,.86)", backdropFilter: "blur(10px)" }}
       >
         <Toolbar sx={{ minHeight: "66px !important", gap: 1 }}>
           <IconButton onClick={() => setMobileOpen(true)} sx={{ display: { md: "none" } }}>

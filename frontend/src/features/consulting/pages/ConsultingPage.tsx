@@ -15,17 +15,17 @@ import { useToast } from "../../../components/common/ToastProvider";
 import type { ConsultingLead } from "../types";
 
 const STATUS_COLOR: Record<string, { bg: string; fg: string }> = {
-  "Investigado": { bg: "#E4EDE6", fg: "#6E7D74" },
-  "Propuesta enviada": { bg: "#E3ECFA", fg: "#2E5AA8" },
-  "Reunión agendada": { bg: "#DCEFE1", fg: "#4C9773" },
-  "En negociación": { bg: "#FBEBD2", fg: "#A66A1E" },
-  "Cliente": { bg: "#DCEFE1", fg: "#2E7D4F" },
+  "Investigado": { bg: "#EBEBF4", fg: "#6B6F8C" },
+  "Propuesta enviada": { bg: "#E1E7FA", fg: "#4F6FBF" },
+  "Reunión agendada": { bg: "#E1F0E8", fg: "#7C93D6" },
+  "En negociación": { bg: "#F7ECDC", fg: "#BF8A46" },
+  "Cliente": { bg: "#E1F0E8", fg: "#4C9B7C" },
 };
 
 const PRIORITY_COLOR: Record<string, { bg: string; fg: string }> = {
-  Alta: { bg: "#FDE2E2", fg: "#B23A3A" },
-  Media: { bg: "#FBEBD2", fg: "#A66A1E" },
-  Baja: { bg: "#E4EDE6", fg: "#6E7D74" },
+  Alta: { bg: "#F2D3DA", fg: "#B5677E" },
+  Media: { bg: "#F7ECDC", fg: "#BF8A46" },
+  Baja: { bg: "#EBEBF4", fg: "#6B6F8C" },
 };
 
 export function ConsultingPage() {
@@ -83,7 +83,7 @@ export function ConsultingPage() {
           <Box sx={{ bgcolor: "background.paper", border: "1px solid", borderColor: "divider", borderRadius: 4, overflow: "hidden" }}>
             <Table size="small">
               <TableHead>
-                <TableRow sx={{ bgcolor: "#F1F7F2" }}>
+                <TableRow sx={{ bgcolor: "#F2F1FA" }}>
                   {["Empresa", "Sector", "Tamaño", "Contacto", "Necesidad", "Status", "Valor", "IA", ""].map((h) => (
                     <TableCell key={h} sx={{ fontWeight: 800, fontSize: 11, textTransform: "uppercase", letterSpacing: "0.04em", color: "text.secondary" }}>{h}</TableCell>
                   ))}
@@ -133,7 +133,7 @@ export function ConsultingPage() {
               <Typography fontSize={26}>{s.icon}</Typography>
               <Typography fontWeight={800} sx={{ mt: 1 }}>{s.name}</Typography>
               <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5, mb: 1.5 }}>{s.desc}</Typography>
-              <Box sx={{ pt: 1.25, borderTop: "1px solid", borderColor: "#E4EDE6" }}>
+              <Box sx={{ pt: 1.25, borderTop: "1px solid", borderColor: "#EBEBF4" }}>
                 <Typography variant="caption" color="text.secondary">Pricing</Typography>
                 <Typography fontWeight={700} color="primary.main">{s.price}</Typography>
               </Box>
@@ -159,7 +159,7 @@ export function ConsultingPage() {
                 return (
                   <Stack key={status} direction="row" alignItems="center" spacing={1.5}>
                     <Typography variant="body2" color="text.secondary" sx={{ width: 150, flexShrink: 0 }}>{status}</Typography>
-                    <Box sx={{ flex: 1, height: 8, bgcolor: "#E4EDE6", borderRadius: 4, overflow: "hidden" }}>
+                    <Box sx={{ flex: 1, height: 8, bgcolor: "#EBEBF4", borderRadius: 4, overflow: "hidden" }}>
                       <Box sx={{ width: `${pct}%`, height: "100%", bgcolor: color.fg }} />
                     </Box>
                     <Typography variant="caption" fontWeight={700} sx={{ width: 32, textAlign: "right" }}>{count}</Typography>

@@ -25,9 +25,9 @@ import { useTalentBankMatch, useTalentBankMatchWithAi, useAssignFromTalentBank }
 import type { TalentBankMatch } from "../types";
 
 function matchColor(percent: number) {
-  if (percent >= 70) return "#1c8a54";
-  if (percent >= 40) return "#a8681a";
-  return "#b3455a";
+  if (percent >= 70) return "#4C9B7C";
+  if (percent >= 40) return "#BF8A46";
+  return "#C4677E";
 }
 
 /**
@@ -162,10 +162,10 @@ export function TalentBankMatchModal() {
                 />
                 <Stack direction="row" flexWrap="wrap" gap={0.6} sx={{ mt: 0.5 }}>
                   {matchingSkills.map((skill) => (
-                    <Chip key={skill} size="small" icon={<CheckRoundedIcon sx={{ fontSize: 13 }} />} label={skill} sx={{ height: 21, fontSize: 10.5, fontWeight: 650, bgcolor: "#e7f7ee", color: "#1c8a54" }} />
+                    <Chip key={skill} size="small" icon={<CheckRoundedIcon sx={{ fontSize: 13 }} />} label={skill} sx={{ height: 21, fontSize: 10.5, fontWeight: 650, bgcolor: "#E7F3ED", color: "#4C9B7C" }} />
                   ))}
                   {missingSkills.map((skill) => (
-                    <Chip key={skill} size="small" icon={<CloseRoundedIcon sx={{ fontSize: 13 }} />} label={skill} sx={{ height: 21, fontSize: 10.5, fontWeight: 650, bgcolor: "#fbe9ec", color: "#b3455a" }} />
+                    <Chip key={skill} size="small" icon={<CloseRoundedIcon sx={{ fontSize: 13 }} />} label={skill} sx={{ height: 21, fontSize: 10.5, fontWeight: 650, bgcolor: "#F7E3E8", color: "#C4677E" }} />
                   ))}
                 </Stack>
                 {reasoning && <Typography variant="caption" color="text.secondary" sx={{ display: "block", mt: 0.75 }}>{reasoning}</Typography>}

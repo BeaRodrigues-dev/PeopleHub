@@ -1,4 +1,4 @@
-const palette = ["#4C9773", "#9BCBAE", "#4A6FA5", "#B8863A", "#5D8F70", "#6B8FA5", "#7CBE9C"];
+const palette = ["#7C93D6", "#B8A9E3", "#5C74B8", "#C99A52", "#6F86C9", "#7C8FC4", "#A9BBE8"];
 
 /** Color determinístico por posición de etapa (misma etapa = mismo color siempre). */
 export function stageColor(order: number): string {
