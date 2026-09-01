@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Avatar, Box, Button, Chip, IconButton, InputAdornment, Skeleton, Stack, Table, TableBody, TableCell, TableHead, TableRow, TextField, ToggleButton, ToggleButtonGroup, Typography } from "@mui/material";
+import { Avatar, Box, Button, Chip, FormControlLabel, IconButton, InputAdornment, Skeleton, Stack, Switch, Table, TableBody, TableCell, TableHead, TableRow, TextField, ToggleButton, ToggleButtonGroup, Typography } from "@mui/material";
 import SearchRoundedIcon from "@mui/icons-material/SearchRounded";
 import PersonAddRoundedIcon from "@mui/icons-material/PersonAddRounded";
 import PeopleAltRoundedIcon from "@mui/icons-material/PeopleAltRounded";
@@ -34,6 +34,7 @@ function initials(name: string): string {
 export function PeoplePage() {
   const [view, setView] = useState<"database" | "lifecycle">("database");
   const [search, setSearch] = useState("");
+  const [showOffboarding, setShowOffboarding] = useState(false);
   const [addOpen, setAddOpen] = useState(false);
   const [editing, setEditing] = useState<Employee | null>(null);
   const [toDelete, setToDelete] = useState<Employee | null>(null);
@@ -41,9 +42,10 @@ export function PeoplePage() {
   const deleteEmployee = useDeleteEmployee();
 
   const { data, isLoading, isError, error, refetch } = useEmployees({ search });
-  const employees = data?.items ?? [];
-  const activeCount = employees.filter((e) => e.status === "Activo").length;
-  const offboardingCount = employees.filter((e) => e.status === "Offboarding").length;
+  const allEmployees = data?.items ?? [];
+  const activeCount = allEmployees.filter((e) => e.status === "Activo").length;
+  const offboardingCount = allEmployees.filter((e) => e.status === "Offboarding").length;
+  const employees = showOffboarding ? allEmployees : allEmployees.filter((e) => e.status !== "Offboarding");
 
   const handleDelete = () => {
     if (!toDelete) return;
@@ -69,30 +71,46 @@ export function PeoplePage() {
         <Button variant="contained" startIcon={<PersonAddRoundedIcon />} onClick={() => setAddOpen(true)}>Agregar</Button>
       </Stack>
 
-      {view === "database" && (
-        <TextField
-          placeholder="Buscar colaborador…"
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          size="small"
-          sx={{ width: { xs: "100%", sm: 320 }, mb: 2, bgcolor: "background.paper" }}
-          slotProps={{ input: { startAdornment: <InputAdornment position="start"><SearchRoundedIcon fontSize="small" /></InputAdornment> } }}
+      <Stack direction={{ xs: "column", sm: "row" }} alignItems={{ sm: "center" }} spacing={1.5} sx={{ mb: 2 }}>
+        {view === "database" && (
+          <TextField
+            placeholder="Buscar colaborador…"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            size="small"
+            sx={{ width: { xs: "100%", sm: 320 }, bgcolor: "background.paper" }}
+            slotProps={{ input: { startAdornment: <InputAdornment position="start"><SearchRoundedIcon fontSize="small" /></InputAdornment> } }}
+          />
+        )}
+        <FormControlLabel
+          control={<Switch size="small" checked={showOffboarding} onChange={(e) => setShowOffboarding(e.target.checked)} />}
+          label={<Typography variant="body2" color="text.secondary">Mostrar quien ya salió{offboardingCount > 0 ? ` (${offboardingCount})` : ""}</Typography>}
+          sx={{ ml: { xs: 0, sm: 1 } }}
         />
-      )}
+      </Stack>
 
       {isError ? (
         <ErrorState error={error} onRetry={() => refetch()} />
       ) : isLoading ? (
         <Stack spacing={1}>{Array.from({ length: 6 }).map((_, i) => <Skeleton key={i} variant="rounded" height={48} />)}</Stack>
       ) : employees.length === 0 ? (
-        <EmptyState icon={<PeopleAltRoundedIcon />} title="Ningún colaborador encontrado" description="Ajusta la búsqueda o agrega un nuevo colaborador." action={<Button variant="contained" startIcon={<PersonAddRoundedIcon />} onClick={() => setAddOpen(true)}>Agregar colaborador</Button>} />
+        allEmployees.length > 0 ? (
+          <EmptyState
+            icon={<PeopleAltRoundedIcon />}
+            title="Todos están de offboarding"
+            description='Actualmente todos los colaboradores que coinciden están marcados como "Offboarding". Activa el interruptor de arriba para verlos.'
+            action={<Button variant="outlined" onClick={() => setShowOffboarding(true)}>Mostrar quien ya salió</Button>}
+          />
+        ) : (
+          <EmptyState icon={<PeopleAltRoundedIcon />} title="Ningún colaborador encontrado" description="Ajusta la búsqueda o agrega un nuevo colaborador." action={<Button variant="contained" startIcon={<PersonAddRoundedIcon />} onClick={() => setAddOpen(true)}>Agregar colaborador</Button>} />
+        )
       ) : view === "database" ? (
-        <Box sx={{ bgcolor: "background.paper", border: "1px solid", borderColor: "divider", borderRadius: 4, overflow: "hidden" }}>
-          <Table size="small">
+        <Box sx={{ bgcolor: "background.paper", border: "1px solid", borderColor: "divider", borderRadius: 4, overflowX: "auto" }}>
+          <Table size="small" sx={{ minWidth: 1080 }}>
             <TableHead>
               <TableRow sx={{ bgcolor: "#F3F1FC" }}>
                 {["Colaborador", "Cargo", "Área", "País", "Ingreso", "Manager", "Contrato", "Fase", "Status", "Salida", ""].map((h) => (
-                  <TableCell key={h} sx={{ fontWeight: 800, fontSize: 11, textTransform: "uppercase", letterSpacing: "0.04em", color: "text.secondary" }}>{h}</TableCell>
+                  <TableCell key={h} sx={{ fontWeight: 800, fontSize: 11, textTransform: "uppercase", letterSpacing: "0.04em", color: "text.secondary", whiteSpace: "nowrap" }}>{h}</TableCell>
                 ))}
               </TableRow>
             </TableHead>
