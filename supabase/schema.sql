@@ -127,6 +127,38 @@ create table if not exists documents (
   created_at timestamptz not null default now()
 );
 
+-- Panel personal/de empresa: KPIs, tareas y notas 100% editables por el
+-- usuario (no vienen del ATS, no se calculan solos — los crea, edita y
+-- borra quien use la app, tanto para métricas propias como de la empresa).
+create table if not exists custom_kpis (
+  id uuid primary key default gen_random_uuid(),
+  label text not null,
+  value numeric not null default 0,
+  unit text not null default '',
+  category text not null default 'Personal',
+  note text default '',
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+);
+
+create table if not exists custom_tasks (
+  id uuid primary key default gen_random_uuid(),
+  text text not null,
+  done boolean not null default false,
+  category text not null default 'Personal',
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+);
+
+create table if not exists custom_notes (
+  id uuid primary key default gen_random_uuid(),
+  title text not null default '',
+  body text not null default '',
+  category text not null default 'Personal',
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+);
+
 -- ─────────────────────────────────────────────────────────────────────────
 -- updated_at automático
 -- ─────────────────────────────────────────────────────────────────────────
@@ -156,6 +188,15 @@ create trigger trg_onboardings_updated_at before update on onboardings for each 
 drop trigger if exists trg_consulting_leads_updated_at on consulting_leads;
 create trigger trg_consulting_leads_updated_at before update on consulting_leads for each row execute function set_updated_at();
 
+drop trigger if exists trg_custom_kpis_updated_at on custom_kpis;
+create trigger trg_custom_kpis_updated_at before update on custom_kpis for each row execute function set_updated_at();
+
+drop trigger if exists trg_custom_tasks_updated_at on custom_tasks;
+create trigger trg_custom_tasks_updated_at before update on custom_tasks for each row execute function set_updated_at();
+
+drop trigger if exists trg_custom_notes_updated_at on custom_notes;
+create trigger trg_custom_notes_updated_at before update on custom_notes for each row execute function set_updated_at();
+
 -- ─────────────────────────────────────────────────────────────────────────
 -- RLS — qualquer usuário autenticado tem acesso total (app single-tenant)
 -- ─────────────────────────────────────────────────────────────────────────
@@ -168,6 +209,9 @@ alter table onboardings enable row level security;
 alter table consulting_leads enable row level security;
 alter table insights enable row level security;
 alter table documents enable row level security;
+alter table custom_kpis enable row level security;
+alter table custom_tasks enable row level security;
+alter table custom_notes enable row level security;
 
 drop policy if exists "authenticated_full_access" on vacancies;
 create policy "authenticated_full_access" on vacancies for all using (auth.role() = 'authenticated') with check (auth.role() = 'authenticated');
@@ -192,6 +236,15 @@ create policy "authenticated_full_access" on insights for all using (auth.role()
 
 drop policy if exists "authenticated_full_access" on documents;
 create policy "authenticated_full_access" on documents for all using (auth.role() = 'authenticated') with check (auth.role() = 'authenticated');
+
+drop policy if exists "authenticated_full_access" on custom_kpis;
+create policy "authenticated_full_access" on custom_kpis for all using (auth.role() = 'authenticated') with check (auth.role() = 'authenticated');
+
+drop policy if exists "authenticated_full_access" on custom_tasks;
+create policy "authenticated_full_access" on custom_tasks for all using (auth.role() = 'authenticated') with check (auth.role() = 'authenticated');
+
+drop policy if exists "authenticated_full_access" on custom_notes;
+create policy "authenticated_full_access" on custom_notes for all using (auth.role() = 'authenticated') with check (auth.role() = 'authenticated');
 
 -- ─────────────────────────────────────────────────────────────────────────
 -- Storage — buckets públicos para currículos e documentos

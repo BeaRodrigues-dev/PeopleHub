@@ -1,9 +1,12 @@
-import { Box, Skeleton, Stack, Typography } from "@mui/material";
+import { Box, Divider, Skeleton, Stack, Typography } from "@mui/material";
 import { useVacancies } from "../../vacancy/queries";
 import { useAllApplications } from "../../kanban/queries";
 import { useEmployees } from "../../people/queries";
 import { useConsultingLeads } from "../../consulting/queries";
 import { LIFECYCLE_STAGES } from "../../people/types";
+import { CustomKpiSection } from "../../workspace/components/CustomKpiSection";
+import { CustomTasksSection } from "../../workspace/components/CustomTasksSection";
+import { CustomNotesSection } from "../../workspace/components/CustomNotesSection";
 
 const AREA_PALETTE = ["#4C9773", "#9BCBAE", "#CFE6D9", "#A66A1E", "#4A6FA5", "#8A5DA5"];
 const LIFECYCLE_COLOR: Record<string, string> = {
@@ -139,6 +142,20 @@ export function AnalyticsPage() {
               <ImpactCard icon="✅" label="Contrataciones" value={String(hiredApplications.length)} />
             </Box>
           </Section>
+
+          <Divider sx={{ my: 1 }} />
+
+          <Box>
+            <Typography fontWeight={800} fontSize={19} sx={{ mb: 0.25 }}>🗂️ Tu panel</Typography>
+            <Typography variant="body2" color="text.secondary" sx={{ mb: 2.5 }}>
+              A diferencia de las secciones de arriba (que se calculan solas a partir del ATS), esto es 100% tuyo: agrega, edita y elimina lo que necesites, sea de la empresa o personal.
+            </Typography>
+            <Stack spacing={4}>
+              <CustomKpiSection />
+              <CustomTasksSection />
+              <CustomNotesSection />
+            </Stack>
+          </Box>
         </Stack>
       )}
     </Box>
