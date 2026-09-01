@@ -25,6 +25,8 @@ interface VacancyRow {
   status: string;
   required_skills: string[];
   stages: PipelineStage[];
+  opening_date: string;
+  closed_at: string | null;
   created_at: string;
   updated_at: string;
 }
@@ -43,6 +45,8 @@ function fromRow(row: VacancyRow): Vacancy {
     status: row.status as VacancyStatus,
     requiredSkills: row.required_skills ?? [],
     stages: (row.stages ?? []) as PipelineStage[],
+    openingDate: row.opening_date,
+    closedAt: row.closed_at ?? null,
     createdAt: row.created_at,
     updatedAt: row.updated_at,
   };
@@ -58,8 +62,14 @@ function toRow(input: Partial<CreateVacancyInput>): Record<string, unknown> {
   if (input.location !== undefined) row.location = input.location;
   if (input.workModel !== undefined) row.work_model = input.workModel;
   if (input.seniority !== undefined) row.seniority = input.seniority;
-  if (input.status !== undefined) row.status = input.status;
+  if (input.status !== undefined) {
+    row.status = input.status;
+    // Registra la fecha real de cierre cuando la vacante pasa a "Cerrada"
+    // (para el KPI de tiempo real para cerrar) y la limpia si se reabre.
+    row.closed_at = input.status === "Cerrada" ? new Date().toISOString().slice(0, 10) : null;
+  }
   if (input.requiredSkills !== undefined) row.required_skills = input.requiredSkills;
+  if (input.openingDate !== undefined) row.opening_date = input.openingDate;
   return row;
 }
 

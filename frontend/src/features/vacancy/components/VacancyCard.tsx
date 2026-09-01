@@ -3,6 +3,7 @@ import PlaceOutlinedIcon from "@mui/icons-material/PlaceOutlined";
 import WorkOutlineRoundedIcon from "@mui/icons-material/WorkOutlineRounded";
 import GroupsRoundedIcon from "@mui/icons-material/GroupsRounded";
 import DeleteOutlineRoundedIcon from "@mui/icons-material/DeleteOutlineRounded";
+import EventAvailableRoundedIcon from "@mui/icons-material/EventAvailableRounded";
 import { useNavigate } from "react-router-dom";
 import type { Vacancy, VacancyStatus } from "../types";
 
@@ -12,6 +13,11 @@ const statusStyle: Record<VacancyStatus, { bg: string; color: string }> = {
   Cerrada: { bg: "#f1f1f5", color: "#5a5f72" },
   Borrador: { bg: "#eef0ff", color: "#5546c9" },
 };
+
+function daysBetween(from: string, to: string): number {
+  const ms = new Date(to).getTime() - new Date(from).getTime();
+  return Math.max(0, Math.round(ms / 86_400_000));
+}
 
 export function VacancyCard({ vacancy, candidateCount, onDelete }: { vacancy: Vacancy; candidateCount?: number; onDelete?: (vacancy: Vacancy) => void }) {
   const navigate = useNavigate();
@@ -60,6 +66,14 @@ export function VacancyCard({ vacancy, candidateCount, onDelete }: { vacancy: Va
           <WorkOutlineRoundedIcon sx={{ fontSize: 15 }} />
           <Typography variant="caption">{vacancy.workModel} · {vacancy.seniority || "—"}</Typography>
         </Stack>
+        {vacancy.openingDate && (
+          <Stack direction="row" spacing={0.5} alignItems="center">
+            <EventAvailableRoundedIcon sx={{ fontSize: 15 }} />
+            <Typography variant="caption">
+              {vacancy.closedAt ? `Cerrada en ${daysBetween(vacancy.openingDate, vacancy.closedAt)}d` : `${daysBetween(vacancy.openingDate, new Date().toISOString().slice(0, 10))}d abierta`}
+            </Typography>
+          </Stack>
+        )}
         <Box sx={{ flex: 1 }} />
         <Stack direction="row" spacing={0.5} alignItems="center">
           <GroupsRoundedIcon sx={{ fontSize: 15 }} />

@@ -36,6 +36,7 @@ export function CreateVacancyPage() {
   const [workModel, setWorkModel] = useState<WorkModel>("Híbrido");
   const [seniority, setSeniority] = useState<string>("Semi Senior");
   const [status, setStatus] = useState<VacancyStatus>("Abierta");
+  const [openingDate, setOpeningDate] = useState(new Date().toISOString().slice(0, 10));
 
   const [description, setDescription] = useState("");
   const [responsibilities, setResponsibilities] = useState("");
@@ -52,6 +53,7 @@ export function CreateVacancyPage() {
     setWorkModel(existingVacancy.workModel);
     setSeniority(existingVacancy.seniority ?? "Semi Senior");
     setStatus(existingVacancy.status);
+    setOpeningDate(existingVacancy.openingDate ?? new Date().toISOString().slice(0, 10));
     setDescription(existingVacancy.description ?? "");
     setResponsibilities(existingVacancy.responsibilities ?? "");
     setRequirements(existingVacancy.requirements ?? "");
@@ -71,6 +73,7 @@ export function CreateVacancyPage() {
       workModel,
       seniority,
       status,
+      openingDate,
       description,
       responsibilities,
       requirements,
@@ -131,7 +134,7 @@ export function CreateVacancyPage() {
             <TextField label="Ubicación" fullWidth size="small" value={location} onChange={(e) => setLocation(e.target.value)} placeholder="Ej.: Remoto, Madrid…" />
           </Grid>
           <Grid size={{ xs: 12, sm: 4 }}>
-            <Typography variant="caption" fontWeight={750} color="text.secondary" sx={{ mb: 0.75, display: "block" }}>Modalidade</Typography>
+            <Typography variant="caption" fontWeight={750} color="text.secondary" sx={{ mb: 0.75, display: "block" }}>Modalidad</Typography>
             <Select fullWidth size="small" value={workModel} onChange={(e) => setWorkModel(e.target.value as WorkModel)}>
               {WORK_MODELS.map((m) => <MenuItem key={m} value={m}>{m}</MenuItem>)}
             </Select>
@@ -147,6 +150,18 @@ export function CreateVacancyPage() {
             <Select fullWidth size="small" value={status} onChange={(e) => setStatus(e.target.value as VacancyStatus)}>
               {VACANCY_STATUSES.map((s) => <MenuItem key={s} value={s}>{s}</MenuItem>)}
             </Select>
+          </Grid>
+          <Grid size={{ xs: 12, sm: 4 }}>
+            <TextField
+              label="Fecha de apertura"
+              type="date"
+              fullWidth
+              size="small"
+              value={openingDate}
+              onChange={(e) => setOpeningDate(e.target.value)}
+              slotProps={{ inputLabel: { shrink: true } }}
+              helperText="Se usa para calcular el tiempo real para cerrar la vacante."
+            />
           </Grid>
         </Grid>
       </SectionCard>

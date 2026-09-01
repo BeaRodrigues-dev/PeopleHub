@@ -52,6 +52,14 @@ export function AnalyticsPage() {
 
   const clients = leads.filter((l) => l.status === "Cliente");
 
+  const closedVacancies = vacancies.filter((v) => v.closedAt);
+  const avgDaysToClose = closedVacancies.length
+    ? Math.round(
+        closedVacancies.reduce((sum, v) => sum + Math.max(0, Math.round((new Date(v.closedAt!).getTime() - new Date(v.openingDate).getTime()) / 86_400_000)), 0) /
+          closedVacancies.length,
+      )
+    : null;
+
   return (
     <Box sx={{ p: { xs: 2, md: 3.5 }, maxWidth: 1400, mx: "auto" }}>
       <Box sx={{ mb: 3 }}>
@@ -64,10 +72,11 @@ export function AnalyticsPage() {
       ) : (
         <Stack spacing={4}>
           <Section title="🎯 Recruitment KPIs">
-            <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr 1fr", md: "repeat(4, 1fr)" }, gap: 2 }}>
+            <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr 1fr", md: "repeat(5, 1fr)" }, gap: 2 }}>
               <KpiCard label="Vacantes abiertas" value={String(openVacancies.length)} sub={`${vacancies.length} en total`} />
               <KpiCard label="Candidatos/Vacante" value={avgCandidatesPerVacancy} sub="promedio general" />
               <KpiCard label="Conversion Rate" value={`${conversionRate}%`} sub="candidaturas → contratación" />
+              <KpiCard label="Tiempo real para cerrar" value={avgDaysToClose !== null ? `${avgDaysToClose}d` : "—"} sub={closedVacancies.length ? `promedio de ${closedVacancies.length} vacante(s) cerrada(s)` : "aún no hay vacantes cerradas"} />
               <KpiCard label="Candidaturas activas" value={String(activeApplications.length)} sub={`${applications.length} en total`} />
             </Box>
             {funnel.length > 0 && (

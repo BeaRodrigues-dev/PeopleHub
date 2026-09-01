@@ -26,11 +26,13 @@ export interface Vacancy {
   status: VacancyStatus;
   requiredSkills: string[];
   stages: PipelineStage[];
+  openingDate: string;
+  closedAt?: string | null;
   createdAt: string;
   updatedAt: string;
 }
 
-export type CreateVacancyInput = Omit<Vacancy, "id" | "createdAt" | "updatedAt" | "stages"> & {
+export type CreateVacancyInput = Omit<Vacancy, "id" | "createdAt" | "updatedAt" | "stages" | "closedAt"> & {
   stages: Array<{ name: string; order: number; isTerminal?: boolean }>;
 };
 

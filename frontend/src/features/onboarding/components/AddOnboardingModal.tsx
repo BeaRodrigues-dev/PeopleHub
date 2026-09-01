@@ -1,11 +1,12 @@
 import { useEffect, useState } from "react";
-import { Box, Button, Chip, Grid, Stack, TextField, Typography } from "@mui/material";
+import { Button, Grid, Stack, TextField, Typography } from "@mui/material";
 import AutoAwesomeRoundedIcon from "@mui/icons-material/AutoAwesomeRounded";
 import { Modal } from "../../../components/common/Modal";
 import { useToast } from "../../../components/common/ToastProvider";
 import { errorMessage } from "../../../components/common/ErrorState";
 import { useCreateOnboarding, useUpdateOnboarding } from "../queries";
 import { onboardingApi } from "../api";
+import { OnboardingChecklistEditor } from "./OnboardingChecklistEditor";
 import { DEFAULT_CHECKLIST, type OnboardingChecklist, type OnboardingEntry } from "../types";
 
 export function AddOnboardingModal({ open, onClose, entry }: { open: boolean; onClose: () => void; entry?: OnboardingEntry | null }) {
@@ -121,25 +122,12 @@ export function AddOnboardingModal({ open, onClose, entry }: { open: boolean; on
       </Grid>
 
       <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ mb: 1 }}>
-        <Typography variant="body2" fontWeight={700}>Checklist ({totalItems} ítems)</Typography>
+        <Typography variant="body2" fontWeight={700}>Checklist ({totalItems} ítems) — edita, agrega o elimina pasos</Typography>
         <Button size="small" variant="outlined" startIcon={<AutoAwesomeRoundedIcon fontSize="small" />} onClick={handleSuggest} disabled={suggesting}>
           {suggesting ? "Sugiriendo…" : "Sugerir con IA"}
         </Button>
       </Stack>
-      <Stack spacing={1.25}>
-        {(["before", "day1", "week1"] as const).map((phase) => (
-          <Box key={phase} sx={{ bgcolor: "#F1F7F2", borderRadius: 2.5, p: 1.5 }}>
-            <Typography variant="caption" fontWeight={800} color="text.secondary" sx={{ textTransform: "uppercase" }}>
-              {phase === "before" ? "Antes del 1er día" : phase === "day1" ? "1er día" : "1ª semana"}
-            </Typography>
-            <Stack direction="row" flexWrap="wrap" useFlexGap spacing={0.6} sx={{ mt: 0.6 }}>
-              {checklist[phase].map((item, i) => (
-                <Chip key={i} label={item.label} size="small" sx={{ bgcolor: "#fff", border: "1px solid", borderColor: "divider" }} />
-              ))}
-            </Stack>
-          </Box>
-        ))}
-      </Stack>
+      <OnboardingChecklistEditor checklist={checklist} onChange={setChecklist} />
     </Modal>
   );
 }

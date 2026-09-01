@@ -127,6 +127,13 @@ create table if not exists documents (
   created_at timestamptz not null default now()
 );
 
+-- Fecha real de apertura y de cierre de cada vacante, para calcular el KPI
+-- de "tiempo para cerrar" real (no la estimación heurística de IA). Se
+-- agregan con ALTER porque la tabla vacancies ya pudo haber sido creada
+-- antes por este mismo schema.
+alter table vacancies add column if not exists opening_date date not null default current_date;
+alter table vacancies add column if not exists closed_at date;
+
 -- Panel personal/de empresa: KPIs, tareas y notas 100% editables por el
 -- usuario (no vienen del ATS, no se calculan solos — los crea, edita y
 -- borra quien use la app, tanto para métricas propias como de la empresa).

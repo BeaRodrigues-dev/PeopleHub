@@ -6,6 +6,7 @@ import PersonAddAltRoundedIcon from "@mui/icons-material/PersonAddAltRounded";
 import AutoAwesomeRoundedIcon from "@mui/icons-material/AutoAwesomeRounded";
 import DeleteOutlineRoundedIcon from "@mui/icons-material/DeleteOutlineRounded";
 import EditRoundedIcon from "@mui/icons-material/EditRounded";
+import EventAvailableRoundedIcon from "@mui/icons-material/EventAvailableRounded";
 import { useNavigate, useParams } from "react-router-dom";
 import { useVacancy, useTimeToFill, useDeleteVacancy } from "../queries";
 import { KanbanBoard } from "../../kanban/components/KanbanBoard";
@@ -14,6 +15,11 @@ import { useUIStore } from "../../../store/uiStore";
 import { ErrorState, errorMessage } from "../../../components/common/ErrorState";
 import { ConfirmDialog } from "../../../components/common/ConfirmDialog";
 import { useToast } from "../../../components/common/ToastProvider";
+
+function daysBetween(from: string, to: string): number {
+  const ms = new Date(to).getTime() - new Date(from).getTime();
+  return Math.max(0, Math.round(ms / 86_400_000));
+}
 
 export function VacancyDetailPage() {
   const { id } = useParams();
@@ -82,6 +88,18 @@ export function VacancyDetailPage() {
         {vacancy.requiredSkills.map((skill) => (
           <Chip key={skill} label={skill} size="small" variant="outlined" sx={{ fontWeight: 600 }} />
         ))}
+        <Tooltip title={`Abierta desde ${vacancy.openingDate}${vacancy.closedAt ? ` · cerrada el ${vacancy.closedAt}` : ""}`}>
+          <Chip
+            icon={<EventAvailableRoundedIcon sx={{ fontSize: 15 }} />}
+            label={
+              vacancy.closedAt
+                ? `Cerrada en ${daysBetween(vacancy.openingDate, vacancy.closedAt)} días`
+                : `${daysBetween(vacancy.openingDate, new Date().toISOString().slice(0, 10))} días abierta`
+            }
+            size="small"
+            sx={{ fontWeight: 700, bgcolor: "#EEF0FF", color: "#5546c9", ml: 0.5 }}
+          />
+        </Tooltip>
         {timeToFill && (
           <Tooltip title={timeToFill.reasoning}>
             <Chip
