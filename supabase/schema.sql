@@ -164,6 +164,11 @@ create table if not exists custom_tasks (
   updated_at timestamptz not null default now()
 );
 
+-- Bucket de "My Week" en el Home ('today' | 'week' | 'pending'), para que
+-- las mismas tareas de custom_tasks (creadas aquí o en Analytics) se puedan
+-- organizar también por día en el Home sin duplicar la lista.
+alter table custom_tasks add column if not exists day text not null default 'today';
+
 create table if not exists custom_notes (
   id uuid primary key default gen_random_uuid(),
   title text not null default '',

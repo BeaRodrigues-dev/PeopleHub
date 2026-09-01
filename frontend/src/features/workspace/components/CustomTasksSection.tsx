@@ -28,7 +28,7 @@ export function CustomTasksSection() {
     const value = text.trim();
     if (!value) return;
     createTask.mutate(
-      { text: value, category },
+      { text: value, category, day: "pending" },
       {
         onSuccess: () => setText(""),
         onError: (err) => toast.error(errorMessage(err, "No fue posible agregar la tarea.")),
@@ -41,7 +41,7 @@ export function CustomTasksSection() {
       <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ mb: 1.5 }} flexWrap="wrap" gap={1}>
         <Box>
           <Typography fontWeight={800} fontSize={17}>✅ Tus tareas</Typography>
-          <Typography variant="body2" color="text.secondary">Pendientes de la empresa o personales — agrega, marca y elimina libremente.</Typography>
+          <Typography variant="body2" color="text.secondary">Pendientes de la empresa o personales — agrega, marca y elimina libremente. También aparecen en "My Week" del Home.</Typography>
         </Box>
         <ToggleButtonGroup exclusive size="small" value={filter} onChange={(_, v) => v && setFilter(v)}>
           <ToggleButton value="all" sx={{ px: 1.5, textTransform: "none", fontWeight: 700 }}>Todas</ToggleButton>

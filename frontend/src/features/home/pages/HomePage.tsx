@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { Box, Button, Chip, Skeleton, Stack, Typography, alpha } from "@mui/material";
+import { Box, Button, Chip, IconButton, Skeleton, Stack, TextField, Typography, alpha } from "@mui/material";
 import BarChartRoundedIcon from "@mui/icons-material/BarChartRounded";
 import CalendarMonthRoundedIcon from "@mui/icons-material/CalendarMonthRounded";
 import TrendingUpRoundedIcon from "@mui/icons-material/TrendingUpRounded";
@@ -14,6 +14,7 @@ import AddRoundedIcon from "@mui/icons-material/AddRounded";
 import PersonAddAltRoundedIcon from "@mui/icons-material/PersonAddAltRounded";
 import SummarizeRoundedIcon from "@mui/icons-material/SummarizeRounded";
 import InsightsRoundedIcon from "@mui/icons-material/InsightsRounded";
+import DeleteOutlineRoundedIcon from "@mui/icons-material/DeleteOutlineRounded";
 import { useNavigate } from "react-router-dom";
 import { useAgendaEvents } from "../../agenda/queries";
 import { useClimateRounds, useClimateResults } from "../../climate/queries";
@@ -24,6 +25,8 @@ import { useOnboardings } from "../../onboarding/queries";
 import { useConsultingLeads } from "../../consulting/queries";
 import { useInsights, useGenerateInsightsWithAi } from "../../insights/queries";
 import { useTalentPool } from "../../talent-bank/queries";
+import { useCustomTasks, useCreateCustomTask, useToggleCustomTask, useDeleteCustomTask } from "../../workspace/queries";
+import type { TaskDay } from "../../workspace/types";
 import { useUIStore } from "../../../store/uiStore";
 import { useToast } from "../../../components/common/ToastProvider";
 import { errorMessage } from "../../../components/common/ErrorState";
@@ -33,23 +36,6 @@ const INSIGHT_STYLE: Record<string, { bg: string; border: string; label: string;
   opportunity: { bg: "#E7E2FB", border: "#F1EEFD", label: "Oportunidad", icon: "🟡" },
   suggestion: { bg: "#E7E2FB", border: "#E7E2FB", label: "Sugerencia", icon: "🔵" },
 };
-
-interface LocalTask {
-  id: number;
-  text: string;
-  day: "today" | "week" | "pending";
-  done: boolean;
-}
-
-const INITIAL_TASKS: LocalTask[] = [
-  { id: 1, text: "Revisar candidaturas en Preselección", day: "today", done: false },
-  { id: 2, text: "Dar seguimiento a empresas en negociación", day: "today", done: false },
-  { id: 3, text: "Actualizar checklist de onboarding activo", day: "today", done: true },
-  { id: 4, text: "Publicar nueva vacante abierta", day: "week", done: false },
-  { id: 5, text: "Preparar reporte semanal", day: "week", done: false },
-  { id: 6, text: "Revisar pipeline de consultoría", day: "week", done: false },
-  { id: 7, text: "Definir metas de People para el próximo ciclo", day: "pending", done: false },
-];
 
 function formatToday(): string {
   const text = new Date().toLocaleDateString("es-ES", { weekday: "long", day: "numeric", month: "long", year: "numeric" });
@@ -69,8 +55,12 @@ export function HomePage() {
   const navigate = useNavigate();
   const toast = useToast();
   const openAddCandidate = useUIStore((s) => s.openAddCandidate);
-  const [tasks, setTasks] = useState<LocalTask[]>(INITIAL_TASKS);
-  const [activeDay, setActiveDay] = useState<"today" | "week" | "pending">("today");
+  const [activeDay, setActiveDay] = useState<TaskDay>("today");
+  const [newTaskText, setNewTaskText] = useState("");
+  const { data: tasks } = useCustomTasks();
+  const createTask = useCreateCustomTask();
+  const toggleTask = useToggleCustomTask();
+  const deleteTask = useDeleteCustomTask();
 
   const { data: vacancyData, isLoading: vacanciesLoading } = useVacancies({ limit: 200 });
   const vacancies = vacancyData?.items ?? [];
@@ -96,8 +86,19 @@ export function HomePage() {
   const activeOnboardings = onboardings.filter((o) => o.status !== "Completado");
   const clients = leads.filter((l) => l.status === "Cliente");
 
-  const filteredTasks = tasks.filter((t) => t.day === activeDay);
-  const toggleTask = (id: number) => setTasks((prev) => prev.map((t) => (t.id === id ? { ...t, done: !t.done } : t)));
+  const filteredTasks = (tasks ?? []).filter((t) => t.day === activeDay);
+
+  const handleAddTask = () => {
+    const value = newTaskText.trim();
+    if (!value) return;
+    createTask.mutate(
+      { text: value, category: "Personal", day: activeDay },
+      {
+        onSuccess: () => setNewTaskText(""),
+        onError: (err) => toast.error(errorMessage(err, "No fue posible agregar la tarea.")),
+      },
+    );
+  };
 
   const recentInsights = useMemo(() => insights.slice(0, 4), [insights]);
 
@@ -176,12 +177,26 @@ export function HomePage() {
               />
             ))}
           </Stack>
+          <Stack direction="row" spacing={1} sx={{ mb: 1.5 }}>
+            <TextField
+              fullWidth
+              size="small"
+              placeholder="Agregar tarea a esta pestaña…"
+              value={newTaskText}
+              onChange={(e) => setNewTaskText(e.target.value)}
+              onKeyDown={(e) => e.key === "Enter" && handleAddTask()}
+            />
+            <IconButton onClick={handleAddTask} disabled={!newTaskText.trim() || createTask.isPending} sx={{ bgcolor: "primary.main", color: "#fff", "&:hover": { bgcolor: "primary.dark" } }}>
+              <AddRoundedIcon fontSize="small" />
+            </IconButton>
+          </Stack>
           <Stack spacing={1}>
             {filteredTasks.map((t) => (
-              <Stack key={t.id} direction="row" spacing={1.25} alignItems="flex-start" sx={{ cursor: "pointer" }} onClick={() => toggleTask(t.id)}>
+              <Stack key={t.id} direction="row" spacing={1.25} alignItems="flex-start">
                 <Box
+                  onClick={() => toggleTask.mutate({ id: t.id, done: !t.done })}
                   sx={{
-                    width: 16, height: 16, borderRadius: "5px", mt: 0.3, flexShrink: 0,
+                    width: 16, height: 16, borderRadius: "5px", mt: 0.3, flexShrink: 0, cursor: "pointer",
                     border: "2px solid", borderColor: t.done ? "primary.main" : "divider",
                     bgcolor: t.done ? "primary.main" : "transparent",
                     display: "grid", placeItems: "center", color: "#fff", fontSize: 11,
@@ -189,9 +204,16 @@ export function HomePage() {
                 >
                   {t.done ? "✓" : ""}
                 </Box>
-                <Typography variant="body2" sx={{ textDecoration: t.done ? "line-through" : "none", color: t.done ? "text.secondary" : "text.primary" }}>
+                <Typography
+                  variant="body2"
+                  onClick={() => toggleTask.mutate({ id: t.id, done: !t.done })}
+                  sx={{ flex: 1, cursor: "pointer", textDecoration: t.done ? "line-through" : "none", color: t.done ? "text.secondary" : "text.primary" }}
+                >
                   {t.text}
                 </Typography>
+                <IconButton size="small" onClick={() => deleteTask.mutate(t.id)}>
+                  <DeleteOutlineRoundedIcon sx={{ fontSize: 15 }} />
+                </IconButton>
               </Stack>
             ))}
             {filteredTasks.length === 0 && <Typography variant="body2" color="text.secondary" fontStyle="italic">¡Todo listo! 🎉</Typography>}

@@ -20,17 +20,22 @@ export interface CreateCustomKpiInput {
   note?: string;
 }
 
+export const TASK_DAYS = ["today", "week", "pending"] as const;
+export type TaskDay = (typeof TASK_DAYS)[number];
+
 export interface CustomTask {
   id: string;
   text: string;
   done: boolean;
   category: WorkspaceCategory;
+  day: TaskDay;
   createdAt: string;
 }
 
 export interface CreateCustomTaskInput {
   text: string;
   category: WorkspaceCategory;
+  day?: TaskDay;
 }
 
 export interface CustomNote {
