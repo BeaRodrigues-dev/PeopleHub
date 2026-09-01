@@ -20,11 +20,13 @@ const LIFECYCLE_COLOR: Record<LifecycleStage, { bg: string; fg: string }> = {
   Desarrollo: { bg: "#E7E2FB", fg: "#5646C4" },
   Desempeño: { bg: "#F1EEFD", fg: "#6C5CE0" },
   Offboarding: { bg: "#EFEDFB", fg: "#6B7086" },
+  Inactivo: { bg: "#EAEAF2", fg: "#5B5F72" },
 };
 
 const STATUS_COLOR: Record<string, { bg: string; fg: string }> = {
   Activo: { bg: "#E1F3EA", fg: "#2F8F63" },
   Offboarding: { bg: "#F5E3E8", fg: "#C9748A" },
+  Inactivo: { bg: "#E9E9F1", fg: "#6B7086" },
 };
 
 function initials(name: string): string {
@@ -45,7 +47,9 @@ export function PeoplePage() {
   const allEmployees = data?.items ?? [];
   const activeCount = allEmployees.filter((e) => e.status === "Activo").length;
   const offboardingCount = allEmployees.filter((e) => e.status === "Offboarding").length;
-  const employees = showOffboarding ? allEmployees : allEmployees.filter((e) => e.status !== "Offboarding");
+  const inactiveCount = allEmployees.filter((e) => e.status === "Inactivo").length;
+  const goneCount = offboardingCount + inactiveCount;
+  const employees = showOffboarding ? allEmployees : allEmployees.filter((e) => e.status === "Activo");
 
   const handleDelete = () => {
     if (!toDelete) return;
@@ -61,7 +65,9 @@ export function PeoplePage() {
         <Box sx={{ flex: 1 }}>
           <Typography variant="h4">People</Typography>
           <Typography color="text.secondary" variant="body2" sx={{ mt: 0.4 }}>
-            {isLoading ? "…" : activeCount} activos{!isLoading && offboardingCount > 0 ? ` · ${offboardingCount} en offboarding` : ""}
+            {isLoading ? "…" : activeCount} activos
+            {!isLoading && offboardingCount > 0 ? ` · ${offboardingCount} en offboarding` : ""}
+            {!isLoading && inactiveCount > 0 ? ` · ${inactiveCount} inactivos` : ""}
           </Typography>
         </Box>
         <ToggleButtonGroup exclusive size="small" value={view} onChange={(_, v) => v && setView(v)}>
@@ -84,7 +90,7 @@ export function PeoplePage() {
         )}
         <FormControlLabel
           control={<Switch size="small" checked={showOffboarding} onChange={(e) => setShowOffboarding(e.target.checked)} />}
-          label={<Typography variant="body2" color="text.secondary">Mostrar quien ya salió{offboardingCount > 0 ? ` (${offboardingCount})` : ""}</Typography>}
+          label={<Typography variant="body2" color="text.secondary">Mostrar quien ya salió{goneCount > 0 ? ` (${goneCount})` : ""}</Typography>}
           sx={{ ml: { xs: 0, sm: 1 } }}
         />
       </Stack>
@@ -97,8 +103,8 @@ export function PeoplePage() {
         allEmployees.length > 0 ? (
           <EmptyState
             icon={<PeopleAltRoundedIcon />}
-            title="Todos están de offboarding"
-            description='Actualmente todos los colaboradores que coinciden están marcados como "Offboarding". Activa el interruptor de arriba para verlos.'
+            title="Todos ya salieron"
+            description='Actualmente todos los colaboradores que coinciden están marcados como "Offboarding" o "Inactivo". Activa el interruptor de arriba para verlos.'
             action={<Button variant="outlined" onClick={() => setShowOffboarding(true)}>Mostrar quien ya salió</Button>}
           />
         ) : (
@@ -109,20 +115,20 @@ export function PeoplePage() {
           <Table size="small" sx={{ minWidth: 1080 }}>
             <TableHead>
               <TableRow sx={{ bgcolor: "#F3F1FC" }}>
-                {["Colaborador", "Cargo", "Área", "País", "Ingreso", "Manager", "Contrato", "Fase", "Status", "Salida", ""].map((h) => (
+                {["Colaborador", "Cargo", "Área", "País", "Ingreso", "Manager", "Contrato", "Fase", "Status", "Salida", "Motivo", ""].map((h) => (
                   <TableCell key={h} sx={{ fontWeight: 800, fontSize: 11, textTransform: "uppercase", letterSpacing: "0.04em", color: "text.secondary", whiteSpace: "nowrap" }}>{h}</TableCell>
                 ))}
               </TableRow>
             </TableHead>
             <TableBody>
               {employees.map((e) => {
-                const isOffboarding = e.status === "Offboarding";
+                const hasLeft = e.status !== "Activo";
                 return (
-                  <TableRow key={e.id} hover sx={isOffboarding ? { opacity: 0.72 } : undefined}>
+                  <TableRow key={e.id} hover sx={hasLeft ? { opacity: 0.72 } : undefined}>
                     <TableCell>
                       <Stack direction="row" spacing={1.2} alignItems="center">
                         <Avatar sx={{ width: 28, height: 28, fontSize: 12, fontWeight: 700, bgcolor: "secondary.light", color: "primary.dark" }}>{initials(e.name)}</Avatar>
-                        <Typography variant="body2" fontWeight={700} sx={isOffboarding ? { textDecoration: "line-through", textDecorationColor: "text.secondary" } : undefined}>{e.name}</Typography>
+                        <Typography variant="body2" fontWeight={700} sx={hasLeft ? { textDecoration: "line-through", textDecorationColor: "text.secondary" } : undefined}>{e.name}</Typography>
                       </Stack>
                     </TableCell>
                     <TableCell><Typography variant="body2" color="text.secondary">{e.role}</Typography></TableCell>
@@ -136,13 +142,14 @@ export function PeoplePage() {
                     </TableCell>
                     <TableCell>
                       <Chip
-                        icon={isOffboarding ? <LogoutRoundedIcon sx={{ fontSize: 14 }} /> : undefined}
+                        icon={hasLeft ? <LogoutRoundedIcon sx={{ fontSize: 14 }} /> : undefined}
                         label={e.status}
                         size="small"
                         sx={{ bgcolor: STATUS_COLOR[e.status]?.bg, color: STATUS_COLOR[e.status]?.fg, fontWeight: 700 }}
                       />
                     </TableCell>
                     <TableCell><Typography variant="body2" color="text.secondary">{e.exitDate || "—"}</Typography></TableCell>
+                    <TableCell><Typography variant="body2" color="text.secondary">{e.exitReason || "—"}</Typography></TableCell>
                     <TableCell align="right">
                       <IconButton size="small" onClick={() => setEditing(e)}><EditRoundedIcon fontSize="small" /></IconButton>
                       <IconButton size="small" onClick={() => setToDelete(e)}><DeleteOutlineRoundedIcon fontSize="small" /></IconButton>
@@ -173,7 +180,7 @@ export function PeoplePage() {
 
 function LifecycleBoard({ employees }: { employees: Employee[] }) {
   return (
-    <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", md: "repeat(5, 1fr)" }, gap: 2 }}>
+    <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", md: "repeat(6, 1fr)" }, gap: 2 }}>
       {LIFECYCLE_STAGES.map((stage) => {
         const group = employees.filter((e) => e.lifecycle === stage);
         return (
@@ -184,18 +191,18 @@ function LifecycleBoard({ employees }: { employees: Employee[] }) {
             </Stack>
             <Stack spacing={1}>
               {group.map((e) => (
-                <Box key={e.id} sx={{ bgcolor: "background.paper", border: "1px solid", borderColor: "divider", borderRadius: 3, p: 1.4, opacity: e.status === "Offboarding" ? 0.72 : 1 }}>
+                <Box key={e.id} sx={{ bgcolor: "background.paper", border: "1px solid", borderColor: "divider", borderRadius: 3, p: 1.4, opacity: e.status !== "Activo" ? 0.72 : 1 }}>
                   <Stack direction="row" spacing={1} alignItems="center" sx={{ mb: 0.4 }}>
                     <Avatar sx={{ width: 22, height: 22, fontSize: 10, fontWeight: 700, bgcolor: "secondary.light", color: "primary.dark" }}>{initials(e.name)}</Avatar>
                     <Typography variant="caption" fontWeight={700} lineHeight={1.2}>{e.name}</Typography>
                   </Stack>
                   <Typography variant="caption" color="text.secondary" sx={{ display: "block" }}>{e.role}</Typography>
-                  {e.status === "Offboarding" && (
+                  {e.status !== "Activo" && (
                     <Chip
                       icon={<LogoutRoundedIcon sx={{ fontSize: 12 }} />}
-                      label={e.exitDate ? `Salió el ${e.exitDate}` : "Offboarding"}
+                      label={e.exitDate ? `Salió el ${e.exitDate}` : e.status}
                       size="small"
-                      sx={{ mt: 0.6, height: 20, fontSize: 10.5, bgcolor: STATUS_COLOR.Offboarding.bg, color: STATUS_COLOR.Offboarding.fg, fontWeight: 700 }}
+                      sx={{ mt: 0.6, height: 20, fontSize: 10.5, bgcolor: STATUS_COLOR[e.status]?.bg, color: STATUS_COLOR[e.status]?.fg, fontWeight: 700 }}
                     />
                   )}
                 </Box>

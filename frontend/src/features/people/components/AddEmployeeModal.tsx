@@ -16,6 +16,7 @@ const empty: CreateEmployeeInput = {
   contract: "Tiempo completo",
   status: "Activo",
   lifecycle: "Onboarding",
+  exitReason: "",
 };
 
 export function AddEmployeeModal({ open, onClose, employee }: { open: boolean; onClose: () => void; employee?: Employee | null }) {
@@ -29,7 +30,7 @@ export function AddEmployeeModal({ open, onClose, employee }: { open: boolean; o
     if (open) {
       setForm(
         employee
-          ? { name: employee.name, role: employee.role, area: employee.area, country: employee.country, startDate: employee.startDate, manager: employee.manager ?? "", contract: employee.contract, status: employee.status, lifecycle: employee.lifecycle }
+          ? { name: employee.name, role: employee.role, area: employee.area, country: employee.country, startDate: employee.startDate, manager: employee.manager ?? "", contract: employee.contract, status: employee.status, lifecycle: employee.lifecycle, exitReason: employee.exitReason ?? "" }
           : empty,
       );
     }
@@ -116,6 +117,18 @@ export function AddEmployeeModal({ open, onClose, employee }: { open: boolean; o
             {LIFECYCLE_STAGES.map((s) => <MenuItem key={s} value={s}>{s}</MenuItem>)}
           </TextField>
         </Grid>
+        {form.status !== "Activo" && (
+          <Grid size={12}>
+            <TextField
+              label="Motivo de salida"
+              placeholder="Ej. Renuncia, fin de contrato, despido…"
+              fullWidth
+              size="small"
+              value={form.exitReason ?? ""}
+              onChange={(e) => set("exitReason", e.target.value)}
+            />
+          </Grid>
+        )}
       </Grid>
       <Box sx={{ height: 4 }} />
     </Modal>

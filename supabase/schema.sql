@@ -135,8 +135,11 @@ alter table vacancies add column if not exists opening_date date not null defaul
 alter table vacancies add column if not exists closed_at date;
 
 -- Fecha real de salida del colaborador, para distinguir quién sigue activo
--- de quién ya salió (se completa sola al pasar el status a "Offboarding").
+-- de quién ya salió (se completa sola al pasar el status a "Offboarding" o
+-- "Inactivo"). El motivo de salida es de texto libre, editable por quien usa
+-- la app (ej. "Renuncia", "Fin de contrato", "Despido").
 alter table employees add column if not exists exit_date date;
+alter table employees add column if not exists exit_reason text;
 
 -- Panel personal/de empresa: KPIs, tareas y notas 100% editables por el
 -- usuario (no vienen del ATS, no se calculan solos — los crea, edita y
