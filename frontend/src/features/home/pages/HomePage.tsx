@@ -116,9 +116,9 @@ export function HomePage() {
 
       <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr 1fr", lg: "repeat(4, 1fr)" }, gap: 2, mb: 3 }}>
         <StatCard label="Colaboradores" value={isLoading ? undefined : activeEmployees.length} sub={`${offboardingEmployees.length} en offboarding`} color="#D9EEDE" />
-        <StatCard label="Vacantes abiertas" value={isLoading ? undefined : openVacancies.length} sub={`${vacancies.length} total`} color="#B7DCC0" light />
-        <StatCard label="Candidatos activos" value={isLoading ? undefined : activeCandidates} sub="en pipelines de vacantes" color="#7FB396" light />
-        <StatCard label="Pipeline Consulting" value={isLoading ? undefined : leads.length} sub={`${clients.length} cliente(s)`} color="#ECF5EF" />
+        <StatCard label="Vacantes abiertas" value={isLoading ? undefined : openVacancies.length} sub={`${vacancies.length} total`} neutral />
+        <StatCard label="Candidatos activos" value={isLoading ? undefined : activeCandidates} sub="en pipelines de vacantes" color="#3D6A52" light />
+        <StatCard label="Pipeline Consulting" value={isLoading ? undefined : leads.length} sub={`${clients.length} cliente(s)`} neutral />
       </Box>
 
       <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", lg: "1fr 1fr 1fr" }, gap: 2.5, mb: 3 }}>
@@ -250,9 +250,16 @@ export function HomePage() {
   );
 }
 
-function StatCard({ label, value, sub, color, light }: { label: string; value?: number; sub: string; color: string; light?: boolean }) {
+function StatCard({ label, value, sub, color, light, neutral }: { label: string; value?: number; sub: string; color?: string; light?: boolean; neutral?: boolean }) {
   return (
-    <Box sx={{ borderRadius: 4, p: 2.25, bgcolor: color }}>
+    <Box
+      sx={{
+        borderRadius: 4, p: 2.25,
+        bgcolor: neutral ? "background.paper" : color,
+        border: neutral ? "1px solid" : "none",
+        borderColor: "divider",
+      }}
+    >
       <Typography variant="caption" fontWeight={700} sx={{ textTransform: "uppercase", letterSpacing: "0.06em", color: light ? "rgba(255,255,255,.8)" : "text.secondary" }}>
         {label}
       </Typography>

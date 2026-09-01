@@ -1,8 +1,9 @@
 import { createTheme } from "@mui/material/styles";
 
-// Identidade visual "People Hub" — paleta pastel verde-salvia, toda clara y
-// "calma": sin bloques oscuros, sidebar en verde pastel muy suave, acentos
-// en menta claro, tipografía con toque serifado en los títulos.
+// Identidade visual "People Hub" — paleta pastel verde-salvia y "calma":
+// fondo de contenido claro/neutro con acentos de color puntuales (no todo
+// coloreado, no todo blanco), sidebar en verde oscuro como ancla de
+// contraste, tipografía con toque serifado en los títulos.
 export const theme = createTheme({
   palette: {
     primary: { main: "#7FB396", light: "#ADD1BB", dark: "#5F9678", contrastText: "#fff" },

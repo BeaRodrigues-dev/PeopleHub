@@ -23,8 +23,8 @@ import { useUIStore } from "../../store/uiStore";
 import { useAuthStore } from "../../features/auth/authStore";
 
 const drawerWidth = 248;
-const SIDEBAR_BG = "#E7F4EC";
-const SIDEBAR_BORDER = "#D2E8DC";
+const SIDEBAR_BG = "#20342B";
+const SIDEBAR_BORDER = "#2E4A3B";
 
 const navItems = [
   { to: "/", label: "Home", icon: <HomeRoundedIcon fontSize="small" />, end: true },
@@ -54,9 +54,9 @@ function Nav({ onNavigate }: { onNavigate?: () => void }) {
           sx={{
             borderRadius: 2.5,
             py: 1,
-            color: "text.secondary",
+            color: "rgba(255,255,255,.65)",
             "&.active": { bgcolor: "primary.main", color: "#fff", "& .MuiListItemIcon-root": { color: "#fff" } },
-            "&:not(.active):hover": { bgcolor: "rgba(95,150,120,.1)", color: "text.primary" },
+            "&:not(.active):hover": { bgcolor: "rgba(255,255,255,.08)", color: "#fff" },
           }}
         >
           <ListItemIcon sx={{ minWidth: 34, color: "inherit" }}>{item.icon}</ListItemIcon>
@@ -93,8 +93,8 @@ export function AppLayout({ children }: { children: ReactNode }) {
         P
       </Box>
       <Box sx={{ overflow: "hidden" }}>
-        <Typography fontWeight={800} fontSize={15.5} letterSpacing="-0.01em" color="text.primary" noWrap>People Hub</Typography>
-        <Typography fontSize={11} color="text.secondary" noWrap>HR OS</Typography>
+        <Typography fontWeight={800} fontSize={15.5} letterSpacing="-0.01em" color="#fff" noWrap>People Hub</Typography>
+        <Typography fontSize={11} color="rgba(255,255,255,.5)" noWrap>HR OS</Typography>
       </Box>
     </Box>
   );
@@ -145,18 +145,18 @@ export function AppLayout({ children }: { children: ReactNode }) {
         <Box sx={{ borderTop: "1px solid", borderColor: SIDEBAR_BORDER, p: 2, display: "flex", alignItems: "center", gap: 1.25 }}>
           <Box
             onClick={() => navigate("/configuracoes")}
-            sx={{ display: "flex", alignItems: "center", gap: 1.25, flex: 1, minWidth: 0, cursor: "pointer", borderRadius: 2, p: 0.5, m: -0.5, "&:hover": { bgcolor: "rgba(95,150,120,.1)" } }}
+            sx={{ display: "flex", alignItems: "center", gap: 1.25, flex: 1, minWidth: 0, cursor: "pointer", borderRadius: 2, p: 0.5, m: -0.5, "&:hover": { bgcolor: "rgba(255,255,255,.06)" } }}
           >
             <Avatar sx={{ width: 30, height: 30, bgcolor: "secondary.light", color: "primary.dark", fontSize: 12.5, fontWeight: 700 }}>BR</Avatar>
             <Box sx={{ overflow: "hidden" }}>
-              <Typography fontSize={12.5} fontWeight={700} color="text.primary" noWrap>Beatriz Rodrigues</Typography>
-              <Typography fontSize={11} color="text.secondary" noWrap>Gerente de RR. HH.</Typography>
+              <Typography fontSize={12.5} fontWeight={700} color="#fff" noWrap>Beatriz Rodrigues</Typography>
+              <Typography fontSize={11} color="rgba(255,255,255,.5)" noWrap>Gerente de RR. HH.</Typography>
             </Box>
           </Box>
-          <IconButton onClick={() => navigate("/configuracoes")} size="small" title="Configuración" sx={{ color: "text.secondary", "&:hover": { color: "text.primary", bgcolor: "rgba(95,150,120,.1)" } }}>
+          <IconButton onClick={() => navigate("/configuracoes")} size="small" title="Configuración" sx={{ color: "rgba(255,255,255,.55)", "&:hover": { color: "#fff", bgcolor: "rgba(255,255,255,.07)" } }}>
             <SettingsRoundedIcon fontSize="small" />
           </IconButton>
-          <IconButton onClick={logout} size="small" title="Cerrar sesión" sx={{ color: "text.secondary", "&:hover": { color: "text.primary", bgcolor: "rgba(95,150,120,.1)" } }}>
+          <IconButton onClick={logout} size="small" title="Cerrar sesión" sx={{ color: "rgba(255,255,255,.55)", "&:hover": { color: "#fff", bgcolor: "rgba(255,255,255,.07)" } }}>
             <LogoutRoundedIcon fontSize="small" />
           </IconButton>
         </Box>

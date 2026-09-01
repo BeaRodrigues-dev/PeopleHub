@@ -32,8 +32,8 @@ export function LoginPage() {
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
-        bgcolor: "#E7F4EC",
-        backgroundImage: "linear-gradient(160deg, #E7F4EC 0%, #D2E8DC 60%, #E7F4EC 100%)",
+        bgcolor: "#20342B",
+        backgroundImage: "linear-gradient(160deg, #20342B 0%, #2E4A3B 60%, #20342B 100%)",
         p: 2,
       }}
     >
