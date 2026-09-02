@@ -11,6 +11,8 @@ export interface PipelineStage {
   name: string;
   order: number;
   isTerminal?: boolean;
+  /** Cuántas personas hay hoy en esta etapa — cargado a mano (no se cuentan candidatos reales). */
+  count?: number;
 }
 
 export interface Vacancy {
@@ -28,12 +30,27 @@ export interface Vacancy {
   stages: PipelineStage[];
   openingDate: string;
   closedAt?: string | null;
+  /** Total de candidatos recibidos para esta vaga — cargado a mano. */
+  candidatesReceived: number;
+  daysToFirstInterview: number | null;
+  daysToFirstOffer: number | null;
+  /** % de contratados de esta vaga que siguen activos después de un tiempo — cargado a mano. */
+  retentionRate: number | null;
+  bestSource: string;
   createdAt: string;
   updatedAt: string;
 }
 
-export type CreateVacancyInput = Omit<Vacancy, "id" | "createdAt" | "updatedAt" | "stages" | "closedAt"> & {
-  stages: Array<{ name: string; order: number; isTerminal?: boolean }>;
+export type CreateVacancyInput = Omit<
+  Vacancy,
+  "id" | "createdAt" | "updatedAt" | "stages" | "closedAt" | "candidatesReceived" | "daysToFirstInterview" | "daysToFirstOffer" | "retentionRate" | "bestSource"
+> & {
+  stages: Array<{ name: string; order: number; isTerminal?: boolean; count?: number }>;
+  candidatesReceived?: number;
+  daysToFirstInterview?: number | null;
+  daysToFirstOffer?: number | null;
+  retentionRate?: number | null;
+  bestSource?: string;
 };
 
 export interface TimeToFillPrediction {

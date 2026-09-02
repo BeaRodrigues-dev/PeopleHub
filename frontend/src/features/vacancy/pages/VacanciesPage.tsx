@@ -5,7 +5,6 @@ import AddRoundedIcon from "@mui/icons-material/AddRounded";
 import WorkOutlineRoundedIcon from "@mui/icons-material/WorkOutlineRounded";
 import { useNavigate } from "react-router-dom";
 import { useDeleteVacancy, useVacancies } from "../queries";
-import { useVacancyCandidateCounts } from "../../candidate/queries";
 import { VacancyCard } from "../components/VacancyCard";
 import { EmptyState } from "../../../components/common/EmptyState";
 import { ErrorState, errorMessage } from "../../../components/common/ErrorState";
@@ -23,7 +22,6 @@ export function VacanciesPage() {
 
   const { data, isLoading, isError, error, refetch } = useVacancies({ search, status: status ?? undefined });
   const vacancies = data?.items ?? [];
-  const { data: counts } = useVacancyCandidateCounts(vacancies.map((v) => v.id));
 
   const summary = useMemo(() => `${data?.total ?? 0} vacantes encontradas`, [data?.total]);
 
@@ -78,7 +76,7 @@ export function VacanciesPage() {
         />
       ) : (
         <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", sm: "1fr 1fr", lg: "1fr 1fr 1fr" }, gap: 2 }}>
-          {vacancies.map((vacancy) => <VacancyCard key={vacancy.id} vacancy={vacancy} candidateCount={counts?.[vacancy.id]} onDelete={setToDelete} />)}
+          {vacancies.map((vacancy) => <VacancyCard key={vacancy.id} vacancy={vacancy} onDelete={setToDelete} />)}
         </Box>
       )}
 

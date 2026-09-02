@@ -19,7 +19,6 @@ import { useNavigate } from "react-router-dom";
 import { useAgendaEvents } from "../../agenda/queries";
 import { useClimateRounds, useClimateResults } from "../../climate/queries";
 import { useVacancies } from "../../vacancy/queries";
-import { useVacancyCandidateCounts } from "../../candidate/queries";
 import { useEmployees } from "../../people/queries";
 import { useOnboardings } from "../../onboarding/queries";
 import { useConsultingLeads } from "../../consulting/queries";
@@ -84,7 +83,6 @@ export function HomePage() {
 
   const { data: vacancyData, isLoading: vacanciesLoading } = useVacancies({ limit: 200 });
   const vacancies = vacancyData?.items ?? [];
-  const { data: counts } = useVacancyCandidateCounts(vacancies.map((v) => v.id));
   const { data: employeeData, isLoading: employeesLoading } = useEmployees({ limit: 200 });
   const employees = employeeData?.items ?? [];
   const { data: onboardingData, isLoading: onboardingsLoading } = useOnboardings();
@@ -100,7 +98,7 @@ export function HomePage() {
   const generateInsights = useGenerateInsightsWithAi();
 
   const openVacancies = vacancies.filter((v) => v.status === "Abierta");
-  const activeCandidates = Object.values(counts ?? {}).reduce((sum, n) => sum + n, 0);
+  const activeCandidates = vacancies.reduce((sum, v) => sum + (v.stages ?? []).filter((s) => !s.isTerminal).reduce((s2, st) => s2 + (st.count ?? 0), 0), 0);
   const activeEmployees = employees.filter((e) => e.status === "Activo");
   const offboardingEmployees = employees.filter((e) => e.status === "Offboarding");
   const activeOnboardings = onboardings.filter((o) => o.status !== "Completado");

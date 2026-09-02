@@ -1,6 +1,5 @@
 import { Box, Divider, Skeleton, Stack, Typography } from "@mui/material";
 import { useVacancies } from "../../vacancy/queries";
-import { useAllApplications } from "../../kanban/queries";
 import { useEmployees } from "../../people/queries";
 import { useConsultingLeads } from "../../consulting/queries";
 import { LIFECYCLE_STAGES } from "../../people/types";
@@ -20,25 +19,44 @@ const LIFECYCLE_COLOR: Record<string, string> = {
 export function AnalyticsPage() {
   const { data: vacancyData, isLoading: vacanciesLoading } = useVacancies({ limit: 200 });
   const vacancies = vacancyData?.items ?? [];
-  const { data: appData, isLoading: appsLoading } = useAllApplications();
-  const applications = appData?.items ?? [];
   const { data: employeeData, isLoading: employeesLoading } = useEmployees({ limit: 200 });
   const employees = employeeData?.items ?? [];
   const { data: leadData } = useConsultingLeads();
   const leads = leadData?.items ?? [];
 
-  const isLoading = vacanciesLoading || appsLoading || employeesLoading;
+  const isLoading = vacanciesLoading || employeesLoading;
 
+  // Recruitment: esta app es un panel de control manual (no el ATS real de
+  // quien la usa) — los números de candidatos/etapas se cargan a mano por
+  // vaga (vacancy.candidatesReceived, vacancy.stages[].count), no se cuentan
+  // candidatos reales insertados aquí.
   const openVacancies = vacancies.filter((v) => v.status === "Abierta");
-  const activeApplications = applications.filter((a) => a.status === "ACTIVE");
-  const hiredApplications = applications.filter((a) => a.status === "HIRED");
-  const avgCandidatesPerVacancy = vacancies.length ? (applications.length / vacancies.length).toFixed(1) : "0";
-  const conversionRate = applications.length ? Math.round((hiredApplications.length / applications.length) * 100) : 0;
+  const totalCandidatesReceived = vacancies.reduce((sum, v) => sum + (v.candidatesReceived ?? 0), 0);
+  const totalHires = vacancies.reduce((sum, v) => sum + ((v.stages ?? []).find((s) => s.isTerminal)?.count ?? 0), 0);
+  const totalInProcess = vacancies.reduce((sum, v) => sum + (v.stages ?? []).filter((s) => !s.isTerminal).reduce((s2, st) => s2 + (st.count ?? 0), 0), 0);
+  const avgCandidatesPerVacancy = vacancies.length ? (totalCandidatesReceived / vacancies.length).toFixed(1) : "0";
+  const conversionRate = totalCandidatesReceived ? Math.round((totalHires / totalCandidatesReceived) * 100) : 0;
 
-  const stageOrder = Array.from(new Set(applications.map((a) => a.currentStage)));
-  const funnel = stageOrder
-    .map((stage) => ({ stage, count: applications.filter((a) => a.currentStage === stage).length }))
-    .sort((a, b) => b.count - a.count);
+  const avgOf = (values: number[]) => (values.length ? Math.round(values.reduce((sum, v) => sum + v, 0) / values.length) : null);
+  const avgDaysToFirstInterview = avgOf(vacancies.map((v) => v.daysToFirstInterview).filter((v): v is number => v !== null));
+  const avgDaysToFirstOffer = avgOf(vacancies.map((v) => v.daysToFirstOffer).filter((v): v is number => v !== null));
+  const retentionValues = vacancies.map((v) => v.retentionRate).filter((v): v is number => v !== null);
+  const avgRetention = retentionValues.length ? Math.round(retentionValues.reduce((sum, v) => sum + v, 0) / retentionValues.length) : null;
+  const sourceCounts = new Map<string, number>();
+  for (const v of vacancies) {
+    const source = (v.bestSource ?? "").trim();
+    if (!source) continue;
+    sourceCounts.set(source, (sourceCounts.get(source) ?? 0) + 1);
+  }
+  const topSource = [...sourceCounts.entries()].sort((a, b) => b[1] - a[1])[0];
+
+  const funnelTotals = new Map<string, number>();
+  for (const v of vacancies) {
+    for (const stage of v.stages ?? []) {
+      funnelTotals.set(stage.name, (funnelTotals.get(stage.name) ?? 0) + (stage.count ?? 0));
+    }
+  }
+  const funnel = [...funnelTotals.entries()].map(([stage, count]) => ({ stage, count })).sort((a, b) => b.count - a.count);
   const funnelMax = Math.max(1, ...funnel.map((f) => f.count));
 
   const activeEmployees = employees.filter((e) => e.status === "Activo");
@@ -71,14 +89,31 @@ export function AnalyticsPage() {
         <Stack spacing={2}>{Array.from({ length: 3 }).map((_, i) => <Skeleton key={i} variant="rounded" height={160} />)}</Stack>
       ) : (
         <Stack spacing={4}>
-          <Section title="🎯 Recruitment KPIs">
-            <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr 1fr", md: "repeat(5, 1fr)" }, gap: 2 }}>
+          <Section title="🎯 Recruitment KPIs" subtitle="Cargados a mano por vaga — este panel no cuenta candidatos reales, es tu resumen de control.">
+            <Typography variant="caption" fontWeight={800} color="text.secondary" sx={{ textTransform: "uppercase", letterSpacing: "0.04em", display: "block", mb: 1 }}>Volumen</Typography>
+            <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr 1fr", md: "repeat(4, 1fr)" }, gap: 2 }}>
               <KpiCard label="Vacantes abiertas" value={String(openVacancies.length)} sub={`${vacancies.length} en total`} />
-              <KpiCard label="Candidatos/Vacante" value={avgCandidatesPerVacancy} sub="promedio general" />
-              <KpiCard label="Conversion Rate" value={`${conversionRate}%`} sub="candidaturas → contratación" />
-              <KpiCard label="Tiempo real para cerrar" value={avgDaysToClose !== null ? `${avgDaysToClose}d` : "—"} sub={closedVacancies.length ? `promedio de ${closedVacancies.length} vacante(s) cerrada(s)` : "aún no hay vacantes cerradas"} />
-              <KpiCard label="Candidaturas activas" value={String(activeApplications.length)} sub={`${applications.length} en total`} />
+              <KpiCard label="Vacantes cerradas" value={String(closedVacancies.length)} sub="del total de vacantes" />
+              <KpiCard label="Candidatos recibidos" value={String(totalCandidatesReceived)} sub="suma de todas las vacantes" />
+              <KpiCard label="Contrataciones" value={String(totalHires)} sub="candidatos en etapa final" />
             </Box>
+
+            <Typography variant="caption" fontWeight={800} color="text.secondary" sx={{ textTransform: "uppercase", letterSpacing: "0.04em", display: "block", mt: 2.5, mb: 1 }}>Eficiencia</Typography>
+            <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr 1fr", md: "repeat(4, 1fr)" }, gap: 2 }}>
+              <KpiCard label="Tiempo real para cerrar" value={avgDaysToClose !== null ? `${avgDaysToClose}d` : "—"} sub={closedVacancies.length ? `promedio de ${closedVacancies.length} vacante(s)` : "aún no hay vacantes cerradas"} />
+              <KpiCard label="Tiempo a 1ª entrevista" value={avgDaysToFirstInterview !== null ? `${avgDaysToFirstInterview}d` : "—"} sub="promedio cargado a mano" />
+              <KpiCard label="Tiempo a oferta" value={avgDaysToFirstOffer !== null ? `${avgDaysToFirstOffer}d` : "—"} sub="promedio cargado a mano" />
+              <KpiCard label="Candidatos/Vacante" value={avgCandidatesPerVacancy} sub="promedio general" />
+            </Box>
+
+            <Typography variant="caption" fontWeight={800} color="text.secondary" sx={{ textTransform: "uppercase", letterSpacing: "0.04em", display: "block", mt: 2.5, mb: 1 }}>Calidad</Typography>
+            <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr 1fr", md: "repeat(4, 1fr)" }, gap: 2 }}>
+              <KpiCard label="Conversion Rate" value={`${conversionRate}%`} sub="candidatos → contratación" />
+              <KpiCard label="Retención de contratados" value={avgRetention !== null ? `${avgRetention}%` : "—"} sub="promedio cargado a mano" />
+              <KpiCard label="Mejor fuente" value={topSource ? topSource[0] : "—"} sub={topSource ? `en ${topSource[1]} vacante(s)` : "sin datos cargados"} />
+              <KpiCard label="Candidatos en proceso" value={String(totalInProcess)} sub="en todas las vacantes" />
+            </Box>
+
             {funnel.length > 0 && (
               <Box sx={{ bgcolor: "background.paper", border: "1px solid", borderColor: "divider", borderRadius: 4, p: 2.5, mt: 2 }}>
                 <Typography variant="caption" fontWeight={800} color="text.secondary" sx={{ textTransform: "uppercase" }}>Embudo de reclutamiento (todas las vacantes)</Typography>
@@ -148,7 +183,7 @@ export function AnalyticsPage() {
               <ImpactCard icon="🏢" label="Empresas en pipeline" value={String(leads.length)} />
               <ImpactCard icon="🤝" label="Clientes activos" value={String(clients.length)} />
               <ImpactCard icon="🎯" label="Vacantes abiertas" value={String(openVacancies.length)} />
-              <ImpactCard icon="✅" label="Contrataciones" value={String(hiredApplications.length)} />
+              <ImpactCard icon="✅" label="Contrataciones" value={String(totalHires)} />
             </Box>
           </Section>
 
@@ -157,7 +192,7 @@ export function AnalyticsPage() {
           <Box>
             <Typography fontWeight={800} fontSize={19} sx={{ mb: 0.25 }}>🗂️ Tu panel</Typography>
             <Typography variant="body2" color="text.secondary" sx={{ mb: 2.5 }}>
-              A diferencia de las secciones de arriba (que se calculan solas a partir del ATS), esto es 100% tuyo: agrega, edita y elimina lo que necesites, sea de la empresa o personal.
+A diferencia de las secciones de arriba (que resumen los datos de People, Onboarding y Consulting cargados en la app), esto es 100% libre: agrega, edita y elimina lo que necesites, sea de la empresa o personal.
             </Typography>
             <Stack spacing={4}>
               <CustomKpiSection />
@@ -171,10 +206,12 @@ export function AnalyticsPage() {
   );
 }
 
-function Section({ title, children }: { title: string; children: React.ReactNode }) {
+function Section({ title, subtitle, children }: { title: string; subtitle?: string; children: React.ReactNode }) {
   return (
     <Box>
-      <Typography fontWeight={800} fontSize={17} sx={{ mb: 1.5 }}>{title}</Typography>
+      <Typography fontWeight={800} fontSize={17}>{title}</Typography>
+      {subtitle && <Typography variant="body2" color="text.secondary" sx={{ mt: 0.25, mb: 1.5 }}>{subtitle}</Typography>}
+      {!subtitle && <Box sx={{ mb: 1.5 }} />}
       {children}
     </Box>
   );

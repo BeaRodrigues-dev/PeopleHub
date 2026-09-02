@@ -2,7 +2,6 @@ import { supabase, throwIfError } from "../../lib/supabaseClient";
 import { paginate } from "../../lib/paginate";
 import { predictTimeToFill } from "../../lib/ai";
 import type { PaginatedResult } from "../../api/types";
-import type { Application } from "../kanban/types";
 import type { CreateVacancyInput, PipelineStage, TimeToFillPrediction, Vacancy, VacancyStatus } from "./types";
 
 export interface VacancyQueryParams {
@@ -27,6 +26,11 @@ interface VacancyRow {
   stages: PipelineStage[];
   opening_date: string;
   closed_at: string | null;
+  candidates_received: number;
+  days_to_first_interview: number | null;
+  days_to_first_offer: number | null;
+  retention_rate: number | null;
+  best_source: string | null;
   created_at: string;
   updated_at: string;
 }
@@ -47,6 +51,11 @@ function fromRow(row: VacancyRow): Vacancy {
     stages: (row.stages ?? []) as PipelineStage[],
     openingDate: row.opening_date,
     closedAt: row.closed_at ?? null,
+    candidatesReceived: row.candidates_received ?? 0,
+    daysToFirstInterview: row.days_to_first_interview ?? null,
+    daysToFirstOffer: row.days_to_first_offer ?? null,
+    retentionRate: row.retention_rate === null || row.retention_rate === undefined ? null : Number(row.retention_rate),
+    bestSource: row.best_source ?? "",
     createdAt: row.created_at,
     updatedAt: row.updated_at,
   };
@@ -70,6 +79,11 @@ function toRow(input: Partial<CreateVacancyInput>): Record<string, unknown> {
   }
   if (input.requiredSkills !== undefined) row.required_skills = input.requiredSkills;
   if (input.openingDate !== undefined) row.opening_date = input.openingDate;
+  if (input.candidatesReceived !== undefined) row.candidates_received = input.candidatesReceived;
+  if (input.daysToFirstInterview !== undefined) row.days_to_first_interview = input.daysToFirstInterview;
+  if (input.daysToFirstOffer !== undefined) row.days_to_first_offer = input.daysToFirstOffer;
+  if (input.retentionRate !== undefined) row.retention_rate = input.retentionRate;
+  if (input.bestSource !== undefined) row.best_source = input.bestSource;
   return row;
 }
 
@@ -80,6 +94,7 @@ function buildStages(stages: CreateVacancyInput["stages"], existing?: PipelineSt
     name: s.name,
     order: i,
     isTerminal: i === stages.length - 1,
+    count: s.count ?? existing?.[i]?.count ?? 0,
   }));
 }
 
@@ -122,21 +137,15 @@ export const vacancyApi = {
     throwIfError(error);
   },
 
+  /** Actualiza solo los `count` de las etapas (resumen manual de postulaciones) sin tocar nombres/orden. */
+  updateStageCounts: async (id: string, stages: PipelineStage[]): Promise<Vacancy> => {
+    const { data, error } = await supabase.from("vacancies").update({ stages }).eq("id", id).select("*").single();
+    throwIfError(error);
+    return fromRow(data as VacancyRow);
+  },
+
   timeToFill: async (id: string): Promise<TimeToFillPrediction> => {
     const vacancy = await vacancyApi.getById(id);
-    const { data, error } = await supabase.from("applications").select("*").eq("vacancy_id", id);
-    throwIfError(error);
-    const applications: Application[] = ((data ?? []) as Array<Record<string, unknown>>).map((r) => ({
-      id: r.id as string,
-      candidateId: r.candidate_id as string,
-      vacancyId: r.vacancy_id as string,
-      currentStage: r.current_stage as string,
-      matchScore: r.match_score as number | null,
-      status: r.status as Application["status"],
-      aiEvaluation: r.ai_evaluation as Application["aiEvaluation"],
-      createdAt: r.created_at as string,
-      updatedAt: r.updated_at as string,
-    }));
-    return predictTimeToFill(vacancy, applications);
+    return predictTimeToFill(vacancy);
   },
 };

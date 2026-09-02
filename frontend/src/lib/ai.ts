@@ -6,7 +6,6 @@
  */
 import type { Vacancy } from "../features/vacancy/types";
 import type { Candidate, EducationEntry, ExperienceEntry, ParsedResume } from "../features/candidate/types";
-import type { Application } from "../features/kanban/types";
 import type { ConsultingLead } from "../features/consulting/types";
 import type { Employee } from "../features/people/types";
 import type { OnboardingChecklist, OnboardingEntry } from "../features/onboarding/types";
@@ -130,7 +129,13 @@ export interface TimeToFillPrediction {
 
 const SENIORITY_BASE: Record<string, number> = { "Prácticas": 16, "Junior": 20, "Semi Senior": 26, "Senior": 33, "Especialista": 40 };
 
-export function predictTimeToFill(vacancy: Vacancy, applications: Application[]): TimeToFillPrediction {
+/**
+ * Predicción de tiempo para cubrir la vacante — basada en los números que
+ * People carga a mano por etapa (`vacancy.stages[].count`), no en candidatos
+ * reales insertados en esta app (que puede no ser el ATS de verdad de quien
+ * la usa).
+ */
+export function predictTimeToFill(vacancy: Vacancy): TimeToFillPrediction {
   let days = SENIORITY_BASE[vacancy.seniority ?? ""] ?? 26;
 
   const skillCount = (vacancy.requiredSkills || []).length;
@@ -138,14 +143,21 @@ export function predictTimeToFill(vacancy: Vacancy, applications: Application[])
   if (vacancy.workModel === "Remoto") days -= 3;
   if (vacancy.workModel === "Presencial") days += 4;
 
-  const active = (applications || []).filter((a) => a.status === "ACTIVE");
-  days -= Math.min(8, active.length * 0.8);
-  const advancedStages = active.filter((a) => ["Oferta", "Entrevista Técnica", "Entrevista RR. HH.", "Contratado"].includes(a.currentStage));
-  days -= advancedStages.length * 2;
+  const stages = vacancy.stages ?? [];
+  const totalInProcess = stages.reduce((sum, s) => sum + (s.count ?? 0), 0);
+  const halfway = stages.length / 2;
+  const advanced = stages.filter((s) => !s.isTerminal && s.order >= halfway).reduce((sum, s) => sum + (s.count ?? 0), 0);
+
+  days -= Math.min(8, totalInProcess * 0.8);
+  days -= advanced * 2;
+
+  if (vacancy.daysToFirstOffer !== null && vacancy.daysToFirstOffer !== undefined) {
+    days = Math.round((days + vacancy.daysToFirstOffer) / 2);
+  }
 
   days = Math.max(7, Math.round(days));
-  const confidence: TimeToFillPrediction["confidence"] = active.length >= 5 ? "Alta" : active.length >= 2 ? "Media" : "Baja";
-  const reasoning = `Estimación basada en el nivel de experiencia (${vacancy.seniority || "no definido"}), ${skillCount} competencia(s) exigida(s), modalidad de trabajo ${vacancy.workModel || "no definida"} y ${active.length} candidatura(s) activa(s) en el pipeline${advancedStages.length ? ` (${advancedStages.length} ya en etapas avanzadas)` : ""}.`;
+  const confidence: TimeToFillPrediction["confidence"] = totalInProcess >= 5 ? "Alta" : totalInProcess >= 2 ? "Media" : "Baja";
+  const reasoning = `Estimación basada en el nivel de experiencia (${vacancy.seniority || "no definido"}), ${skillCount} competencia(s) exigida(s), modalidad de trabajo ${vacancy.workModel || "no definida"} y ${totalInProcess} persona(s) cargada(s) manualmente en el pipeline${advanced ? ` (${advanced} en etapas avanzadas)` : ""}.`;
 
   return { estimatedDays: days, confidence, reasoning, benchmarkDays: 28 };
 }
@@ -160,27 +172,25 @@ export interface GeneratedInsight {
 
 export function generateInsights(input: {
   vacancies?: Vacancy[];
-  applications?: Application[];
   candidates?: Candidate[];
   onboardings?: OnboardingEntry[];
   consultingLeads?: ConsultingLead[];
   employees?: Employee[];
 }): GeneratedInsight[] {
-  const { vacancies = [], applications = [], candidates = [], onboardings = [], consultingLeads = [], employees = [] } = input;
+  const { vacancies = [], candidates = [], onboardings = [], consultingLeads = [], employees = [] } = input;
   const insights: GeneratedInsight[] = [];
   const dayMs = 86_400_000;
   const nowTs = Date.now();
 
   for (const vacancy of vacancies) {
     if (vacancy.status !== "Abierta") continue;
-    const vacancyApps = applications.filter((a) => a.vacancyId === vacancy.id);
-    const active = vacancyApps.filter((a) => a.status === "ACTIVE");
+    const totalInProcess = (vacancy.stages ?? []).reduce((sum, s) => sum + (s.count ?? 0), 0);
     const daysOpen = Math.round((nowTs - new Date(vacancy.createdAt).getTime()) / dayMs);
 
-    if (active.length === 0 && daysOpen > 10) {
-      insights.push({ type: "problem", text: `La vacante "${vacancy.title}" lleva ${daysOpen} días abierta sin candidaturas activas — vale la pena revisar la estrategia de sourcing.`, area: "Recruitment" });
+    if (totalInProcess === 0 && daysOpen > 10) {
+      insights.push({ type: "problem", text: `La vacante "${vacancy.title}" lleva ${daysOpen} días abierta sin personas cargadas en el pipeline — vale la pena revisar la estrategia de sourcing.`, area: "Recruitment" });
     } else {
-      const prediction = predictTimeToFill(vacancy, vacancyApps);
+      const prediction = predictTimeToFill(vacancy);
       if (prediction.estimatedDays > prediction.benchmarkDays + 5) {
         insights.push({ type: "problem", text: `La previsión de cobertura de la vacante "${vacancy.title}" es de ${prediction.estimatedDays} días, por encima del promedio de la empresa (${prediction.benchmarkDays}d) — considera ajustar los requisitos o los canales de sourcing.`, area: "Recruitment" });
       }

@@ -19,9 +19,10 @@ function daysBetween(from: string, to: string): number {
   return Math.max(0, Math.round(ms / 86_400_000));
 }
 
-export function VacancyCard({ vacancy, candidateCount, onDelete }: { vacancy: Vacancy; candidateCount?: number; onDelete?: (vacancy: Vacancy) => void }) {
+export function VacancyCard({ vacancy, onDelete }: { vacancy: Vacancy; onDelete?: (vacancy: Vacancy) => void }) {
   const navigate = useNavigate();
   const status = statusStyle[vacancy.status];
+  const totalInProcess = (vacancy.stages ?? []).reduce((sum, s) => sum + (s.count ?? 0), 0);
   return (
     <Card
       onClick={() => navigate(`/vagas/${vacancy.id}`)}
@@ -77,7 +78,7 @@ export function VacancyCard({ vacancy, candidateCount, onDelete }: { vacancy: Va
         <Box sx={{ flex: 1 }} />
         <Stack direction="row" spacing={0.5} alignItems="center">
           <GroupsRoundedIcon sx={{ fontSize: 15 }} />
-          <Typography variant="caption" fontWeight={700}>{candidateCount ?? "—"}</Typography>
+          <Typography variant="caption" fontWeight={700}>{totalInProcess}</Typography>
         </Stack>
       </Stack>
     </Card>

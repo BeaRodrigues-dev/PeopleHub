@@ -134,6 +134,18 @@ create table if not exists documents (
 alter table vacancies add column if not exists opening_date date not null default current_date;
 alter table vacancies add column if not exists closed_at date;
 
+-- Recruitment como panel de control manual (esta app ya no es la fuente de
+-- verdad del ATS del usuario, solo un resumen): métricas cargadas a mano por
+-- vaga, en vez de calculadas contando candidatos/aplicaciones reales. El
+-- desglose por etapa (cuántas personas hay en cada etapa ahora mismo, y
+-- cuántas se contrataron) vive dentro de cada elemento del array `stages`,
+-- como un campo `count` adicional — no requiere columna nueva.
+alter table vacancies add column if not exists candidates_received integer not null default 0;
+alter table vacancies add column if not exists days_to_first_interview integer;
+alter table vacancies add column if not exists days_to_first_offer integer;
+alter table vacancies add column if not exists retention_rate numeric;
+alter table vacancies add column if not exists best_source text default '';
+
 -- Fecha real de salida del colaborador, para distinguir quién sigue activo
 -- de quién ya salió (se completa sola al pasar el status a "Offboarding" o
 -- "Inactivo"). El motivo de salida es de texto libre, editable por quien usa

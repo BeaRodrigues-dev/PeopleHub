@@ -4,7 +4,6 @@ import { generateInsights } from "../../lib/ai";
 import type { PaginatedResult } from "../../api/types";
 import type { CreateInsightInput, Insight, InsightType } from "./types";
 import type { Vacancy } from "../vacancy/types";
-import type { Application } from "../kanban/types";
 import type { Candidate } from "../candidate/types";
 import type { OnboardingEntry } from "../onboarding/types";
 import type { ConsultingLead } from "../consulting/types";
@@ -55,22 +54,18 @@ export const insightsApi = {
   },
 
   generateWithAi: async (): Promise<Insight[]> => {
-    const [vacanciesRes, applicationsRes, candidatesRes, onboardingsRes, leadsRes, employeesRes] = await Promise.all([
+    const [vacanciesRes, candidatesRes, onboardingsRes, leadsRes, employeesRes] = await Promise.all([
       supabase.from("vacancies").select("*"),
-      supabase.from("applications").select("*"),
       supabase.from("candidates").select("*"),
       supabase.from("onboardings").select("*"),
       supabase.from("consulting_leads").select("*"),
       supabase.from("employees").select("*"),
     ]);
-    for (const res of [vacanciesRes, applicationsRes, candidatesRes, onboardingsRes, leadsRes, employeesRes]) throwIfError(res.error);
+    for (const res of [vacanciesRes, candidatesRes, onboardingsRes, leadsRes, employeesRes]) throwIfError(res.error);
 
     const vacancies = (vacanciesRes.data ?? []).map((r: Record<string, unknown>) => ({
-      id: r.id, title: r.title, status: r.status, createdAt: r.created_at, requiredSkills: r.required_skills, workModel: r.work_model, seniority: r.seniority,
+      id: r.id, title: r.title, status: r.status, createdAt: r.created_at, requiredSkills: r.required_skills, workModel: r.work_model, seniority: r.seniority, stages: r.stages ?? [],
     })) as unknown as Vacancy[];
-    const applications = (applicationsRes.data ?? []).map((r: Record<string, unknown>) => ({
-      id: r.id, candidateId: r.candidate_id, vacancyId: r.vacancy_id, currentStage: r.current_stage, status: r.status, matchScore: r.match_score, createdAt: r.created_at, updatedAt: r.updated_at,
-    })) as unknown as Application[];
     const candidates = (candidatesRes.data ?? []).map((r: Record<string, unknown>) => ({
       id: r.id, skills: r.skills, vacancyId: r.vacancy_id,
     })) as unknown as Candidate[];
@@ -84,7 +79,7 @@ export const insightsApi = {
       id: r.id, name: r.name, lifecycle: r.lifecycle, status: r.status,
     })) as unknown as Employee[];
 
-    const generated = generateInsights({ vacancies, applications, candidates, onboardings, consultingLeads, employees });
+    const generated = generateInsights({ vacancies, candidates, onboardings, consultingLeads, employees });
     if (!generated.length) return [];
 
     const today = new Date().toISOString().slice(0, 10);
