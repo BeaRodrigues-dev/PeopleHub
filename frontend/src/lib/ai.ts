@@ -11,6 +11,7 @@ import type { ConsultingLead } from "../features/consulting/types";
 import type { Employee } from "../features/people/types";
 import type { OnboardingChecklist, OnboardingEntry } from "../features/onboarding/types";
 import type { Insight, InsightType } from "../features/insights/types";
+import type { ClimateSurveyResult, ClimateSurveyRound } from "../features/climate/types";
 
 // ── extracción (sintética) de currículum ───────────────────────────────────
 
@@ -296,6 +297,118 @@ export function computeProgress(checklist: OnboardingChecklist): number {
   const items = [...checklist.before, ...checklist.day1, ...checklist.week1];
   if (!items.length) return 0;
   return Math.round((items.filter((i) => i.done).length / items.length) * 100);
+}
+
+// ── copiloto de People Analytics (Encuestas de Clima) ───────────────────────
+
+export interface ClimateThemeSuggestion {
+  theme: string;
+  score: number;
+  insight: string;
+  suggestion?: string;
+}
+
+export interface ClimateActionSuggestion {
+  name: string;
+  description: string;
+  priority: "Alta" | "Media" | "Baja";
+}
+
+export interface ClimateAnalysis {
+  summary: string;
+  strengths: ClimateThemeSuggestion[];
+  opportunities: ClimateThemeSuggestion[];
+  actions: ClimateActionSuggestion[];
+}
+
+const CLIMATE_STRENGTH_PHRASES: Record<string, string> = {
+  "Satisfacción general": "Existe un alto nivel de satisfacción general — los colaboradores se sienten bien en su día a día.",
+  "Cultura y pertenencia": "Los colaboradores sienten un fuerte sentido de pertenencia y se identifican con la cultura de la empresa.",
+  "Comunicación interna": "La comunicación interna es percibida como clara y transparente.",
+  "Liderazgo": "Los líderes son bien evaluados — se percibe cercanía y confianza en la gestión de los equipos.",
+  "Desarrollo profesional": "Hay una percepción positiva sobre las oportunidades de desarrollo y crecimiento profesional.",
+  "Organización y procesos": "Los procesos internos son percibidos como claros y bien organizados.",
+  "Bienestar": "El bienestar de los colaboradores está bien cuidado — se valora el equilibrio entre vida personal y laboral.",
+};
+
+const CLIMATE_OPPORTUNITY_PHRASES: Record<string, string> = {
+  "Satisfacción general": "La satisfacción general muestra margen de mejora — vale la pena profundizar en las causas con entrevistas cualitativas.",
+  "Cultura y pertenencia": "Existe una oportunidad de reforzar el sentido de pertenencia y la identificación con los valores de la empresa.",
+  "Comunicación interna": "Existe una oportunidad de aumentar la transparencia sobre decisiones y cambios internos.",
+  "Liderazgo": "Se percibe una oportunidad de fortalecer las habilidades de liderazgo y la cercanía de los líderes con sus equipos.",
+  "Desarrollo profesional": "Los colaboradores sienten falta de feedback frecuente sobre su desempeño y su crecimiento.",
+  "Organización y procesos": "Los procesos internos generan fricción — hay espacio para simplificar y clarificar los flujos de trabajo.",
+  "Bienestar": "Existe una oportunidad de reforzar las iniciativas de bienestar y el equilibrio entre vida personal y laboral.",
+};
+
+const CLIMATE_ACTION_SUGGESTIONS: Record<string, string> = {
+  "Satisfacción general": "Realizar entrevistas 1:1 breves para entender mejor las causas de la insatisfacción.",
+  "Cultura y pertenencia": "Organizar encuentros informales y reforzar la comunicación de los valores de la empresa.",
+  "Comunicación interna": "Crear un canal de comunicación interna semanal con las novedades de la empresa.",
+  "Liderazgo": "Implementar un programa de desarrollo de liderazgo para managers.",
+  "Desarrollo profesional": "Crear reuniones 1:1 mensuales entre líderes y colaboradores para dar seguimiento al desarrollo.",
+  "Organización y procesos": "Mapear y simplificar, junto con los equipos, los procesos internos más críticos.",
+  "Bienestar": "Revisar la carga de trabajo de los equipos y reforzar las rutinas de feedback 1:1.",
+};
+
+const CLIMATE_SCORE_MAX_REF = 10;
+
+function climateLevelLabel(avg: number): string {
+  if (avg >= 8) return "alto";
+  if (avg >= 6) return "moderado";
+  return "bajo";
+}
+
+/**
+ * Analiza los resultados por categoría de una ronda de clima y genera un
+ * resumen, fortalezas, oportunidades y sugerencias de acción — 100% heurístico
+ * y determinístico (sin llamar a ningún servicio externo), igual que el resto
+ * de las funciones de "IA" de la app. Nunca se aplica nada solo: todo queda
+ * como sugerencia editable/eliminable para que People decida.
+ */
+export function analyzeClimateRound(round: Pick<ClimateSurveyRound, "name" | "enps">, results: ClimateSurveyResult[]): ClimateAnalysis {
+  if (results.length === 0) {
+    return {
+      summary: `Todavía no hay puntajes cargados para "${round.name}" — agrega resultados por categoría para generar el análisis.`,
+      strengths: [],
+      opportunities: [],
+      actions: [],
+    };
+  }
+
+  const average = results.reduce((sum, r) => sum + r.score, 0) / results.length;
+  const sortedDesc = [...results].sort((a, b) => b.score - a.score);
+  const sortedAsc = [...results].sort((a, b) => a.score - b.score);
+
+  const strengthsSource = sortedDesc.filter((r) => r.score >= average);
+  const strengths: ClimateThemeSuggestion[] = (strengthsSource.length ? strengthsSource : sortedDesc).slice(0, 3).map((r) => ({
+    theme: r.category,
+    score: r.score,
+    insight: CLIMATE_STRENGTH_PHRASES[r.category] ?? `Los colaboradores valoran especialmente "${r.category}", con un puntaje de ${r.score}/${CLIMATE_SCORE_MAX_REF}.`,
+  }));
+
+  const opportunitiesSource = sortedAsc.filter((r) => r.score < average);
+  const opportunities: ClimateThemeSuggestion[] = opportunitiesSource.slice(0, 3).map((r) => ({
+    theme: r.category,
+    score: r.score,
+    insight: CLIMATE_OPPORTUNITY_PHRASES[r.category] ?? `"${r.category}" aparece como un área con margen de mejora, con un puntaje de ${r.score}/${CLIMATE_SCORE_MAX_REF}.`,
+    suggestion: CLIMATE_ACTION_SUGGESTIONS[r.category] ?? `Crear un plan de escucha activa y seguimiento sobre "${r.category}".`,
+  }));
+
+  const actions: ClimateActionSuggestion[] = opportunities.map((o) => ({
+    name: o.suggestion ?? `Plan de acción — ${o.theme}`,
+    description: o.insight,
+    priority: o.score <= average - 1.5 ? "Alta" : "Media",
+  }));
+
+  const topStrength = strengths[0];
+  const topOpportunity = opportunities[0];
+  const enpsText = round.enps !== null && round.enps !== undefined ? `, con un eNPS de ${round.enps > 0 ? "+" : ""}${round.enps}` : "";
+  const summary = topOpportunity
+    ? `El clima general se ubica en un nivel ${climateLevelLabel(average)} (${average.toFixed(1)}/${CLIMATE_SCORE_MAX_REF}${enpsText}). El aspecto mejor evaluado es "${topStrength.theme}" (${topStrength.score}/${CLIMATE_SCORE_MAX_REF}), mientras que "${topOpportunity.theme}" (${topOpportunity.score}/${CLIMATE_SCORE_MAX_REF}) representa la principal oportunidad de mejora.`
+    : `El clima general se ubica en un nivel ${climateLevelLabel(average)} (${average.toFixed(1)}/${CLIMATE_SCORE_MAX_REF}${enpsText}), sin oportunidades críticas identificadas — todas las categorías están parejas y bien evaluadas.`;
+
+  return { summary, strengths, opportunities, actions };
 }
 
 export type { Insight };

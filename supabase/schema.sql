@@ -206,6 +206,52 @@ create table if not exists climate_survey_results (
   updated_at timestamptz not null default now()
 );
 
+-- Evolución de "Encuestas de Clima" a módulo de People Analytics: estado del
+-- período, público objetivo, categorías incluidas y eNPS (siempre mostrado
+-- por separado del puntaje de satisfacción, nunca mezclado en una sola nota).
+alter table climate_survey_rounds add column if not exists status text not null default 'Activa';
+alter table climate_survey_rounds add column if not exists start_date date;
+alter table climate_survey_rounds add column if not exists end_date date;
+alter table climate_survey_rounds add column if not exists audience text not null default 'Toda la empresa';
+alter table climate_survey_rounds add column if not exists audience_team text;
+alter table climate_survey_rounds add column if not exists categories text[] not null default array['Satisfacción general','Cultura y pertenencia','Comunicación interna','Liderazgo','Desarrollo profesional','Organización y procesos','Bienestar'];
+alter table climate_survey_rounds add column if not exists enps integer;
+alter table climate_survey_rounds add column if not exists target_headcount integer;
+alter table climate_survey_rounds add column if not exists ai_summary text;
+
+-- Fortalezas y oportunidades identificadas por ronda — manuales o generadas
+-- por el asistente de IA (origin = 'ia'), siempre editables/eliminables por
+-- People: la IA sugiere, People decide.
+create table if not exists climate_theme_notes (
+  id uuid primary key default gen_random_uuid(),
+  round_id uuid not null references climate_survey_rounds(id) on delete cascade,
+  kind text not null default 'fortaleza',
+  theme text not null,
+  result numeric,
+  insight text not null default '',
+  suggestion text,
+  origin text not null default 'manual',
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+);
+
+-- Plan de acción de People derivado de los resultados de clima. La IA puede
+-- sugerir acciones (origin = 'ia'), pero nunca se aplican solas: quedan
+-- pendientes de revisión/aprobación humana, editables y eliminables.
+create table if not exists climate_action_items (
+  id uuid primary key default gen_random_uuid(),
+  round_id uuid not null references climate_survey_rounds(id) on delete cascade,
+  name text not null,
+  description text not null default '',
+  owner text not null default '',
+  due_date date,
+  priority text not null default 'Media',
+  status text not null default 'Pendiente',
+  origin text not null default 'manual',
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+);
+
 -- Agenda personal / "segunda agenda de People": eventos con fecha, 100%
 -- editables, usados también para los recordatorios de la página de inicio.
 create table if not exists agenda_events (
@@ -266,6 +312,12 @@ create trigger trg_climate_survey_results_updated_at before update on climate_su
 drop trigger if exists trg_agenda_events_updated_at on agenda_events;
 create trigger trg_agenda_events_updated_at before update on agenda_events for each row execute function set_updated_at();
 
+drop trigger if exists trg_climate_theme_notes_updated_at on climate_theme_notes;
+create trigger trg_climate_theme_notes_updated_at before update on climate_theme_notes for each row execute function set_updated_at();
+
+drop trigger if exists trg_climate_action_items_updated_at on climate_action_items;
+create trigger trg_climate_action_items_updated_at before update on climate_action_items for each row execute function set_updated_at();
+
 -- ─────────────────────────────────────────────────────────────────────────
 -- RLS — qualquer usuário autenticado tem acesso total (app single-tenant)
 -- ─────────────────────────────────────────────────────────────────────────
@@ -284,6 +336,8 @@ alter table custom_notes enable row level security;
 alter table climate_survey_rounds enable row level security;
 alter table climate_survey_results enable row level security;
 alter table agenda_events enable row level security;
+alter table climate_theme_notes enable row level security;
+alter table climate_action_items enable row level security;
 
 drop policy if exists "authenticated_full_access" on vacancies;
 create policy "authenticated_full_access" on vacancies for all using (auth.role() = 'authenticated') with check (auth.role() = 'authenticated');
@@ -326,6 +380,12 @@ create policy "authenticated_full_access" on climate_survey_results for all usin
 
 drop policy if exists "authenticated_full_access" on agenda_events;
 create policy "authenticated_full_access" on agenda_events for all using (auth.role() = 'authenticated') with check (auth.role() = 'authenticated');
+
+drop policy if exists "authenticated_full_access" on climate_theme_notes;
+create policy "authenticated_full_access" on climate_theme_notes for all using (auth.role() = 'authenticated') with check (auth.role() = 'authenticated');
+
+drop policy if exists "authenticated_full_access" on climate_action_items;
+create policy "authenticated_full_access" on climate_action_items for all using (auth.role() = 'authenticated') with check (auth.role() = 'authenticated');
 
 -- ─────────────────────────────────────────────────────────────────────────
 -- Storage — buckets públicos para currículos e documentos

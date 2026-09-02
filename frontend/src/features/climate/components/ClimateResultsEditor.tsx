@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Box, Button, IconButton, Stack, Table, TableBody, TableCell, TableHead, TableRow, TextField, Typography } from "@mui/material";
+import { Box, Button, IconButton, Stack, TextField, Typography } from "@mui/material";
 import AddRoundedIcon from "@mui/icons-material/AddRounded";
 import DeleteOutlineRoundedIcon from "@mui/icons-material/DeleteOutlineRounded";
 import { useCreateClimateResult, useDeleteClimateResult, useUpdateClimateResult } from "../queries";
@@ -7,37 +7,51 @@ import { useToast } from "../../../components/common/ToastProvider";
 import { errorMessage } from "../../../components/common/ErrorState";
 import { CLIMATE_SCORE_MAX, type ClimateSurveyResult } from "../types";
 
-const BAR_COLORS = ["#6C5CE0", "#E4DFFB", "#C7BBF5", "#9B8FEA", "#5646C4", "#6C5CE0", "#D6A65D"];
+const BAR_COLORS = ["#6C5CE0", "#4C7DE0", "#2FA36B", "#E08A3C", "#5646C4", "#9B8FEA", "#D6A65D"];
 
-/** Editor de los puntajes por categoría de una ronda: agregar, editar y eliminar filas, más un gráfico de barras generado a partir de los datos. */
-export function ClimateResultsEditor({ roundId, results }: { roundId: string; results: ClimateSurveyResult[] }) {
-  const [draftCategory, setDraftCategory] = useState("");
-  const [draftScore, setDraftScore] = useState(CLIMATE_SCORE_MAX);
+/**
+ * Editor de los puntajes por categoría de una ronda — pensado como tarjetas
+ * de análisis (no como planilla): una fila por dimensión de clima, con barra
+ * comparativa, puntaje editable y comentario opcional. Las categorías de la
+ * ronda aparecen siempre, aunque todavía no tengan puntaje cargado.
+ */
+export function ClimateResultsEditor({ roundId, categories, results }: { roundId: string; categories: string[]; results: ClimateSurveyResult[] }) {
+  const [customCategory, setCustomCategory] = useState("");
   const createResult = useCreateClimateResult();
   const updateResult = useUpdateClimateResult();
   const deleteResult = useDeleteClimateResult();
   const toast = useToast();
 
-  const handleAdd = () => {
-    if (!draftCategory.trim()) return;
-    createResult.mutate(
-      { roundId, category: draftCategory.trim(), score: draftScore },
-      {
-        onSuccess: () => { setDraftCategory(""); setDraftScore(CLIMATE_SCORE_MAX); },
-        onError: (err) => toast.error(errorMessage(err, "No fue posible agregar la categoría.")),
-      },
-    );
-  };
+  const byCategory = new Map(results.map((r) => [r.category, r]));
+  const extraCategories = results.map((r) => r.category).filter((c) => !categories.includes(c));
+  const orderedCategories = [...categories, ...Array.from(new Set(extraCategories))];
 
-  const handleScoreChange = (result: ClimateSurveyResult, score: number) => {
-    updateResult.mutate({ id: result.id, input: { score } }, { onError: (err) => toast.error(errorMessage(err, "No se pudo actualizar.")) });
+  const average = results.length ? results.reduce((sum, r) => sum + r.score, 0) / results.length : 0;
+
+  const handleRate = (category: string, score: number) => {
+    const existing = byCategory.get(category);
+    if (existing) {
+      updateResult.mutate({ id: existing.id, input: { score } }, { onError: (err) => toast.error(errorMessage(err, "No se pudo actualizar.")) });
+    } else {
+      createResult.mutate({ roundId, category, score }, { onError: (err) => toast.error(errorMessage(err, "No fue posible cargar el puntaje.")) });
+    }
   };
 
   const handleCommentChange = (result: ClimateSurveyResult, comment: string) => {
     updateResult.mutate({ id: result.id, input: { comment } }, { onError: (err) => toast.error(errorMessage(err, "No se pudo actualizar.")) });
   };
 
-  const average = results.length ? results.reduce((sum, r) => sum + r.score, 0) / results.length : 0;
+  const handleAddCustom = () => {
+    const value = customCategory.trim();
+    if (!value) return;
+    createResult.mutate(
+      { roundId, category: value, score: CLIMATE_SCORE_MAX * 0.7 },
+      {
+        onSuccess: () => setCustomCategory(""),
+        onError: (err) => toast.error(errorMessage(err, "No fue posible agregar la categoría.")),
+      },
+    );
+  };
 
   return (
     <Stack spacing={2}>
@@ -46,93 +60,61 @@ export function ClimateResultsEditor({ roundId, results }: { roundId: string; re
         <Typography variant="body2" color="text.secondary">Promedio: <Typography component="span" fontWeight={800} color="primary.dark">{average.toFixed(1)}</Typography> / {CLIMATE_SCORE_MAX}</Typography>
       </Stack>
 
-      {results.length === 0 ? (
-        <Typography variant="caption" color="text.secondary" fontStyle="italic">Todavía no hay categorías cargadas para esta ronda.</Typography>
-      ) : (
-        <Box sx={{ bgcolor: "background.paper", border: "1px solid", borderColor: "divider", borderRadius: 3, p: 2 }}>
-          <Stack spacing={1.25}>
-            {results.map((r, i) => (
-              <Stack key={r.id} direction="row" alignItems="center" spacing={1.5}>
-                <Typography variant="body2" color="text.secondary" sx={{ width: 150, flexShrink: 0 }} noWrap>{r.category}</Typography>
-                <Box sx={{ flex: 1, height: 18, bgcolor: "#EFEDFB", borderRadius: 2, overflow: "hidden" }}>
-                  <Box sx={{ width: `${Math.min(100, (r.score / CLIMATE_SCORE_MAX) * 100)}%`, height: "100%", bgcolor: BAR_COLORS[i % BAR_COLORS.length] }} />
+      <Stack spacing={1.25}>
+        {orderedCategories.map((category, i) => {
+          const result = byCategory.get(category);
+          const score = result?.score ?? 0;
+          return (
+            <Box key={category} sx={{ bgcolor: "background.paper", border: "1px solid", borderColor: "divider", borderRadius: 3, p: 1.75 }}>
+              <Stack direction="row" alignItems="center" spacing={1.5}>
+                <Typography variant="body2" fontWeight={700} sx={{ width: { xs: 120, sm: 190 }, flexShrink: 0 }} noWrap>{category}</Typography>
+                <Box sx={{ flex: 1, height: 10, bgcolor: "#EFEDFB", borderRadius: 2, overflow: "hidden" }}>
+                  {result && <Box sx={{ width: `${Math.min(100, (score / CLIMATE_SCORE_MAX) * 100)}%`, height: "100%", bgcolor: BAR_COLORS[i % BAR_COLORS.length] }} />}
                 </Box>
-                <Typography variant="caption" fontWeight={700} sx={{ width: 30, textAlign: "right", flexShrink: 0 }}>{r.score}</Typography>
+                <TextField
+                  type="number"
+                  size="small"
+                  value={result ? score : ""}
+                  placeholder="—"
+                  onChange={(e) => handleRate(category, Number(e.target.value))}
+                  slotProps={{ htmlInput: { min: 0, max: CLIMATE_SCORE_MAX, step: 0.5 } }}
+                  sx={{ width: 72, flexShrink: 0 }}
+                />
+                {result && (
+                  <IconButton size="small" onClick={() => deleteResult.mutate(result.id)}>
+                    <DeleteOutlineRoundedIcon fontSize="small" />
+                  </IconButton>
+                )}
               </Stack>
-            ))}
-          </Stack>
-        </Box>
-      )}
-
-      <Box sx={{ bgcolor: "background.paper", border: "1px solid", borderColor: "divider", borderRadius: 3, overflow: "hidden" }}>
-        <Table size="small">
-          <TableHead>
-            <TableRow sx={{ bgcolor: "#F3F1FC" }}>
-              {["Categoría", `Puntaje (0–${CLIMATE_SCORE_MAX})`, "Comentario", ""].map((h) => (
-                <TableCell key={h} sx={{ fontWeight: 800, fontSize: 11, textTransform: "uppercase", letterSpacing: "0.04em", color: "text.secondary" }}>{h}</TableCell>
-              ))}
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {results.map((r) => (
-              <TableRow key={r.id} hover>
-                <TableCell><Typography variant="body2" fontWeight={700}>{r.category}</Typography></TableCell>
-                <TableCell sx={{ width: 130 }}>
-                  <TextField
-                    type="number"
-                    size="small"
-                    variant="standard"
-                    value={r.score}
-                    onChange={(e) => handleScoreChange(r, Number(e.target.value))}
-                    slotProps={{ htmlInput: { min: 0, max: CLIMATE_SCORE_MAX, step: 0.5 } }}
-                    sx={{ width: 70 }}
-                  />
-                </TableCell>
-                <TableCell>
-                  <TextField
-                    size="small"
-                    variant="standard"
-                    fullWidth
-                    placeholder="Opcional…"
-                    defaultValue={r.comment}
-                    onBlur={(e) => e.target.value !== r.comment && handleCommentChange(r, e.target.value)}
-                  />
-                </TableCell>
-                <TableCell sx={{ width: 40 }}>
-                  <IconButton size="small" onClick={() => deleteResult.mutate(r.id)}><DeleteOutlineRoundedIcon fontSize="small" /></IconButton>
-                </TableCell>
-              </TableRow>
-            ))}
-            <TableRow>
-              <TableCell>
+              {result ? (
                 <TextField
                   size="small"
                   variant="standard"
                   fullWidth
-                  placeholder="Nueva categoría (ej.: Liderazgo)…"
-                  value={draftCategory}
-                  onChange={(e) => setDraftCategory(e.target.value)}
-                  onKeyDown={(e) => e.key === "Enter" && (e.preventDefault(), handleAdd())}
+                  placeholder="Comentario (opcional)…"
+                  defaultValue={result.comment}
+                  onBlur={(e) => e.target.value !== result.comment && handleCommentChange(result, e.target.value)}
+                  sx={{ mt: 1 }}
                 />
-              </TableCell>
-              <TableCell sx={{ width: 130 }}>
-                <TextField
-                  type="number"
-                  size="small"
-                  variant="standard"
-                  value={draftScore}
-                  onChange={(e) => setDraftScore(Number(e.target.value))}
-                  slotProps={{ htmlInput: { min: 0, max: CLIMATE_SCORE_MAX, step: 0.5 } }}
-                  sx={{ width: 70 }}
-                />
-              </TableCell>
-              <TableCell colSpan={2}>
-                <Button size="small" variant="outlined" startIcon={<AddRoundedIcon fontSize="small" />} onClick={handleAdd}>Agregar categoría</Button>
-              </TableCell>
-            </TableRow>
-          </TableBody>
-        </Table>
-      </Box>
+              ) : (
+                <Typography variant="caption" color="text.secondary" fontStyle="italic" sx={{ display: "block", mt: 0.5 }}>Todavía sin calificar — carga un puntaje de 0 a {CLIMATE_SCORE_MAX}.</Typography>
+              )}
+            </Box>
+          );
+        })}
+      </Stack>
+
+      <Stack direction="row" spacing={1}>
+        <TextField
+          fullWidth
+          size="small"
+          placeholder="Agregar otra dimensión (ej.: Diversidad e inclusión)…"
+          value={customCategory}
+          onChange={(e) => setCustomCategory(e.target.value)}
+          onKeyDown={(e) => e.key === "Enter" && handleAddCustom()}
+        />
+        <Button variant="outlined" startIcon={<AddRoundedIcon fontSize="small" />} onClick={handleAddCustom} sx={{ flexShrink: 0 }}>Agregar</Button>
+      </Stack>
     </Stack>
   );
 }
