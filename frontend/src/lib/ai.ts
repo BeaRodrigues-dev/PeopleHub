@@ -11,6 +11,7 @@ import type { Employee } from "../features/people/types";
 import type { OnboardingChecklist, OnboardingEntry } from "../features/onboarding/types";
 import type { Insight, InsightType } from "../features/insights/types";
 import type { ClimateSurveyResult, ClimateSurveyRound } from "../features/climate/types";
+import { isExitStage } from "../features/vacancy/types";
 
 // ── extracción (sintética) de currículum ───────────────────────────────────
 
@@ -146,7 +147,7 @@ export function predictTimeToFill(vacancy: Vacancy): TimeToFillPrediction {
   const stages = vacancy.stages ?? [];
   const totalInProcess = stages.reduce((sum, s) => sum + (s.count ?? 0), 0);
   const halfway = stages.length / 2;
-  const advanced = stages.filter((s) => !s.isTerminal && s.order >= halfway).reduce((sum, s) => sum + (s.count ?? 0), 0);
+  const advanced = stages.filter((s) => !isExitStage(s) && s.order >= halfway).reduce((sum, s) => sum + (s.count ?? 0), 0);
 
   days -= Math.min(8, totalInProcess * 0.8);
   days -= advanced * 2;

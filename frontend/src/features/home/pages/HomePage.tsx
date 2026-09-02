@@ -28,6 +28,7 @@ import { useCustomTasks, useCreateCustomTask, useToggleCustomTask, useDeleteCust
 import { useUIStore } from "../../../store/uiStore";
 import { useToast } from "../../../components/common/ToastProvider";
 import { errorMessage } from "../../../components/common/ErrorState";
+import { countInProcess } from "../../vacancy/types";
 
 const INSIGHT_STYLE: Record<string, { bg: string; border: string; label: string; icon: string }> = {
   problem: { bg: "#F5E3E8", border: "#E8D3D9", label: "Problema", icon: "🔴" },
@@ -98,7 +99,7 @@ export function HomePage() {
   const generateInsights = useGenerateInsightsWithAi();
 
   const openVacancies = vacancies.filter((v) => v.status === "Abierta");
-  const activeCandidates = vacancies.reduce((sum, v) => sum + (v.stages ?? []).filter((s) => !s.isTerminal).reduce((s2, st) => s2 + (st.count ?? 0), 0), 0);
+  const activeCandidates = vacancies.reduce((sum, v) => sum + countInProcess(v.stages ?? []), 0);
   const activeEmployees = employees.filter((e) => e.status === "Activo");
   const offboardingEmployees = employees.filter((e) => e.status === "Offboarding");
   const activeOnboardings = onboardings.filter((o) => o.status !== "Completado");

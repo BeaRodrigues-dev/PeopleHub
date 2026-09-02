@@ -6,6 +6,7 @@ import { LIFECYCLE_STAGES } from "../../people/types";
 import { CustomKpiSection } from "../../workspace/components/CustomKpiSection";
 import { CustomTasksSection } from "../../workspace/components/CustomTasksSection";
 import { CustomNotesSection } from "../../workspace/components/CustomNotesSection";
+import { countHires, countInProcess } from "../../vacancy/types";
 
 const AREA_PALETTE = ["#6C5CE0", "#E4DFFB", "#F1EEFD", "#D6A65D", "#5646C4", "#6C5CE0"];
 const LIFECYCLE_COLOR: Record<string, string> = {
@@ -32,8 +33,8 @@ export function AnalyticsPage() {
   // candidatos reales insertados aquí.
   const openVacancies = vacancies.filter((v) => v.status === "Abierta");
   const totalCandidatesReceived = vacancies.reduce((sum, v) => sum + (v.candidatesReceived ?? 0), 0);
-  const totalHires = vacancies.reduce((sum, v) => sum + ((v.stages ?? []).find((s) => s.isTerminal)?.count ?? 0), 0);
-  const totalInProcess = vacancies.reduce((sum, v) => sum + (v.stages ?? []).filter((s) => !s.isTerminal).reduce((s2, st) => s2 + (st.count ?? 0), 0), 0);
+  const totalHires = vacancies.reduce((sum, v) => sum + countHires(v.stages ?? []), 0);
+  const totalInProcess = vacancies.reduce((sum, v) => sum + countInProcess(v.stages ?? []), 0);
   const avgCandidatesPerVacancy = vacancies.length ? (totalCandidatesReceived / vacancies.length).toFixed(1) : "0";
   const conversionRate = totalCandidatesReceived ? Math.round((totalHires / totalCandidatesReceived) * 100) : 0;
 
